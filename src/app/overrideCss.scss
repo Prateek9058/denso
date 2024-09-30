@@ -1,0 +1,90 @@
+@media screen and (min-width: 768px) {
+  .mainLayout {
+    margin-left: 0px !important;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .mainLayout {
+    margin-left: 270px !important;
+  }
+}
+.TabStyleAddDevice {
+  border-radius: 7px !important;
+  padding: 6px !important;
+}
+.TabStyleAddDeviceZone {
+  border-radius: 7px !important;
+  background: #b0b0b0 !important;
+  padding: 6px !important;
+  border-radius: 50px !important
+  ;
+}
+.TabChangesDeviceLive {
+  min-width: 120px !important;
+  font-style: normal !important;
+  text-transform: capitalize !important;
+  font-weight: 500 !important;
+  font-size: 15px !important;
+  padding: 6px 8px !important;
+  min-height: 40px !important;
+}
+.TabChangesDeviceLiveZone {
+  min-width: 120px !important;
+  font-style: normal !important;
+  text-transform: capitalize !important;
+  font-weight: 500 !important;
+  font-size: 15px !important;
+  padding: 6px 8px !important;
+  min-height: 40px !important;
+}
+.TabStyleAddDevice .MuiTabs-indicator {
+  width: 0px !important;
+}
+.TabStyleAddDeviceZone .MuiTabs-indicator {
+  width: 0px !important;
+}
+
+.TabStyleAddDevice .MuiTab-textColorInherit.Mui-selected {
+  color: #fff !important;
+}
+.TabStyleAddDeviceZone .MuiTab-textColorInherit.Mui-selected {
+  color: #fff !important;
+}
+
+.TabStTabStyleAddDeviceyle .MuiTab-textColorInherit {
+  color: #6f6f6f !important;
+}
+
+.TabStyleAddDevice .MuiTab-textColorInherit.Mui-selected {
+  color: #fff !important;
+}
+
+.TabStTabStyleAddDeviceyle .MuiTab-textColorInherit {
+  color: #6f6f6f !important;
+}
+
+.TabStyleAddDevice .Mui-selected {
+  color: #ffffff !important;
+  background-color: #ffa11f !important;
+}
+.TabStyleAddDeviceZone .Mui-selected {
+  color: #ffffff !important;
+  background-color: #ffa11f !important;
+}
+.customChip {
+  border-radius: 30px !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  padding: 8px !important;
+  color: white !important;
+  cursor: pointer;
+}
+.activeGreen {
+  background-color: #8bd040 !important;
+}
+.activeOrg {
+  background-color: #fcbe2d !important;
+}
+.activeRed {
+  background-color: #e40203 !important;
+}
