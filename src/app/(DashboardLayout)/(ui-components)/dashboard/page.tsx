@@ -1,7 +1,15 @@
 "use client";
 import React, { useEffect, useCallback } from "react";
 import { useState } from "react";
-import { Card, CardContent, Typography, Grid } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  Box,
+  LinearProgress,
+} from "@mui/material";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { styled } from "@mui/system";
 import salesIcon from "../../../../../public/Img/sales.png";
 import deviceIcon from "../../../../../public/Img/alertsdash.png";
@@ -13,6 +21,10 @@ import axiosInstance from "@/app/api/axiosInstance";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import { useSitesData } from "@/app/(context)/SitesContext";
 import dynamic from "next/dynamic";
+import ManpowerWaiting from "./manPowerWaitingTime";
+import TrolleyDetails from "./trolleyDetails.tsx";
+import TrolleyRepairTime from "./trolleyRepairTime";
+import TotalAlerts from "./totalAlerts";
 const DynamicHeader = dynamic(
   () => import("../../../(components)/pages/track"),
   {
@@ -43,26 +55,36 @@ const Page = () => {
     {
       title: "Manpower",
       value: 0,
-      change: "+2 from yesterday",
+      active: "0",
+      assigned: "0",
+      in: "0",
+      nonActive: "0",
+      notAssigned: "0",
+      out: "0",
       id: "totalRegisterDevice",
       icon: salesIcon,
     },
     {
       title: "Trolleys",
       value: 0,
-      change: "+1 from yesterday",
+      active: "0",
+      assigned: "0",
+      in: "0",
+      nonActive: "0",
+      notAssigned: "0",
+      out: "0",
       id: "totalActiveDevice",
       icon: users,
     },
     {
-      title: "Attendance",
+      title: "Maintenance trolleys",
       value: 0,
       change: "+7 from yesterday",
       id: "totalUser",
       icon: clock,
     },
     {
-      title: "Alerts",
+      title: "Trolley running time",
       value: 0,
       change: "+6 from yesterday",
       id: "pendingSubscription",
@@ -85,26 +107,36 @@ const Page = () => {
           {
             title: "Manpower",
             value: data?.totalEmployees,
-            change: "+2 from yesterday",
+            active: "0",
+            assigned: "0",
+            in: "0",
+            nonActive: "0",
+            notAssigned: "0",
+            out: "0",
             id: "totalRegisterDevice",
             icon: salesIcon,
           },
           {
             title: "Trolleys",
             value: data?.totalTrolleys,
-            change: "+1 from yesterday",
+            active: "0",
+            assigned: "0",
+            in: "0",
+            nonActive: "0",
+            notAssigned: "0",
+            out: "0",
             id: "totalActiveDevice",
             icon: users,
           },
           {
-            title: "Attendance",
-            value: data?.attendanceData,
+            title: "Maintenance trolleys",
+            value: 0,
             change: "+7 from yesterday",
             id: "totalUser",
             icon: clock,
           },
           {
-            title: "Alerts",
+            title: "Trolley running time",
             value: data?.totalAlerts,
             change: "+6 from yesterday",
             id: "pendingSubscription",
@@ -122,11 +154,6 @@ const Page = () => {
 
   return (
     <Grid sx={{ padding: "12px 15px" }}>
-      <ManagementGrid
-        moduleName="Dashboard"
-        subHeading="Track manpower, Trolley location seamlessly"
-        breadcrumbItems={breadcrumbItems}
-      />
       <Grid container spacing={2}>
         {stats?.map((stat) => (
           <Grid item md={3} mt={2} sm={5.8} xs={12} key={stat?.id}>
@@ -162,12 +189,109 @@ const Page = () => {
                     </Avatar>
                   </Grid>
                 </Grid>
+                {(stat.title == "Manpower" || stat.title == "Trolleys") && (
+                  <Box>
+                    <Grid container spacing={1}>
+                      <Grid item xs={6}>
+                        <Typography variant="body1">
+                          <span style={{ color: "#227B52", fontSize: "18px" }}>
+                            ●
+                          </span>{" "}
+                          Active - 100
+                        </Typography>
+                        <Typography variant="body1">
+                          <span style={{ color: "#227B52", fontSize: "18px" }}>
+                            ●
+                          </span>{" "}
+                          Assigned - 100
+                        </Typography>
+                        <Typography variant="body1">
+                          <span style={{ color: "#227B52", fontSize: "18px" }}>
+                            ●
+                          </span>{" "}
+                          In - 100
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="body1">
+                          <span style={{ color: "#b0bec5" }}>●</span> Non-active
+                          - 20
+                        </Typography>
+                        <Typography variant="body1">
+                          <span style={{ color: "#b0bec5" }}>●</span>{" "}
+                          Not-assigned - 20
+                        </Typography>
+                        <Typography variant="body1">
+                          <span style={{ color: "#b0bec5" }}>●</span> Out - 20
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                )}
+                {(stat.title == "Maintenance trolleys" ||
+                  stat.title == "Trolley running time") && (
+                  <Box>
+                    <Grid
+                      container
+                      spacing={1}
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography variant="body1">
+                        Average repair time
+                      </Typography>
+                      <Grid item>
+                        <Typography variant="body1" display="inline">
+                          4 H{" "}
+                        </Typography>
+                        <AccessTimeIcon fontSize="small" />
+                      </Grid>
+                    </Grid>
+
+                    <Box mt={1}>
+                      <LinearProgress
+                        variant="determinate"
+                        color="success"
+                        value={72}
+                        sx={{
+                          height: 8,
+                          borderRadius: 5,
+                          backgroundColor: "#CCCCCC",
+                        }}
+                      />
+                    </Box>
+
+                    <Grid container justifyContent="space-between" mt={1}>
+                      <Typography variant="body2" style={{ color: "#227B52" }}>
+                        <span style={{ color: "#227B52", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Not repaired - 72
+                      </Typography>
+                      <Typography variant="body2">
+                        <span style={{ color: "#b0bec5", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Repaired - 17
+                      </Typography>
+                    </Grid>
+                  </Box>
+                )}
               </CardContent>
             </StatCard>
           </Grid>
         ))}
       </Grid>
+      <Grid container spacing={2}>
+        <ManpowerWaiting />
+        <TrolleyDetails />
+      </Grid>
+
       <DynamicHeader />
+      <Grid container spacing={2}>
+        <TrolleyRepairTime />
+        <TotalAlerts />
+      </Grid>
     </Grid>
   );
 };

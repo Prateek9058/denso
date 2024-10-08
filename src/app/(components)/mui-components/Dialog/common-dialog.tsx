@@ -2,16 +2,15 @@ import React from "react";
 import Dialog, { DialogProps } from "@mui/material/Dialog";
 import { DialogTitle } from "@mui/material";
 import Typography from "@mui/material/Typography";
-// **  component
 import CancelAlertDialog from "./confirmation-dialog";
 
 interface BootstrapDialogProps extends DialogProps {
   title: string;
   message: string;
   titleConfirm?: string;
-  onClose: () => void;
+  onClose: (event: any, reason: any) => void;
+  disableBackdropClick?: boolean;
 }
-
 
 const CommonDialog: React.FC<BootstrapDialogProps> = ({
   message,
@@ -19,6 +18,7 @@ const CommonDialog: React.FC<BootstrapDialogProps> = ({
   onClose,
   children,
   titleConfirm,
+  disableBackdropClick = true,
   ...otherProps
 }) => {
   return (
@@ -33,10 +33,10 @@ const CommonDialog: React.FC<BootstrapDialogProps> = ({
             icon={true}
             message={message}
             title={titleConfirm}
-            handleCloseFirst={onClose}
+            handleCloseFirst={(event, reason) => onClose(event, reason)} // Pass onClose directly
           />
         ) : null}
-        <Typography variant="subtitle1" color="white">
+        <Typography variant="subtitle1" color="primary.contrastText">
           {title}
         </Typography>
       </DialogTitle>

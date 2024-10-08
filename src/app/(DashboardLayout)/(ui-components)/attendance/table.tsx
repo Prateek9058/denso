@@ -121,7 +121,7 @@ const Table: React.FC<TableProps> = ({
             <Link href={`/man-power-tracking/${item?._id}`}>
               <Tooltip title="View">
                 <IconButton size="small">
-                  <BsEye color="#ffa11f" />
+                  <BsEye color="#DC0032" />
                 </IconButton>
               </Tooltip>
             </Link>

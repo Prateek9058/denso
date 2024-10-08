@@ -61,7 +61,7 @@ export default function CustomizedDialogs({
             ) : iconAssign == "removedevice" ? (
               <DesktopAccessDisabledIcon />
             ) : (
-              <DeleteIcon sx={{ color: "#ffa11f" }} />
+              <DeleteIcon sx={{ color: "#DC0032" }} />
             )}{" "}
           </IconButton>
         </Tooltip>

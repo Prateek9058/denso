@@ -193,7 +193,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, name }) => {
         </LocalizationProvider>
       </Grid>
       <Grid
-        item 
+        item
         xs={12}
         md={employees?.length > 0 ? 9.9 : 12}
         sx={{ height: "550px", width: "100%", position: "relative" }}
@@ -275,7 +275,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, name }) => {
                       <StepLabel
                         StepIconProps={{
                           sx: {
-                            color: activeStep === index ? "#6DA430" : "#FFA11F",
+                            color: activeStep === index ? "#6DA430" : "#DC0032",
                             "& .MuiStepIcon-text": {
                               borderRadius: "50%",
                             },

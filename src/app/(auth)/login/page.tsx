@@ -4,8 +4,8 @@ import type { ReactElement } from "react";
 import { Grid, Box, Card, Stack, Typography, IconButton } from "@mui/material";
 import BlankLayout from "@/app/(DashboardLayout)/layout/blank/BlankLayout";
 import Image from "next/image";
-import Logo from "../../../../public/Img/logo2.png";
-import banner from "../../../../public/Img/manppowerBanner.png";
+import Logo from "../../../../public/Img/logodenzo.png";
+import banner from "../../../../public/Img/banner.png";
 
 // components
 import PageContainer from "@/app/(components)/container/PageContainer";
@@ -56,8 +56,8 @@ const Login2 = () => {
               >
                 <Box
                   display="flex"
-                  alignItems="center"
-                  justifyContent="center"
+                  // alignItems="center"
+                  // justifyContent="center"
                   mb={4}
                 >
                   <Image src={Logo} alt="Logo" />
@@ -66,8 +66,8 @@ const Login2 = () => {
                   subtext={
                     <>
                       <Typography
-                        variant="h3"
-                        textAlign="center"
+                        variant="h2"
+                        textAlign="start"
                         color="textSecondary"
                         mb={1}
                       >
@@ -75,7 +75,7 @@ const Login2 = () => {
                       </Typography>
                       <Typography
                         variant="body2"
-                        textAlign="center"
+                        textAlign="start"
                         color="grey"
                         mb={2}
                       >
@@ -95,7 +95,7 @@ const Login2 = () => {
                         variant="h6"
                         fontWeight="200"
                       >
-                        © 2024 ALL RIGHTS RESERVED
+                        © 2024 ALL RIGHTS RESERVED DENSO CORPORATION.
                       </Typography>
                     </Stack>
                   }
@@ -115,7 +115,7 @@ const Login2 = () => {
                   style={{
                     height: "100%",
                     width: "100%",
-                    // objectFit:""
+                    // objectFit:"cover"
                   }}
                 />
               </Grid>

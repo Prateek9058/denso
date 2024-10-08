@@ -55,8 +55,8 @@ interface CustomGraphProps {
 const CustomGraph = ({ viewCount }: any) => {
   const colors = {
     steps: {
-      stroke: "#FFA11F",
-      fill: "#FFA11F",
+      stroke: "#DC0032",
+      fill: "#DC0032",
     },
     text: "#697077",
     background: "#fff",

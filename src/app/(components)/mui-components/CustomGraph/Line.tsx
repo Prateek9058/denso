@@ -13,11 +13,13 @@ import {
   Bar,
 } from "recharts";
 import { Stack } from "@mui/material";
+
 interface TableProps {
   deviceData: any;
-  analyticsDate?: any;
+  multichart?: boolean;
 }
-const LineChartCom: React.FC<TableProps> = ({ deviceData, analyticsDate }) => {
+
+const MultiLineChart: React.FC<TableProps> = ({ deviceData, multichart }) => {
   const colors = {
     steps: {
       stroke: "#DC0032",
@@ -26,18 +28,19 @@ const LineChartCom: React.FC<TableProps> = ({ deviceData, analyticsDate }) => {
     text: "#697077",
     background: "#fff",
   };
+
   return (
     <Stack sx={{ overflowX: "auto", overflowY: "hidden" }}>
       <ResponsiveContainer
         style={{ padding: "10px 0px" }}
-        height={400}
+        height={350}
         width="100%"
       >
-        <BarChart data={deviceData}>
+        <LineChart data={deviceData}>
           <XAxis
-            dataKey="label"
+            dataKey="date"
             tickSize={1}
-            tickMargin={35}
+            tickMargin={30}
             tick={{ fill: colors.text }}
             tickLine={{ stroke: colors.text }}
             height={80}
@@ -52,29 +55,24 @@ const LineChartCom: React.FC<TableProps> = ({ deviceData, analyticsDate }) => {
           />
           <CartesianGrid strokeDasharray="4" />
           <Tooltip />
-          <Bar
-            dataKey="present"
-            fill="#28C87E"
-            barSize={20}
-            activeBar={<Rectangle fill="#28C87E" stroke="blue" />}
+
+          <Line
+            type="monotone"
+            dataKey="Alerts"
+            stroke="#DC0032"
+            activeDot={{ r: 8 }}
           />
-          {analyticsDate?.length > 31 && (
-            <Bar
-              dataKey="absent"
-              fill="#FF3B30"
-              barSize={24}
-              activeBar={<Rectangle fill="#FF3B30" stroke="purple" />}
-            />
-          )}
+
           <Legend
             layout="horizontal"
             verticalAlign="bottom"
             align="center"
             iconType="circle"
           />
-        </BarChart>
+        </LineChart>
       </ResponsiveContainer>
     </Stack>
   );
 };
-export default LineChartCom;
+
+export default MultiLineChart;

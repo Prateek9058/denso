@@ -179,8 +179,8 @@ const UploadFile: React.FC<AddUserProps> = ({
               variant="outlined"
               size="large"
               sx={{
-                border: "0.1px solid #ffa11f",
-                color: "#ffa11f",
+                border: "0.1px solid #DC0032",
+                color: "#DC0032",
                 backgroundColor: "#F6FAF3",
                 height: "34px",
               }}

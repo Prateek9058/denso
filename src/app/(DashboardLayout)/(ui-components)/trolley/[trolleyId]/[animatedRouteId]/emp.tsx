@@ -275,7 +275,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, name }) => {
                       <StepLabel
                         StepIconProps={{
                           sx: {
-                            color: activeStep === index ? "#6DA430" : "#FFA11F",
+                            color: activeStep === index ? "#6DA430" : "#DC0032",
                             "& .MuiStepIcon-text": {
                               borderRadius: "50%",
                             },

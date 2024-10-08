@@ -6,7 +6,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axiosInstance from "@/app/api/axiosInstance";
 import { Rectangle } from "react-leaflet";
-import Site from "../../../../public/Img/layoutPsiborg.jpg";
+import Site from "../../../../public/Img/Layoutdenso.jpg";
 import trolleyIconSrc from "../../../../public/Img/trolleyLive.png";
 import Tabs from "@/app/(components)/mui-components/Tabs/TabsZone";
 interface TabData {
@@ -136,7 +136,7 @@ export default function Track() {
   return (
     <>
       <Grid container mt={2} sx={{ position: "relative" }}>
-        <Grid item md={12} sx={{ height: "600px", width: "100%" }}>
+        <Grid item md={12} sx={{ height: "500px", width: "100%" }}>
           <MapContainer
             center={[50, 100]}
             zoom={3}
@@ -145,7 +145,7 @@ export default function Track() {
             crs={L.CRS.Simple}
           >
             <ImageOverlay url={Site.src} bounds={imageBounds} />
-            <Rectangle
+            {/* <Rectangle
               bounds={geofenceBounds}
               pathOptions={{ color: "#ff00ff" }}
             />
@@ -156,7 +156,7 @@ export default function Track() {
             <Rectangle
               bounds={geofenceBounds2}
               pathOptions={{ color: "#00ffff" }}
-            />
+            /> */}
             {employees && (
               <>
                 {employees?.employeeData?.map((employee: any, index: any) => (
@@ -205,7 +205,7 @@ export default function Track() {
               </>
             )}
           </MapContainer>
-          <Tabs value={value} handleChange={handleChange} tabs={tabs} />
+          {/* <Tabs value={value} handleChange={handleChange} tabs={tabs} /> */}
         </Grid>
       </Grid>
     </>

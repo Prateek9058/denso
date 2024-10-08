@@ -1,20 +1,23 @@
 import * as React from "react";
-import {
-  Grid,
-  Box,
-  Avatar,
-  Menu,
-  MenuItem,
-  IconButton,
-  Typography,
-  Tooltip,
-  Divider,
-} from "@mui/material";
-import { useSitesData } from "@/app/(context)/SitesContext";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import Loading from "../../loading";
+import { Button, Grid, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import { IoMdLogOut } from "react-icons/io";
+import { signOut } from "next-auth/react";
+import Link from "next/link";
+import { ImProfile } from "react-icons/im";
+import profile from "../../../../../public/Img/profile.png";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+
 export default function AccountMenu() {
-  const { sites, selectedSite, setSelectedSite } = useSitesData();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -23,19 +26,20 @@ export default function AccountMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleMenuItemClick = (site: any) => {
-    setSelectedSite(site);
-    handleClose();
+  const handleLogOut = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("loginId");
+    signOut({ callbackUrl: "/login", redirect: true });
   };
   return (
     <React.Fragment>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
-        <Tooltip title="Sites">
+        <Tooltip title="Profile">
           <IconButton
             onClick={handleClick}
             size="small"
             sx={{
-              ml: 2,
               padding: "6px",
               border: "1px solid #E8E8EA",
               borderRadius: "8px",
@@ -44,24 +48,30 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
-            <Avatar
-              sx={{
-                borderRadius: "4px",
-                width: "42px",
-                height: "40px",
-                marginRight: "3px",
+            <Grid
+              width={40}
+              height={40}
+              style={{
+                borderRadius: "50%",
+                overflow: "hidden",
+                marginRight: "5px",
               }}
-              alt="Remy Sharp"
-              src="/Img/logo2.png"
-            />
-            <Grid>
-              <Typography variant="body1">Lets connect</Typography>
-              <Typography variant="body2" color="#FFA11F">
-                {selectedSite ? selectedSite?.siteName : "Select Sites"}
-              </Typography>
+            >
+              <Image
+                src={profile}
+                alt="logo"
+                width={40}
+                height={40}
+                style={{
+                  objectFit: "cover",
+                }}
+              />
             </Grid>
             <Grid>
-              <ArrowDropDownIcon />
+              <Typography variant="body1">Vishal Singh</Typography>
+              <Typography variant="body2" color="#DC0032">
+                {"Admin"}
+              </Typography>
             </Grid>
           </IconButton>
         </Tooltip>
@@ -101,23 +111,58 @@ export default function AccountMenu() {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        {sites && sites?.length > 0 ? (
-          sites?.map((item: any) => (
-            <React.Fragment key={item?._id}>
-              <MenuItem
-                value={item?._id}
-                onClick={() => handleMenuItemClick(item)}
-              >
-                {item?.siteName}
-              </MenuItem>
-              <Divider />
-            </React.Fragment>
-          ))
-        ) : (
-          <MenuItem disabled value="">
-            <Typography>No sites available</Typography>
-          </MenuItem>
-        )}
+        <MenuItem onClick={handleClose}>
+          <Grid
+            width={40}
+            height={40}
+            style={{
+              borderRadius: "50%",
+              overflow: "hidden",
+              marginRight: "5px",
+            }}
+          >
+            <Image
+              src={profile}
+              alt="logo"
+              width={40}
+              height={40}
+              style={{
+                objectFit: "cover",
+              }}
+            />
+          </Grid>
+          <Grid>
+            <Typography variant="body1">Vishal Singh</Typography>
+            <Typography variant="body2" color="#DC0032">
+              {"Admin"}
+            </Typography>
+          </Grid>
+        </MenuItem>
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            handleClose(), router.push("/");
+          }}
+        >
+          <ListItemIcon>
+            <ImProfile fontSize="medium" />
+          </ListItemIcon>
+          View Profile
+        </MenuItem>
+        <Divider />
+
+        <MenuItem onClick={handleClose}>
+          <Button
+            href="/login"
+            variant="outlined"
+            color="primary"
+            component={Link}
+            onClick={handleLogOut}
+            fullWidth
+          >
+            Logout
+          </Button>
+        </MenuItem>
       </Menu>
     </React.Fragment>
   );

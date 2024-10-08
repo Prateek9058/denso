@@ -14,6 +14,8 @@ import Profile from "./header/Profile";
 import Notification from "./header/Notification";
 import { Grid } from "@mui/material";
 import SidebarItems from "./sidebar/SidebarItems";
+import Image from "next/image";
+import Logo from "../../../../public/Img/logodenzo.png";
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -125,33 +127,44 @@ export default function RootLayout({
         <Grid container justifyContent={"space-between"} alignItems={"center"}>
           <Grid item>
             {" "}
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={[
-                  {
-                    marginRight: 5,
-                  },
-                  open && { display: "none" },
-                ]}
-              >
-                <MenuIcon />
-              </IconButton>
-            </Toolbar>
+            <Grid container justifyContent={"space-between"}>
+              <Grid item>
+                {" "}
+                <Toolbar>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={handleDrawerOpen}
+                    edge="start"
+                    sx={[open && { display: "none" }]}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                </Toolbar>
+              </Grid>
+              <Grid item sx={[open && { display: "none" }]}>
+                <Profile />{" "}
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item>
             <Grid container>
               <Notification />
-              <Profile />
+
+              <Image
+                src={Logo}
+                alt="logo"
+                style={{
+                  objectFit: "contain",
+                }}
+              />
             </Grid>
           </Grid>
         </Grid>
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
+          <Profile />
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
