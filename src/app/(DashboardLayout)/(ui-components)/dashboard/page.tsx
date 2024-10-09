@@ -25,6 +25,7 @@ import ManpowerWaiting from "./manPowerWaitingTime";
 import TrolleyDetails from "./trolleyDetails.tsx";
 import TrolleyRepairTime from "./trolleyRepairTime";
 import TotalAlerts from "./totalAlerts";
+import NotificationList from "./notificationList";
 const DynamicHeader = dynamic(
   () => import("../../../(components)/pages/track"),
   {
@@ -282,6 +283,12 @@ const Page = () => {
           </Grid>
         ))}
       </Grid>
+      {/* <Grid container>
+        <Grid item md={12} xs={12}>
+          <NotificationList />
+        </Grid>
+      </Grid> */}
+
       <Grid container spacing={2}>
         <ManpowerWaiting />
         <TrolleyDetails />

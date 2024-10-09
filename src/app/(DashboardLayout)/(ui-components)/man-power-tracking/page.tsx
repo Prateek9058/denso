@@ -7,6 +7,7 @@ import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 import { useSitesData } from "@/app/(context)/SitesContext";
+import CountCard from "@/app/(components)/mui-components/Card/CountCard";
 type Breadcrumb = {
   label: string;
   link: string;
@@ -73,6 +74,7 @@ const Page: React.FC = () => {
     getAllZone();
   }, [selectedSite]);
   console.log(zoneId);
+
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
@@ -82,6 +84,7 @@ const Page: React.FC = () => {
         getEmployeeData={getEmployeeData}
         // selectedSite={selectedSite}
       />
+      <CountCard />
       <ManagementGrid
         moduleName="Manpower Management"
         subHeading="Track manpower"
