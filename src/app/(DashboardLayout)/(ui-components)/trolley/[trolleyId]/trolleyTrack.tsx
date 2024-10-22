@@ -1,117 +1,98 @@
-import React, { useState, useEffect } from "react";
-import { Grid, Box, Typography } from "@mui/material";
-import { MapContainer, ImageOverlay, Marker, Popup } from "react-leaflet";
+import React, { useState, useEffect, useRef } from "react";
+import { Grid } from "@mui/material";
+import {
+  MapContainer,
+  ImageOverlay,
+  Marker,
+  Polyline,
+  CircleMarker,
+  Tooltip,
+} from "react-leaflet";
 import L from "leaflet";
-import Site from "../../../../../../public/Img/layoutPsiborg.jpg";
+import Site from "../../../../../../public/Img/Layoutdenso.jpg";
 import "leaflet/dist/leaflet.css";
-import axiosInstance from "@/app/api/axiosInstance";
 import trolleyIconSrc from "../../../../../../public/Img/trolleyLive.png";
-import { Rectangle } from "react-leaflet";
-
 interface empProps {
   userDetails: any;
 }
 const EmpTrack: React.FC<empProps> = ({ userDetails }) => {
-  const imageBounds: [[number, number], [number, number]] = [
-    [0, 0],
-    [100, 200],
+  const [trolleyPosition, setTrolleyPosition] =
+    useState<L.LatLngExpression | null>(null);
+  const [routeCovered, setRouteCovered] = useState<L.LatLngExpression[]>([]);
+  const [currentPointIndex, setCurrentPointIndex] = useState(0);
+  const movingRef = useRef(false);
+
+  // const points: { position: L.LatLngExpression; label: string }[] = [
+  //   { position: [27.015625, 9.6875], label: "A" },
+  //   { position: [27.0625, 50.5], label: "B" },
+  //   { position: [46.6875, 50.375], label: "C" },
+  //   { position: [47.1875, 66.25], label: "D" },
+  // ];
+  const coordinates = [
+    [9.234375, 9.03125],
+    [9.140625, 18.03125],
+    [9.203125, 27.09375],
+    [26.78125, 27.0625],
+    [26.96875, 35.1875],
+    [5.09375, 35.0625],
+    [5.03125, 49.125],
+    [26.84375, 49.25],
+    [27.5625, 66.125],
+    [47.0625, 65.875],
+    [47.3125, 93.5],
+    [27.3125, 93.875],
+    [27.0625, 102],
+    [64.5625, 101.625],
+    [78.8125, 101.5],
   ];
-  const geofenceBounds: [[number, number], [number, number]] = [
-    [8, 13],
-    [38, 48],
-  ];
-  const geofenceBounds1: [[number, number], [number, number]] = [
-    [38, 13],
-    [58, 48],
-  ];
-  const geofenceBounds2: [[number, number], [number, number]] = [
-    [58, 13],
-    [78, 48],
-  ];
-  const [loading, setLoading] = useState<boolean>(false);
-  const [employees, setEmployees] = useState<any>(null);
+
+  const points = coordinates.map((coord: any, index: any) => ({
+    position: coord,
+    label: String.fromCharCode(65 + index),
+  }));
+
   const trolleyIcon = L.icon({
     iconUrl: trolleyIconSrc.src,
     iconSize: [35, 35],
     iconAnchor: [15, 15],
   });
-  const stringToColor = (string: string) => {
-    let hash = 0;
-    for (let i = 0; i < string?.length; i++) {
-      hash = string?.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    let color = "#";
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += ("00" + value.toString(16)).substr(-2);
-    }
-    return color;
-  };
-  const getTrackData = async () => {
-    const storedSite = localStorage.getItem("selectedSite");
-    if (!storedSite) {
-      console.error("No site selected");
-      return;
-    }
-    if (!userDetails) {
-      console.error("No site selected");
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await axiosInstance.get(
-        `api/v1/employees/getEmployeeAndTrolleyGraphData?siteId=${
-          JSON.parse(storedSite)?._id
-        }&trolleyId=${userDetails}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        console.log(res);
-        setEmployees(res?.data?.data);
-        setLoading(false);
+  const imageBounds: [[number, number], [100, 200]] = [
+    [0, 0],
+    [100, 200],
+  ];
+  const moveTrolley = (startPoint: any, endPoint: any) => {
+    const steps = 100;
+    let stepCount = 0;
+    movingRef.current = true;
+    const moveInterval = setInterval(() => {
+      if (stepCount >= steps) {
+        clearInterval(moveInterval);
+        movingRef.current = false;
+        setCurrentPointIndex((prevIndex) => prevIndex + 1);
+        return;
       }
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-      setLoading(false);
-    }
+      const latStep = (endPoint[0] - startPoint[0]) / steps;
+      const lngStep = (endPoint[1] - startPoint[1]) / steps;
+
+      const newPosition: L.LatLngExpression = [
+        startPoint[0] + latStep * stepCount,
+        startPoint[1] + lngStep * stepCount,
+      ];
+      setTrolleyPosition(newPosition);
+      setRouteCovered((prevRoute) => [...prevRoute, newPosition]);
+
+      stepCount++;
+    }, 200);
   };
   useEffect(() => {
-    getTrackData();
-    const intervalId = setInterval(() => {
-      getTrackData();
-    }, 5000);
-    return () => clearInterval(intervalId);
-  }, []);
-  const maxY = 100;
-  const getInitials = (name: string) => {
-    const nameParts = name?.split(" ");
-    const initials = nameParts?.map((part) => part?.charAt(0)).join("");
-    return initials;
-  };
-  console.log(employees?.positions?.x);
-  const createAvatarIcon = (name: string) => {
-    const initials = getInitials(name);
-    return L.divIcon({
-      className: "custom-marker",
-      html: `<div style="
-              background-color: ${stringToColor(name)};
-              color: white;
-              border-radius: 50%;
-              width: 30px;
-              height: 30px;
-              display: flex;
-              justify-content: center; 
-              align-items: center;
-              font-size: 14px;">
-              ${initials}
-            </div>`,
-      iconSize: [40, 40],
-      iconAnchor: [20, 20],
-    });
-  };
-  const transformY = (y: number) => {
-    console.log(y);
-    return maxY - y;
-  };
+    if (!movingRef.current && currentPointIndex < points.length - 1) {
+      const startPoint = points[currentPointIndex].position;
+      const endPoint = points[currentPointIndex + 1].position;
+
+      setTrolleyPosition(startPoint);
+      moveTrolley(startPoint, endPoint);
+    }
+  }, [currentPointIndex]);
   return (
     <Grid container mt={1}>
       <Grid item md={12} sx={{ height: "600px", width: "100%" }}>
@@ -123,36 +104,28 @@ const EmpTrack: React.FC<empProps> = ({ userDetails }) => {
           crs={L.CRS.Simple}
         >
           <ImageOverlay url={Site.src} bounds={imageBounds} />
-          <Rectangle
-            bounds={geofenceBounds}
-            pathOptions={{ color: "#ff00ff" }}
-          />
-          <Rectangle
-            bounds={geofenceBounds1}
-            pathOptions={{ color: "green" }}
-          />
-          <Rectangle
-            bounds={geofenceBounds2}
-            pathOptions={{ color: "#00ffff" }}
-          />
-          {employees && (
-            <Marker
-              position={[
-                transformY(
-                  parseFloat(employees?.positions?.x?.toFixed(2)) * 4 + 22
-                ) || 0,
-                parseFloat(employees?.positions?.y?.toFixed(2)) * 4 + 16 || 0,
-              ]}
-              icon={trolleyIcon}
+          {points.map((point, index) => (
+            <CircleMarker
+              key={index}
+              center={point.position}
+              radius={5}
+              fillColor="green"
+              color="green"
+              fillOpacity={1}
             >
-              <Popup>
-                <Box>
-                  <Typography variant="subtitle1">
-                    {employees?.trolleyUid}
-                  </Typography>
-                </Box>
-              </Popup>
-            </Marker>
+              <Tooltip direction="top" permanent>
+                <span>{point.label}</span>
+              </Tooltip>
+            </CircleMarker>
+          ))}
+          {trolleyPosition && (
+            <Marker position={trolleyPosition} icon={trolleyIcon} />
+          )}
+          {routeCovered.length > 1 && (
+            <Polyline
+              positions={routeCovered}
+              pathOptions={{ color: "red", dashArray: "5, 10" }}
+            />
           )}
         </MapContainer>
       </Grid>

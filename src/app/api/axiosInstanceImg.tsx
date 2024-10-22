@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstanceImg = axios.create({
-  baseURL: "http://103.127.30.171:8081",
+  baseURL: "http://103.127.30.171:8090",
   // baseURL: "http://localhost:8081",
 });
 

@@ -42,7 +42,7 @@ const TrolleyRoute: React.FC<empProps> = ({ points, setPoints }) => {
     [0, 0],
     [100, 200],
   ];
-  return (
+  return ( 
     <Grid
       item
       xs={12}

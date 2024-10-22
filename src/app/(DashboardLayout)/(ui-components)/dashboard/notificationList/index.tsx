@@ -25,8 +25,6 @@ const Marquee = () => {
     </MarqueeContainer>
   );
 };
-
-// Keyframes for the marquee effect with seamless looping
 const scroll = keyframes`
   from {
     transform: translateX(0);

@@ -50,7 +50,7 @@ const CustomTab: React.FC<CommonTabsProps> = ({
 }) => {
   return (
     <>
-      <Grid container mt={1} justifyContent="left" alignItems="center">
+      <Grid container justifyContent="left" alignItems="center">
         <Tabs
           value={value}
           className="TabStyleAddDevice"

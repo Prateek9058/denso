@@ -15,7 +15,7 @@ export default function RootLayout({
       <body>
         <AuthProviderMain>
           <ThemeProvider theme={theme}>
-            <CssBaseline />
+            <CssBaseline /> 
             {children}
           </ThemeProvider>
         </AuthProviderMain>

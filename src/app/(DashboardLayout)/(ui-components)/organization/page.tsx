@@ -4,7 +4,7 @@ import { Grid, Box } from "@mui/material";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
-import AddShift from "./(addShift)/addShift";
+import AddDepartment from "./(addDepartment)";
 import Image from "next/image";
 import noData from "../../../../../public/Img/nodata.png";
 import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";
@@ -18,6 +18,9 @@ const breadcrumbItems: Breadcrumb[] = [
   { label: "Dashboard", link: "/" },
   { label: "Attendance Details", link: "/attendance" },
 ];
+interface TabData {
+  label: string;
+}
 const Page: React.FC = () => {
   const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
@@ -27,92 +30,109 @@ const Page: React.FC = () => {
   const [deviceData, setDeviceData] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [value, setTabValue] = useState<number>(0);
-  const [shiftId, setShiftId] = useState<any>("");
-  const [tabs, setTabs] = useState<any>([]);
+  const tabs: TabData[] = [
+    { label: "Department" },
+    { label: "Section" },
+    { label: "Line" },
+  ];
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
     setSearchQuery("");
     setPage(0);
     setRowsPerPage(10);
-    const newShiftId = tabs[newValue]?.id;
-    setShiftId(newShiftId);
   };
-  const getAllShifts = useCallback(async () => {
-    if (!selectedSite?._id) return;
+  const getDeviceData = async () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/shifts/getAllShifts/${selectedSite?._id}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        const shiftData = res?.data?.data?.map((item: any) => ({
-          label: item?.shiftName,
-          id: item?._id,
-        }));
-        setTabs(shiftData);
-        if (shiftData.length > 0) {
-          setShiftId(shiftData[value]?.id);
-        }
-      }
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedSite, value]);
-  useEffect(() => {
-    getAllShifts();
-  }, [selectedSite]);
-  const getDeviceData = useCallback(async () => {
-    if (!shiftId) return;
-    setLoading(true);
-    try {
-      const res = await axiosInstance.get(
-        `/api/v1/shifts/shiftWiseEmployeeData/${shiftId}?page=${
+        `/api/v1/organizations/getAllData?type=${value == 0 ? "department" : value == 1 ? "section" : "line"}&page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setDeviceData(res?.data?.data);
+        console.log(res);
       }
     } catch (err) {
     } finally {
       setLoading(false);
     }
-  }, [shiftId, page, rowsPerPage, searchQuery, value]);
+  };
   useEffect(() => {
     getDeviceData();
-  }, [shiftId, page, rowsPerPage, searchQuery, value]);
+  }, [page, rowsPerPage, searchQuery, value]);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const TabPanelList = tabs.map((tab: any, index: number) => ({
-    component: (
-      <Table
-        deviceData={deviceData}
-        rowsPerPage={rowsPerPage}
-        setRowsPerPage={setRowsPerPage}
-        page={page}
-        setPage={setPage}
-        searchQuery={searchQuery}  
-        setSearchQuery={setSearchQuery}
-        loading={loading}
-      />
-    ),
-  }));
+  const TabPanelList = [
+    {
+      component: (
+        <Table
+          deviceData={deviceData}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          page={page}
+          setPage={setPage}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          loading={loading}
+          value={value}
+        />
+      ),
+    },
+    {
+      component: (
+        <Table
+          deviceData={deviceData}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          page={page}
+          setPage={setPage}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          loading={loading}
+          value={value}
+        />
+      ),
+    },
+    {
+      component: (
+        <Table
+          deviceData={deviceData}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          page={page}
+          setPage={setPage}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          loading={loading}
+          value={value}
+        />
+      ),
+    },
+  ];
+  const getButtonLabel = (value: number) => {
+    if (value == 0) {
+      return "Add Department";
+    } else if (value == 1) {
+      return "Add Section";
+    } else {
+      return "Add Line";
+    }
+  };
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
-      <AddShift
+      <AddDepartment
         open={open}
-        selectedSite={selectedSite}
+        type={value == 0 ? "department" : value == 1 ? "section" : "line"}
         setOpen={setOpen}
-        getDeviceData={getAllShifts}
+        getDeviceData={getDeviceData}
       />
       <ManagementGrid
-        moduleName="Attendance Details"
-        subHeading="Track Attendance"
-        button="Add Shift"
+        moduleName="Organization Management"
+        button={getButtonLabel(value)}
         handleClickOpen={handleClickOpen}
         breadcrumbItems={breadcrumbItems}
       />

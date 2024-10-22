@@ -8,17 +8,29 @@ import axiosInstance from "@/app/api/axiosInstance";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 import UploadFile from "./(upload-file)/uploadFile";
 import { useSitesData } from "@/app/(context)/SitesContext";
+import salesIcon from "../../../../../public/Img/trolleydash.png";
+import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";
+import CountCard from "@/app/(components)/mui-components/Card/CountCard";
+import AddCategory from "./(addCategory)";
 type Breadcrumb = {
   label: string;
   link: string;
 };
+interface TabData {
+  label: string;
+}
 const breadcrumbItems: Breadcrumb[] = [
   { label: "Dashboard", link: "/" },
   { label: "Trolley Tracking ", link: "" },
 ];
+const tabs: TabData[] = [
+  { label: "Trolley details" },
+  { label: "Trolley Category" },
+];
 const Page: React.FC = () => {
   const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
+  const [openCat, setOpenCat] = useState<boolean>(false);
   const [openUpload, setOpenUpload] = useState<boolean>(false);
   const [page, setPage] = React.useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -27,19 +39,64 @@ const Page: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [zone, setZone] = useState<any>([]);
   const [zoneId, setZoneId] = useState<any>("");
+  const [value, setTabValue] = useState<number>(0);
+  const [stats, setStats] = useState<any>([
+    {
+      title: "Trolleys",
+      value: 0,
+      active: "0",
+      assigned: "0",
+      in: "0",
+      nonActive: "0",
+      notAssigned: "0",
+      out: "0",
+      icon: salesIcon,
+    },
+    {
+      title: "Assign status",
+      value: 0,
+      active: "0",
+      assigned: "0",
+      in: "0",
+      nonActive: "0",
+      notAssigned: "0",
+      out: "0",
+      icon: salesIcon,
+    },
+    {
+      title: "Geofence",
+      value: 0,
+      active: "0",
+      assigned: "0",
+      in: "0",
+      nonActive: "0",
+      notAssigned: "0",
+      out: "0",
+      icon: salesIcon,
+    },
+  ]);
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+    setSearchQuery("");
+    setPage(0);
+    setRowsPerPage(10);
+  };
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedZone = event.target.value;
     setZoneId(selectedZone);
   };
   ///// Api call's /////
-  const getTrolleyData = useCallback(async () => {
-    if (!selectedSite?._id) return;
+  const getTrolleyData = async () => {
     setLoading(true);
+    const Url =
+      value == 0
+        ? "trolleys/getAllTrolleys"
+        : "/api/v1/trolleyCategory/getAllTrolleyCategories";
     try {
       const res = await axiosInstance.get(
-        `/api/v1/trolleys/getAllTrolleys/${selectedSite._id}?page=${
+        `${Url}?page=${
           page + 1
-        }&limit=${rowsPerPage}&search=${searchQuery}&zone=${zoneId}`
+        }&limit=${rowsPerPage}&search=${searchQuery}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setDeviceData(res?.data?.data);
@@ -52,69 +109,89 @@ const Page: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedSite, page, rowsPerPage, searchQuery, zoneId]);
+  };
   useEffect(() => {
     getTrolleyData();
-  }, [getTrolleyData]);
+  }, [page, rowsPerPage, searchQuery, value]);
   const handleClickOpen = () => {
     setOpen(true);
+  };
+  const handleClickOpenCat = () => {
+    setOpenCat(true);
   };
   const handleClickOpenUpload = () => {
     setOpenUpload(true);
   };
-  const getAllZone = useCallback(async () => {
-    if (!selectedSite?._id) return;
-    try {
-      const res = await axiosInstance.get(
-        `/api/v1/zone/zoneData/${selectedSite?._id}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        const zoneData = Object.values(res?.data?.data[0]?.zones);
-        setZone(zoneData);
-      }
-    } catch (err) {
-    } finally {
-    }
-  }, [selectedSite]);
-  useEffect(() => {
-    getAllZone();
-  }, [selectedSite]);
+
+  const TabPanelList = [
+    {
+      component: (
+        <Table
+          deviceData={deviceData}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          page={page}
+          setPage={setPage}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          loading={loading}
+        />
+      ),
+    },
+    {
+      component: (
+        <Table
+          deviceData={deviceData}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+          page={page}
+          setPage={setPage}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          loading={loading}
+        />
+      ),
+    },
+  ];
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
-      <AddDevice
-        open={open}
-        setOpen={setOpen}
-        getTrolleyData={getTrolleyData}
-        selectedSite={selectedSite}
-      />
+      {value == 0 ? (
+        <AddDevice
+          open={open}
+          setOpen={setOpen}
+          getTrolleyData={getTrolleyData}
+          selectedSite={selectedSite}
+        />
+      ) : (
+        <AddCategory
+          open={openCat}
+          setOpen={setOpenCat}
+          getCategoryData={getTrolleyData}
+        />
+      )}
+
       <UploadFile
         openUpload={openUpload}
         setOpenUpload={setOpenUpload}
         getDeviceData={getTrolleyData}
       />
+      <CountCard cardDetails={stats} />
       <ManagementGrid
-        moduleName="Trolley Tracking"
-        subHeading="Track trolley"
-        button="Add Trolley"
+        moduleName={value == 0 ? "Trolley List" : "Trolley Category"}
+        button={value == 0 ? "Add Trolley" : "Add Category"}
         // buttonUpload={"Bulk Upload"}
-        handleClickOpen={handleClickOpen}
+        handleClickOpen={value == 0 ? handleClickOpen : handleClickOpenCat}
         handleClickOpenUpload={handleClickOpenUpload}
         breadcrumbItems={breadcrumbItems}
-        select={true}
-        zone={zone}
-        zoneId={zoneId}
         handleInputChange={handleInputChange}
       />
-      <Table
-        deviceData={deviceData}
-        rowsPerPage={rowsPerPage}
-        setRowsPerPage={setRowsPerPage}
-        page={page}
-        setPage={setPage}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        loading={loading}
+
+      <Tabs
+        value={value}
+        handleChange={handleChange}
+        tabs={tabs}
+        TabPanelList={TabPanelList}
       />
     </Grid>
   );

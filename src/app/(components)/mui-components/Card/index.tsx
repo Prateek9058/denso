@@ -64,7 +64,7 @@ const ManagementGrid: React.FC<ManagementGridProps> = ({
   zoneId,
 }) => {
   return (
-    <Grid container justifyContent="space-between" alignItems="center">
+    <Grid container justifyContent="space-between" alignItems="center" mt={1}>
       {breadcrumbItems && <Breadcrumbs breadcrumbItems={breadcrumbItems} />}
       <Grid item>
         <Typography component={"h2"} variant="h2" mb={1}>

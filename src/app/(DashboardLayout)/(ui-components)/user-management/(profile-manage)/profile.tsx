@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Grid, Typography } from "@mui/material";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Image from "next/image";
-import empImg from "../../../../../../public/Img/logo2.png";
+import empImg from "../../../../../../public/Img/profile.png";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
 import ManageSites from "./manageSites";
@@ -74,7 +74,7 @@ const Profile: React.FC = () => {
                   width: "100%",
                 }}
               >
-                <Typography variant="h5">Lets connect</Typography>
+                <Typography variant="h5">Vishal Singh</Typography>
               </Grid>
             </Grid>
           </Grid>

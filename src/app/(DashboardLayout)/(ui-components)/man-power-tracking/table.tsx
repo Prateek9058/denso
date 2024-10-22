@@ -41,13 +41,13 @@ const Table: React.FC<TableProps> = ({
   const columns = [
     "Sno.",
     "Manpower ID",
-    "MAC Id",
     "Name",
-    "Phone Number",
     "Job Role",
+    "Assign Trolleys",
+    "Avg CT",
+    "Avg waiting",
+    "Category",
     "Status",
-    "Shift",
-    "Zone",
     "View",
   ];
   const [open, setOpenDialog] = React.useState(false);

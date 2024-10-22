@@ -1,36 +1,35 @@
 "use client";
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
 import { Grid } from "@mui/material";
-import AddDevice from "./(addDevice)/addDevice";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 import { useSitesData } from "@/app/(context)/SitesContext";
+import salesIcon from "../../../../../public/Img/trolleydash.png";
 import CountCard from "@/app/(components)/mui-components/Card/CountCard";
-import salesIcon from "../../../../../public/Img/sales.png";
-
 type Breadcrumb = {
   label: string;
   link: string;
 };
 const breadcrumbItems: Breadcrumb[] = [
   { label: "Dashboard", link: "/" },
-  { label: "Manpower Tracking", link: "/man-power-tracking" },
+  { label: "Trolley Tracking ", link: "" },
 ];
 const Page: React.FC = () => {
   const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(0);
+  const [openUpload, setOpenUpload] = useState<boolean>(false);
+  const [page, setPage] = React.useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
   const [deviceData, setDeviceData] = useState<any>([]);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<any>("");
   const [zone, setZone] = useState<any>([]);
   const [zoneId, setZoneId] = useState<any>("");
   const [stats, setStats] = useState<any>([
     {
-      title: "Manpower",
+      title: "Average repair time",
       value: 0,
       active: "0",
       assigned: "0",
@@ -41,7 +40,7 @@ const Page: React.FC = () => {
       icon: salesIcon,
     },
     {
-      title: "Assign status",
+      title: "Repaired trolleys",
       value: 0,
       active: "0",
       assigned: "0",
@@ -52,7 +51,7 @@ const Page: React.FC = () => {
       icon: salesIcon,
     },
     {
-      title: "Geofence",
+      title: "Not repaired trolleys",
       value: 0,
       active: "0",
       assigned: "0",
@@ -67,18 +66,20 @@ const Page: React.FC = () => {
     const selectedZone = event.target.value;
     setZoneId(selectedZone);
   };
-  const getEmployeeData = useCallback(async () => {
+  ///// Api call's /////
+  const getTrolleyData = useCallback(async () => {
     if (!selectedSite?._id) return;
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/employees/getAllEmployees/${selectedSite?._id}?page=${
+        `/api/v1/trolleys/getAllTrolleys/${selectedSite._id}?page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}&zone=${zoneId}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setDeviceData(res?.data?.data);
         setLoading(false);
+        console.log(res);
       }
     } catch (err) {
       setLoading(false);
@@ -88,10 +89,13 @@ const Page: React.FC = () => {
     }
   }, [selectedSite, page, rowsPerPage, searchQuery, zoneId]);
   useEffect(() => {
-    getEmployeeData();
-  }, [getEmployeeData]);
+    getTrolleyData();
+  }, [getTrolleyData]);
   const handleClickOpen = () => {
     setOpen(true);
+  };
+  const handleClickOpenUpload = () => {
+    setOpenUpload(true);
   };
   const getAllZone = useCallback(async () => {
     if (!selectedSite?._id) return;
@@ -110,28 +114,15 @@ const Page: React.FC = () => {
   useEffect(() => {
     getAllZone();
   }, [selectedSite]);
-  console.log(zoneId);
-
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
-      <AddDevice
-        open={open}
-        setOpen={setOpen}
-        getEmployeeData={getEmployeeData}
-        // selectedSite={selectedSite}
-      />
-      <CountCard cardDetails={stats} />
-
+      <CountCard cardDetails={stats} progress={true} />
       <ManagementGrid
-        moduleName="Manpower Management"
-        subHeading="Track manpower"
-        button="Add manpower"
+        moduleName="Maintenance trolleys"
         handleClickOpen={handleClickOpen}
+        handleClickOpenUpload={handleClickOpenUpload}
         breadcrumbItems={breadcrumbItems}
-        // select={true}
-        // zone={zone}
-        // zoneId={zoneId}
         handleInputChange={handleInputChange}
       />
       <Table
@@ -147,4 +138,5 @@ const Page: React.FC = () => {
     </Grid>
   );
 };
+
 export default Page;

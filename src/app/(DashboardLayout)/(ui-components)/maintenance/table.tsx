@@ -1,9 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, Tooltip } from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
+import Link from "next/link";
+import moment from "moment";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
+import { BsEye } from "react-icons/bs";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 interface TableProps {
   deviceData: any;
@@ -14,7 +17,6 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-  unAssigned: any;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -25,9 +27,16 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
-  unAssigned,
 }) => {
-  const columns = ["Sno.", "Sites Name ", "Action"];
+  const columns = [
+    "Sno.",
+    "Trolley ID",
+    "Date",
+    "Issue",
+    "Av. repair time",
+    "Status]",
+    "View",
+  ];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
@@ -44,31 +53,37 @@ const Table: React.FC<TableProps> = ({
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDebouncedSearchQuery(event.target.value);
   };
+
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
+
   const handleConfirm = () => {
     handleCancel();
   };
+
   const handleCancel = () => {
     setOpenDialog(false);
   };
+
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
       sno: index + 1,
-      siteName: item?.siteName ?? "N/A",
+      trolleyUid: item?.trolleyUid ?? "N/A",
+      trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
+      purchaseDate: moment(item?.purchaseDate).format("lll") ?? "N/A",
+      createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
+      zoneName: item?.zone ? `zone ${item?.zone}` : "N/A",
       Action: [
         <Grid container justifyContent="center" key={index}>
-          <Grid
-            onClick={() => unAssigned(item?._id)}
-            item
-            sx={{ cursor: "pointer" }}
-          >
-            <Tooltip title="unassigned">
-              <Typography variant="body1" color={"error"}>
-                Remove
-              </Typography>
-            </Tooltip>
+          <Grid item>
+            <Link href={`/trolley/${item?._id}`}>
+              <Tooltip title="View">
+                <IconButton size="small">
+                  <BsEye color="#DC0032" />
+                </IconButton>
+              </Tooltip>
+            </Link>
           </Grid>
         </Grid>,
       ],
@@ -96,11 +111,10 @@ const Table: React.FC<TableProps> = ({
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
           <Grid item>
-            <Typography variant="h3">Manage sites</Typography>
-            <Typography variant="body1">
+            <Typography variant="h5">
               {" "}
               Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} Sites
+              {deviceData?.totalCount} Trolleys
             </Typography>
           </Grid>
           <Grid item>

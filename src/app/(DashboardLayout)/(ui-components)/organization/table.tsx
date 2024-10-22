@@ -27,6 +27,7 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  value: any;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -37,14 +38,14 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
+  value,
 }) => {
   const columns = [
     "Sno.",
-    "User Name",
-    "Phone Number",
-    "Email",
-    " Site",
-    "View",
+    "UId",
+    value == 0 ? "Department" : value == 1 ? "Section" : "Line",
+    "Created At",
+    // "View",
   ];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
@@ -75,26 +76,52 @@ const Table: React.FC<TableProps> = ({
     setOpenDialog(false);
   };
 
+  const getStatus = (str: string) => {
+    if (str?.toUpperCase() === "PRESENT")
+      return { status: "Present", color: "customChip activeGreen" };
+    else return { status: "Absent", color: "customChip activeRed" };
+  };
+  const getStatusInfo = (ele: string, index: number) => {
+    if (ele?.toUpperCase() === "PRESENT") {
+      return [
+        <Chip
+          key={index}
+          sx={{ width: "120px" }}
+          className="customChip activeGreen"
+          label={ele}
+        />,
+      ];
+    } else {
+      return [
+        <Chip
+          key={index}
+          className={getStatus(ele)?.color}
+          sx={{ width: "120px" }}
+          label={getStatus(ele)?.status}
+        />,
+      ];
+    }
+  };
+
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
       sno: index + 1,
-      fullName: item?.fullName ? item?.fullName : "N/A",
-      phoneNumber: item?.phoneNumber ?? "N/A",
-      email: item?.email ?? "N/A",
-      site: item?.sites > 0 ? "Assigned" : "Not assigned",
-      Action: [
-        <Grid container justifyContent="center" key={index}>
-          <Grid item>
-            <Link href={`/user-management/${item?._id}`}>
-              <Tooltip title="View">
-                <IconButton size="small">
-                  <BsEye color="#6DA430" />
-                </IconButton>
-              </Tooltip>
-            </Link>
-          </Grid>
-        </Grid>,
-      ],
+      uId: item?.uId ?? "N/A",
+      name: item?.name ? item?.name : "N/A",
+      createAt: item?.createdAt ? moment(item?.createdAt).format("lll") : "N/A",
+      // Action: [
+      //   <Grid container justifyContent="center" key={index}>
+      //     <Grid item>
+      //       <Link href={`/man-power-tracking/${item?._id}`}>
+      //         <Tooltip title="View">
+      //           <IconButton size="small">
+      //             <BsEye color="#DC0032" />
+      //           </IconButton>
+      //         </Tooltip>
+      //       </Link>
+      //     </Grid>
+      //   </Grid>,
+      // ],
     }));
   };
 
@@ -122,7 +149,8 @@ const Table: React.FC<TableProps> = ({
             <Typography variant="h5">
               {" "}
               Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} Users
+              {deviceData?.totalCount}{" "}
+              {value == 0 ? "Department" : value == 1 ? "Section" : "Line"}
             </Typography>
           </Grid>
           <Grid item>
@@ -140,7 +168,7 @@ const Table: React.FC<TableProps> = ({
         </Grid>{" "}
         {loading ? (
           <TableSkeleton
-            rowNumber={new Array(10).fill(0)}
+            rowNumber={new Array(7).fill(0)}
             tableCell={new Array(5).fill("15%")}
             actions={new Array(2).fill(0)}
           />

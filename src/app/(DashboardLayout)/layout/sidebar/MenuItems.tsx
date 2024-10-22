@@ -11,6 +11,10 @@ import setting from "../.../../../../.././../public/Img/setting1.png";
 import alert from "../.../../../../.././../public/Img/alerts.png";
 import settingActive from "../.../../../../.././../public/Img/setting2Active.png";
 import alertActive from "../.../../../../.././../public/Img/alertsActive.png";
+import Organization from "../.../../../../.././../public/Img/gg_organisation.png";
+import OrganizationAct from "../.../../../../.././../public/Img/gg_organisationActive.png";
+import Maintence from "../.../../../../.././../public/Img/maintenceT.png";
+import MaintenceAct from "../.../../../../.././../public/Img/maintenaceAct.png";
 const Menuitems = [
   {
     id: uniqueId(),
@@ -42,11 +46,26 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
+    title: "Trolley maintenance",
+    icon: Maintence,
+    iconActive: MaintenceAct,
+    href: "/maintenance",
+  },
+  {
+    id: uniqueId(),
+    title: "Organization",
+    icon: Organization,
+    iconActive: OrganizationAct,
+    href: "/organization",
+  },
+  {
+    id: uniqueId(),
     title: "Alerts",
     icon: alert,
     iconActive: alertActive,
     href: "/alerts",
   },
+
   {
     id: uniqueId(),
     title: "Setting",
