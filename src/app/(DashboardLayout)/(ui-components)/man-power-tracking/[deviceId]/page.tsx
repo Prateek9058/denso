@@ -298,7 +298,7 @@ const Page: React.FC = () => {
             size="medium"
             sx={{
               color: "#FFFFFF",
-              backgroundColor: "#4C4C4C",
+              // backgroundColor: "#4C4C4C",
             }}
           >
             Animated route

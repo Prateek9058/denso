@@ -283,11 +283,11 @@ const Page = () => {
           </Grid>
         ))}
       </Grid>
-      {/* <Grid container>
+      <Grid container>
         <Grid item md={12} xs={12}>
           <NotificationList />
         </Grid>
-      </Grid> */}
+      </Grid>
 
       <Grid container spacing={2}>
         <ManpowerWaiting />

@@ -121,7 +121,7 @@ const Page: React.FC = () => {
         getEmployeeData={getEmployeeData}
         // selectedSite={selectedSite}
       />
-      <CountCard cardDetails={stats} />
+      {/* <CountCard cardDetails={stats} /> */}
 
       <ManagementGrid
         moduleName="Manpower Management"

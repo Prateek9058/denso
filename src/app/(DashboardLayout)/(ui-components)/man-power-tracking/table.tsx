@@ -39,16 +39,14 @@ const Table: React.FC<TableProps> = ({
   loading,
 }) => {
   const columns = [
-    "Sno.",
-    "Manpower ID",
+    "ID",
     "Name",
     "Job Role",
     "Assign Trolleys",
-    "Avg CT",
     "Avg waiting",
     "Category",
-    "Status",
-    "View",
+    "Shift",
+    "Action",
   ];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
@@ -155,9 +153,10 @@ const Table: React.FC<TableProps> = ({
         >
           <Grid item>
             <Typography variant="h5">
-              {" "}
-              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} manpower
+              {"Manpower Details | "}
+              {/* Showing {deviceData ? deviceData?.data?.length : 0} out of{" "} */}
+              Showing {10} out of{" 97"}
+              {deviceData?.totalCount}
             </Typography>
           </Grid>
           <Grid item>

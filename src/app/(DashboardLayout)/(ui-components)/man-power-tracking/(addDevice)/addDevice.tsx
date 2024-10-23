@@ -12,6 +12,7 @@ import {
   LinearProgress,
   Box,
   Typography,
+  Avatar,
 } from "@mui/material";
 import AssignDialog from "@/app/(components)/mui-components/Dialog/assign-dialog";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
@@ -21,6 +22,7 @@ import {
   notifySuccess,
 } from "@/app/(components)/mui-components/Snackbar";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
+import AvtarIcon from '../../../../../../public/Img/clarityAvatarLine.png';
 import axiosInstance from "@/app/api/axiosInstance";
 import { AxiosError } from "axios";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -29,6 +31,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { useDropzone } from "react-dropzone";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import Image from "next/image";
 
 interface AddDeviceProps {
   open: boolean;
@@ -60,7 +63,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [activeStep, setActiveStep] = useState(0);
   const [file, setFile] = useState<File | null>(null);
-  const [progress, setProgress] = useState<number>(0);
+  // const [progress, setProgress] = useState<number>(0);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const steps = ["Add Manpower", "Assign Trolley"];
 
   useEffect(() => {
@@ -84,8 +88,11 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     reset();
   };
   const onDrop = (acceptedFiles: File[]) => {
-    setFile(acceptedFiles[0]);
-    setProgress(0);
+    // setFile(acceptedFiles[0]);
+    const selectedFile = acceptedFiles[0];
+    // setProgress(0);
+    setFile(selectedFile);
+    setFilePreview(URL.createObjectURL(selectedFile));
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -98,6 +105,16 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       setSelectedSite(JSON.parse(storedSite));
     }
   }, [open]);
+
+  useEffect(() => {
+    // Clean up the object URL when the component unmounts
+    return () => {
+      if (filePreview) {
+        URL.revokeObjectURL(filePreview);
+      }
+    };
+  }, [filePreview]);
+
   const getAllShifts = useCallback(async () => {
     if (!selectedSite?._id) return;
     setLoading(true);
@@ -171,15 +188,10 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     }
   };
   const handleNext = () => {
-    if (activeStep < steps.length - 1) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }
+    setActiveStep(activeStep + 1);
   };
-
   const handleBack = () => {
-    if (activeStep > 0) {
-      setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    }
+    setActiveStep(activeStep - 1);
   };
   return (
     <>
@@ -217,44 +229,46 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       }}
                     >
                       <Box
-                        {...getRootProps()}
+                        {...(filePreview === null ? getRootProps() : {})}
                         sx={{
-                          border: "2px dashed #ccc",
-                          borderRadius: "8px",
-                          padding: "22px",
-                          cursor: "pointer",
+                          marginBottom: "16px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          padding: 0,
+                          borderStyle: "solid",
+                          mx: "auto",
+                          borderWidth: 1,
+                          borderColor: "#E6E6E6",
+                          boxShadow: 3,
+                          position: "relative",
+                          width: "200px",
+                          height: "200px",
+                          overflow: "hidden",
                         }}
                       >
-                        <input {...getInputProps()} />
-                        <CloudUploadIcon
-                          sx={{ fontSize: 48, color: "#90caf9" }}
-                        />
-                        <Typography>
-                          Choose an image or drag & drop it here
-                        </Typography>
-                        <Typography variant="body2">
-                          (Any file type, up to 10MB)
-                        </Typography>
+                        <input {...getInputProps()} style={{ display: "none" }} />
+                        {filePreview === null ? (
+                          <Avatar
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              backgroundColor: "#E8E8EA",
+                              border: "1px solid #24AE6E1A",
+                            }}
+                          >
+                            <Image src={AvtarIcon} alt="icon" />
+                          </Avatar>
+                        ) : (
+                          <Image
+                            src={filePreview}
+                            alt="Uploaded file"
+                            layout="fill"
+                            objectFit="cover"
+                          />
+                        )}
                       </Box>
-                      {file && (
-                        <Box sx={{ marginBottom: "16px" }}>
-                          <InsertDriveFileIcon
-                            sx={{ fontSize: 48, color: "#4caf50" }}
-                          />
-                          <Typography>{file?.name}</Typography>
-                          <Typography variant="body2">{`${(
-                            file?.size / 1024
-                          ).toFixed(2)} KB`}</Typography>
-                          <LinearProgress
-                            variant="determinate"
-                            value={progress}
-                            sx={{ marginTop: "8px" }}
-                          />
-                          <Typography variant="body2" sx={{ marginTop: "8px" }}>
-                            {progress?.toFixed(2)}% uploaded
-                          </Typography>
-                        </Box>
-                      )}
                     </Box>
                   </Grid>
                   <Grid item md={5.8}>
@@ -292,26 +306,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       defaultValue={selectedDevice ? selectedDevice?.uId : ""}
                     />
                   </Grid>
-
-                  <Grid item md={5.8}>
-                    <CustomTextField
-                      {...register("email", {
-                        required: "email is required",
-                        pattern: {
-                          value:
-                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                          message: "Enter a valid email address",
-                        },
-                      })}
-                      name="email"
-                      label="Email"
-                      placeholder="Enter email address"
-                      error={!!errors.email}
-                      helperText={errors.email?.message}
-                      onChange={handleInputChange}
-                      defaultValue={selectedDevice ? selectedDevice?.email : ""}
-                    />
-                  </Grid>
                   <Grid item md={5.8}>
                     <CustomTextField
                       {...register("phone", {
@@ -336,16 +330,21 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   </Grid>
                   <Grid item md={5.8}>
                     <CustomTextField
-                      {...register("age", {
-                        required: "Age is required",
+                      {...register("email", {
+                        required: "email is required",
+                        pattern: {
+                          value:
+                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                          message: "Enter a valid email address",
+                        },
                       })}
-                      name="age"
-                      label="Age"
-                      placeholder="Enter age"
-                      error={!!errors.age}
-                      helperText={errors.age?.message}
+                      name="email"
+                      label="Email"
+                      placeholder="Enter email address"
+                      error={!!errors.email}
+                      helperText={errors.email?.message}
                       onChange={handleInputChange}
-                      defaultValue={selectedDevice ? selectedDevice?.age : ""}
+                      defaultValue={selectedDevice ? selectedDevice?.email : ""}
                     />
                   </Grid>
                   <Grid item md={5.8}>
@@ -362,6 +361,21 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       defaultValue={
                         selectedDevice ? selectedDevice?.jobRole : ""
                       }
+                    />
+                  </Grid>
+                  <Grid item md={5.8}>
+                    <CustomTextField
+                      {...register("age", {
+                        required: "Age is required",
+                      })}
+                      field='number'
+                      name="age"
+                      label="Age"
+                      placeholder="Enter age"
+                      error={!!errors.age}
+                      helperText={errors.age?.message}
+                      onChange={handleInputChange}
+                      defaultValue={selectedDevice ? selectedDevice?.age : ""}
                     />
                   </Grid>
                   <Grid item md={5.8}>
@@ -383,22 +397,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   </Grid>
                   <Grid item md={5.8}>
                     <CustomTextField
-                      {...register("shift", {
-                        required: "Shift is required",
-                      })}
-                      select="select"
-                      selectData={selectData}
-                      name="shift"
-                      label="Shift"
-                      placeholder="Enter shift"
-                      error={!!errors.shift}
-                      helperText={errors.shift?.message}
-                      onChange={handleInputChange}
-                      defaultValue={selectedDevice ? "" : ""}
-                    />
-                  </Grid>
-                  <Grid item md={5.8}>
-                    <CustomTextField
                       {...register("category", {
                         required: "Shift is required",
                       })}
@@ -414,17 +412,35 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                     />
                   </Grid>
                   <Grid item md={5.8}>
-                    <Controller
-                      name="purchaseDate"
-                      control={control}
-                      defaultValue={null}
-                      render={({ field }) => (
-                        <DatePicker
-                          sx={{ width: "100%", color: "#ACACAC" }}
-                          label="Date of Purchase"
-                          {...field}
-                        />
-                      )}
+                    <CustomTextField
+                      {...register("shift", {
+                        required: "Shift is required",
+                      })}
+                      select="select"
+                      selectData={selectData}
+                      name="shift"
+                      label="Assign Shift"
+                      placeholder="Enter shift"
+                      error={!!errors.shift}
+                      helperText={errors.shift?.message}
+                      onChange={handleInputChange}
+                      defaultValue={selectedDevice ? "" : ""}
+                    />
+                  </Grid>
+                  <Grid item md={5.8}>
+                    <CustomTextField
+                      {...register("shift", {
+                        required: "Shift is required",
+                      })}
+                      select="select"
+                      selectData={selectData}
+                      name="shift"
+                      label="Shift range"
+                      placeholder="Enter shift"
+                      error={!!errors.shift}
+                      helperText={errors.shift?.message}
+                      onChange={handleInputChange}
+                      defaultValue={selectedDevice ? "" : ""}
                     />
                   </Grid>
                 </Grid>
@@ -441,38 +457,44 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               )}
             </DialogContent>
             <DialogActions className="dialog-action-btn">
-              <ConfirmationDialog
-                title={"Cancel"}
-                handleCloseFirst={handleClose}
-                message={"Are you sure you want to cancel?"}
-              />
+
               {activeStep < steps.length - 1 ? (
                 <>
-                  {activeStep !== 0 && (
-                    <Button
-                      variant="outlined"
-                      onClick={handleBack}
-                      sx={{ width: "150px" }}
-                    >
-                      Back
-                    </Button>
-                  )}
+
+                  <ConfirmationDialog
+                    title={"Cancel"}
+                    handleCloseFirst={handleClose}
+                    message={"Are you sure you want to cancel?"}
+                  />
                   <Button
                     variant="contained"
+                    type="submit"
                     onClick={handleNext}
                     sx={{ width: "150px" }}
                   >
                     Next
                   </Button>
+
                 </>
               ) : (
-                <Button
-                  variant="contained"
-                  type="submit"
-                  sx={{ width: "150px" }}
-                >
-                  Submit
-                </Button>
+                <>
+
+                  <Button
+                    variant="outlined"
+                    onClick={handleBack}
+                    sx={{ width: "150px" }}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleNext}
+                    sx={{ width: "150px" }}
+                  >
+                    Submit
+                  </Button>
+                </>
+
               )}
             </DialogActions>
           </form>
