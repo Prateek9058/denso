@@ -1,0 +1,26 @@
+.dialog-action-btn {
+  position: sticky !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  background-color: #f3f2f7 !important ;
+  z-index: 1 !important;
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+}
+::-webkit-scrollbar-thumb {
+  background: #dc0032;
+  width: 12px !important;
+  height: 12px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ddd !important;
+}
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+::-webkit-scrollbar {
+  width: 6px !important;
+  height: 5px !important;
+}

@@ -1,0 +1,154 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
+import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
+import CommonDialog from "@/app/(components)/mui-components/Dialog";
+import Link from "next/link";
+import moment from "moment";
+import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
+import { BsEye } from "react-icons/bs";
+import CustomTable from "@/app/(components)/mui-components/Table/customTable";
+interface TableProps {
+  deviceData: any;
+  rowsPerPage: number;
+  setRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  searchQuery: string;
+  loading: boolean;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+}
+const Table: React.FC<TableProps> = ({
+  deviceData,
+  rowsPerPage,
+  setRowsPerPage,
+  page,
+  setPage,
+  searchQuery,
+  setSearchQuery,
+  loading,
+}) => {
+  const columns = [
+    "Sno.",
+    "Trolley ID",
+    "Date",
+    "Issue",
+    "Av. repair time",
+    "Status]",
+    "View",
+  ];
+  const [open, setOpenDialog] = React.useState(false);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchQuery(debouncedSearchQuery);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [debouncedSearchQuery, setSearchQuery]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDebouncedSearchQuery(event.target.value);
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleConfirm = () => {
+    handleCancel();
+  };
+
+  const handleCancel = () => {
+    setOpenDialog(false);
+  };
+
+  const getFormattedData = (data: any[]) => {
+    return data?.map((item, index) => ({
+      sno: index + 1,
+      trolleyUid: item?.trolleyUid ?? "N/A",
+      trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
+      purchaseDate: moment(item?.purchaseDate).format("lll") ?? "N/A",
+      createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
+      zoneName: item?.zone ? `zone ${item?.zone}` : "N/A",
+      Action: [
+        <Grid container justifyContent="center" key={index}>
+          <Grid item>
+            <Link href={`/trolley/${item?._id}`}>
+              <Tooltip title="View">
+                <IconButton size="small">
+                  <BsEye color="#DC0032" />
+                </IconButton>
+              </Tooltip>
+            </Link>
+          </Grid>
+        </Grid>,
+      ],
+    }));
+  };
+
+  return (
+    <>
+      <CommonDialog
+        open={open}
+        fullWidth={true}
+        maxWidth={"xs"}
+        title="Confirmation"
+        message="Are you sure you want to delete this device?"
+        color="error"
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+      />
+      <Grid container mt={3}>
+        <Grid
+          container
+          justifyContent={"space-between"}
+          alignItems="center"
+          p={2}
+          sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
+        >
+          <Grid item>
+            <Typography variant="h5">
+              {" "}
+              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
+              {deviceData?.totalCount} Trolleys
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Grid container justifyContent={"space-between"}>
+              <Grid item className="customSearch">
+                <CustomTextField
+                  type="search"
+                  placeholder="Search ID / Name"
+                  value={debouncedSearchQuery}
+                  onChange={handleSearchChange}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>{" "}
+        {loading ? (
+          <TableSkeleton
+            rowNumber={new Array(10).fill(0)}
+            tableCell={new Array(5).fill("15%")}
+            actions={new Array(2).fill(0)}
+          />
+        ) : (
+          <CustomTable
+            page={page}
+            rows={getFormattedData(deviceData?.data)}
+            count={deviceData?.totalCount}
+            columns={columns}
+            setPage={setPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+          />
+        )}
+      </Grid>
+    </>
+  );
+};
+export default Table;
