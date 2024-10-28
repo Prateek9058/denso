@@ -35,6 +35,7 @@ interface AddDeviceProps {
   getDeviceData: () => void;
   selectedDevice?: any;
   selectedSite?: any;
+  selectedShift?: any;
 }
 interface ErrorResponse {
   message?: string;
@@ -45,6 +46,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   getDeviceData,
   selectedDevice,
   selectedSite,
+  selectedShift,
 }) => {
   const {
     register,
@@ -56,27 +58,49 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     reset,
   } = useForm();
   const [startTime, setStartTime] = React.useState<Dayjs | null>(
-    dayjs("2022-04-17T15:30")
+    dayjs('')
   );
   const [endTime, setEndTime] = React.useState<Dayjs | null>(
-    dayjs("2022-04-17T15:30")
+    dayjs('')
   );
+  useEffect(() => {
+    setStartTime(dayjs(dayjs(selectedShift?.startTime).format('lll')))
+    setEndTime(dayjs(dayjs(selectedShift?.endTime).format("lll")))
+  }, [selectedShift]);
+
   const handleClose = () => {
     setOpen(false);
     reset();
   };
-
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setValue(name, value);
+    if (errors[name]) {
+      clearErrors(name);
+    }
+  };
   const onSubmit = async () => {
-    if (!selectedSite?._id) return;
+    let res;
+    const formData = getValues();
+    // if (!selectedSite?._id) return;
+    const shiftId = selectedShift?._id;
     const body = {
+      shiftName: formData?.shiftName,
       startTime: dayjs(startTime).format("lll"),
       endTime: dayjs(endTime).format("lll"),
     };
     try {
-      const res = await axiosInstance.post(
-        `/api/v1/shifts/addShift/${selectedSite?._id}`,
-        body
-      );
+      if (selectedShift) {
+        res = await axiosInstance.patch(
+          `/api/v1/shifts/updateShiftTime/${shiftId}`,
+          body
+        );
+      } else {
+        res = await axiosInstance.post(
+          `/api/v1/shifts/addShift/`,
+          body
+        );
+      }
       if (res?.status === 200 || res?.status === 201) {
         notifySuccess("Shift added successfully");
         getDeviceData();
@@ -91,6 +115,10 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       // handleClose();
     }
   };
+  console.log("gg", selectedShift)
+  console.log("gg selectedShift", selectedShift?._id)
+
+
   return (
     <>
       <CommonDialog
@@ -110,6 +138,24 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               alignItems={"center"}
               mt={1}
             >
+              <Grid item md={12}>
+                <Stack >
+                  <CustomTextField
+                    {...register("shiftName", {
+                      required: "Shift Name is required",
+                    })}
+                    name="shiftName"
+                    label="Shift Name"
+                    placeholder="Enter Shift Name"
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                    onChange={handleInputChange}
+                    defaultValue={
+                      selectedShift ? selectedShift?.shiftName : ""
+                    }
+                  />
+                </Stack>
+              </Grid>
               <Grid item md={6}>
                 <Stack alignItems={"center"}>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>

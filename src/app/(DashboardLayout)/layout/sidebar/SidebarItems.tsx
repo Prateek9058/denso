@@ -41,7 +41,7 @@ const SidebarItems = ({ toggleMobileSidebar }: any) => {
           })}
         </List>
       </Box>
-      <Box
+      {/* <Box
         sx={{
           justifyContent: "flex-end",
           alignSelf: "flex-end",
@@ -69,7 +69,7 @@ const SidebarItems = ({ toggleMobileSidebar }: any) => {
             );
           })}
         </List>
-      </Box>
+      </Box> */}
     </>
   );
 };

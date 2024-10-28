@@ -25,7 +25,6 @@ import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog
 import AvtarIcon from '../../../../../../public/Img/clarityAvatarLine.png';
 import axiosInstance from "@/app/api/axiosInstance";
 import { AxiosError } from "axios";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -101,13 +100,13 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   });
   useEffect(() => {
     const storedSite = localStorage.getItem("selectedSite");
+    console.log("dataaaa",storedSite)
     if (storedSite) {
       setSelectedSite(JSON.parse(storedSite));
     }
   }, [open]);
 
   useEffect(() => {
-    // Clean up the object URL when the component unmounts
     return () => {
       if (filePreview) {
         URL.revokeObjectURL(filePreview);
@@ -116,11 +115,11 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   }, [filePreview]);
 
   const getAllShifts = useCallback(async () => {
-    if (!selectedSite?._id) return;
+    // if (!selectedSite?._id) return;
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/shifts/getAllShifts/${selectedSite?._id}`
+        `/api/v1/shifts/getAllShifts/`
       );
       if (res?.status === 200 || res?.status === 201) {
         setSelectData(res?.data?.data);
@@ -130,15 +129,19 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       setLoading(false);
     }
   }, [selectedSite]);
+
   useEffect(() => {
     if (open) {
       getAllShifts();
     }
   }, [open, selectedSite]);
+
   const onSubmit = async () => {
     if (!selectedSite?._id) return;
     try {
       const formData = getValues();
+    console.log(formData,'formmmmmmm data');
+      
       const body = {
         name: formData?.name,
         uId: formData?.manpowerId,
@@ -150,6 +153,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         shift: formData?.shift,
         countryCode: "91",
       };
+      console.log('body',body)
+
       let res;
       if (selectedDevice) {
         res = await axiosInstance.patch(
@@ -178,6 +183,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       console.log(error);
       // handleClose();
     }
+
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -188,11 +194,18 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     }
   };
   const handleNext = () => {
-    setActiveStep(activeStep + 1);
+    if(activeStep < steps.length - 1){
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
   };
   const handleBack = () => {
-    setActiveStep(activeStep - 1);
+    if(activeStep > 0){
+      setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    }
   };
+
+  console.log('activeStep',activeStep)
+
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -431,9 +444,13 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                     <CustomTextField
                       {...register("shift", {
                         required: "Shift is required",
+                        pattern: {
+                          value: /^[1-7]$/,
+                          message:
+                            "Shift must be a number between 1 and 7",
+                        },
                       })}
-                      select="select"
-                      selectData={selectData}
+                      field="number"
                       name="shift"
                       label="Shift range"
                       placeholder="Enter shift"
@@ -468,7 +485,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   />
                   <Button
                     variant="contained"
-                    type="submit"
                     onClick={handleNext}
                     sx={{ width: "150px" }}
                   >
@@ -488,6 +504,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   </Button>
                   <Button
                     variant="contained"
+                    type="submit"
                     onClick={handleNext}
                     sx={{ width: "150px" }}
                   >

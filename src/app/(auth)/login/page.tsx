@@ -16,18 +16,20 @@ const Login2 = () => {
     <>
       <PageContainer title="Login" description="this is Login page">
         <Box
-          sx={{
-            position: "relative",
-            "&:before": {
-              content: '""',
-              backgroundSize: "400% 400%",
-              animation: "gradient 15s ease infinite",
-              position: "absolute",
-              height: "100%",
-              width: "100%",
-              opacity: "0.3",
-            },
-          }}
+        sx={{
+          position: "relative",
+          mx: 10,
+          "&:before": {
+            content: '""',
+            backgroundSize: "400% 400%",
+            animation: "gradient 15s ease infinite",
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            opacity: "0.3",
+          },
+        }}
+        
         >
           <Grid
             container

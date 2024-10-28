@@ -95,7 +95,7 @@ export default function CustomizedDialogs({
         </Button>
       ) : (
         <Button
-          // sx={{ width: "150px" }}
+          sx={{ width: "150px" }}
           variant="outlined"
           color="info"
           onClick={handleClickOpen}

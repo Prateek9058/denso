@@ -11,12 +11,15 @@ interface Shift {
   timeRange: string;
 }
 
-const shifts: Shift[] = [
-  { id: 1, name: "Shift 1", timeRange: "09:00 AM - 12:00 PM" },
-  { id: 2, name: "Shift 2", timeRange: "12:00 PM - 03:00 PM" },
-  { id: 3, name: "Shift 3", timeRange: "03:00 PM - 06:00 PM" },
-];
-const ShiftCard: React.FC<{ shift: Shift }> = ({ shift }) => {
+// const shifts: Shift[] = [
+//   { id: 1, name: "Shift 1", timeRange: "09:00 AM - 12:00 PM" },
+//   { id: 2, name: "Shift 2", timeRange: "12:00 PM - 03:00 PM" },
+//   { id: 3, name: "Shift 3", timeRange: "03:00 PM - 06:00 PM" },
+// ];
+
+const ShiftCard: React.FC<{ shift: Shift; handleClickOpen: (id: number) => void; cardData: any }> = ({ shift, handleClickOpen, cardData }) => {
+  console.log("cardData11111",cardData)
+  
   return (
     <Card
       variant="outlined"
@@ -28,7 +31,9 @@ const ShiftCard: React.FC<{ shift: Shift }> = ({ shift }) => {
       }}
     >
       <Typography variant="body1">{shift.timeRange}</Typography>
-      <Button sx={{ color: "red" }} size="small">
+      <Button sx={{ color: "red" }} size="small"
+        onClick={()=>handleClickOpen(shift.id)}
+      >
         Edit
       </Button>
     </Card>
@@ -38,24 +43,25 @@ const ShiftCard: React.FC<{ shift: Shift }> = ({ shift }) => {
 function ManageSites() {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [allSites, setAllSites] = useState<any>([]);
-  const [selectedSite, setSelectedSite] = useState<any>(null);
+  const [allShifts, setAllShifts] = useState<any>([]);
+  const [selectedShift, setSelectedShift] = useState<any>(null);
 
-  useEffect(() => {
-    const storedSite = localStorage.getItem("selectedSite");
-    if (storedSite) {
-      setSelectedSite(JSON.parse(storedSite));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedSite = localStorage.getItem("selectedSite");
+  //   if (storedSite) {
+  //     setSelectedSite(JSON.parse(storedSite));
+  //   }
+  // }, []);
   useEffect(() => {
     getAllSites();
   }, []);
   const getAllSites = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get("/api/v1/site/getAllSites");
+      const res = await axiosInstance.get("/api/v1/shifts/getAllShifts/");
       if (res?.status === 200 || res?.status === 201) {
-        setAllSites(res?.data?.data);
+        console.log("get all shift data", res)
+        setAllShifts(res?.data?.data?.data);
       }
     } catch (err) {
       console.error(err);
@@ -63,12 +69,24 @@ function ManageSites() {
       setLoading(false);
     }
   };
-  const handleClickOpenUpload = () => {
+  const handleClickOpenUpload = (shiftId: number) => {
+    console.log("shiftId",shiftId)
+    console.log("shiftId",allShifts)
+
+    const selectedShiftData = allShifts.find((shift: any) => shift._id === shiftId); 
+    setSelectedShift(selectedShiftData);
     setOpen(true);
   };
+  const shifts: Shift[] = allShifts.map((site:any): Shift => ({
+    id: site._id,
+    name: site.shiftName,
+    timeRange: `${new Date(site.startTime).toLocaleTimeString()} - ${new Date(site.endTime).toLocaleTimeString()}`
+  }));
+  console.log("gggggg",selectedShift)
+
   return (
     <>
-      <AddSite open={open} setOpen={setOpen} getDeviceData={getAllSites} />
+      <AddSite open={open} setOpen={setOpen} getDeviceData={getAllSites} selectedShift={selectedShift}  />
       <ManagementGrid
         moduleName="Shifts"
         button="Add Shift"
@@ -88,7 +106,7 @@ function ManageSites() {
               <Typography variant="h6" gutterBottom>
                 {shift.name}
               </Typography>
-              <ShiftCard shift={shift} />
+              <ShiftCard shift={shift} handleClickOpen={handleClickOpenUpload} cardData={shift.id} />
             </Box>
           </Grid>
         ))}

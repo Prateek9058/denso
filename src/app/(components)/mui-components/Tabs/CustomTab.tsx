@@ -1,6 +1,10 @@
 // CommonTabs.tsx
 import React from "react";
-import { Tabs, Tab, Grid } from "@mui/material";
+import { Tabs, Tab, Grid, Button } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { CgAddR } from "react-icons/cg";
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -39,6 +43,8 @@ interface CommonTabsProps {
   TabPanelList: any;
   tabs: TabData[];
   authRole?: string;
+  button?: any
+  handleClickOpen?: any
 }
 
 const CustomTab: React.FC<CommonTabsProps> = ({
@@ -47,30 +53,60 @@ const CustomTab: React.FC<CommonTabsProps> = ({
   handleChange,
   TabPanelList,
   authRole,
+  button,
+  handleClickOpen,
+  // handleInputChange,
+  // breadcrumbItems
+
+
 }) => {
   return (
     <>
       <Grid container justifyContent="left" alignItems="center">
-        <Tabs
-          value={value}
-          className="TabStyleAddDevice"
-          onChange={handleChange}
-          centered
-        >
-          {tabs?.map((tab: TabData, index: number) => (
-            <Tab
-              key={index}
-              label={tab.label}
-              {...a11yProps(index)}
+        <Grid container justifyContent={"space-between"}>
+
+
+          <Tabs
+            value={value}
+            className="TabStyleAddDevice"
+            onChange={handleChange}
+            centered
+          >
+            {tabs?.map((tab: TabData, index: number) => (
+              <Tab
+                key={index}
+                label={tab.label}
+                {...a11yProps(index)}
+                sx={{
+                  borderRadius: "5px",
+                  bgcolor: "#CACACA",
+                  color: "white",
+                }}
+                className="TabChangesDeviceLive"
+              />
+            ))}
+          </Tabs>
+          {button && (
+            <Button variant={"contained"}
+              onClick={handleClickOpen}
+              startIcon={<CgAddR />}
+              // variant="outlined"
+              size="large"
               sx={{
-                borderRadius: "5px",
-                bgcolor: "#CACACA",
-                color: "white",
+                mt:1,
+                color: "#FFFFFF",
+                backgroundColor: "#4C4C4C",
+              // '& .MuiButton-root':{
+              //   ":hover":{
+              //     backgroundColor: "#4C4C4C",
+              //   }
+              // }
+              ":hover": {
+                backgroundColor: "#4C4C4C", // Set a new color if needed for hover effect
+              }
               }}
-              className="TabChangesDeviceLive"
-            />
-          ))}
-        </Tabs>
+            >{button}</Button>)}
+        </Grid>
       </Grid>
       {TabPanelList?.map((panel: any, index: number) => (
         <TabPanel key={index} value={value} index={index}>

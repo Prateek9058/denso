@@ -11,6 +11,7 @@ import {
   Box,
   Typography,
   LinearProgress,
+  Avatar,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
@@ -19,6 +20,7 @@ import {
   notifyError,
   notifySuccess,
 } from "@/app/(components)/mui-components/Snackbar";
+import TrolleyIcon from '../../../../../../public/Img/clarity_avatar-trolley.png';
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -28,6 +30,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { useDropzone } from "react-dropzone";
 import TrolleyRoute from "./trolleyRoute";
+import Image from "next/image";
+import SelectRoute from "./selectRoute";
+import FinalDetails from "./finalDetails";
+
 
 interface AddDeviceProps {
   open: boolean;
@@ -51,6 +57,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [points, setPoints] = useState<[number, number][]>([]);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const steps = [
     "Add trolley",
     "Mark pointers",
@@ -76,7 +83,13 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       reset();
     }
   }, [setValue, reset, selectedDevice]);
-
+  useEffect(() => {
+    return () => {
+      if (filePreview) {
+        URL.revokeObjectURL(filePreview);
+      }
+    };
+  }, [filePreview]);
   const handleClose = () => {
     setOpen(false);
     getTrolleyData();
@@ -85,10 +98,23 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     setPoints([]);
     reset();
   };
-
+  const trolleyBoxLabel = () => {
+    if (activeStep == 0) {
+      return `${selectedDevice ? "Edit" : "Add"} trolley `
+    } else if (activeStep == 1) {
+      return 'Set animated location points'
+    } else if (activeStep == 2) {
+      return 'Select route'
+    } else if (activeStep == 3) {
+      return 'Final detalis'
+    }
+  }
   const onDrop = (acceptedFiles: File[]) => {
-    setFile(acceptedFiles[0]);
-    setProgress(0);
+    // setFile(acceptedFiles[0]);
+    const selectedFile = acceptedFiles[0];
+    setFile(selectedFile);
+    setFilePreview(URL.createObjectURL(selectedFile));
+    // setProgress(0);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -158,9 +184,10 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <CommonDialog
           open={open}
-          maxWidth={"md"}
+          maxWidth={activeStep !== 2 ? "md" : "xl"}
           fullWidth={true}
-          title={`${selectedDevice ? "Edit" : "Add"} Trolley`}
+          // title={`${selectedDevice ? "Edit" : "Add"} Trolley `}
+          title={`${trolleyBoxLabel()}`}
           message={"Are you sure you want to cancel?"}
           titleConfirm={"Cancel"}
           onClose={handleClose}
@@ -189,44 +216,46 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       }}
                     >
                       <Box
-                        {...getRootProps()}
+                        {...(filePreview === null ? getRootProps() : {})}
                         sx={{
-                          border: "2px dashed #ccc",
-                          borderRadius: "8px",
-                          padding: "22px",
-                          cursor: "pointer",
+                          marginBottom: "16px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                          padding: 0,
+                          borderStyle: "solid",
+                          mx: "auto",
+                          borderWidth: 1,
+                          borderColor: "#E6E6E6",
+                          boxShadow: 3,
+                          position: "relative",
+                          width: "200px",
+                          height: "200px",
+                          overflow: "hidden",
                         }}
                       >
-                        <input {...getInputProps()} />
-                        <CloudUploadIcon
-                          sx={{ fontSize: 48, color: "#90caf9" }}
-                        />
-                        <Typography>
-                          Choose an image or drag & drop it here
-                        </Typography>
-                        <Typography variant="body2">
-                          (Any file type, up to 10MB)
-                        </Typography>
+                        <input {...getInputProps()} style={{ display: "none" }} />
+                        {filePreview === null ? (
+                          <Avatar
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              backgroundColor: "#E8E8EA",
+                              border: "1px solid #24AE6E1A",
+                            }}
+                          >
+                            <Image src={TrolleyIcon} alt="icon" />
+                          </Avatar>
+                        ) : (
+                          <Image
+                            src={filePreview}
+                            alt="Uploaded file"
+                            layout="fill"
+                            objectFit="cover"
+                          />
+                        )}
                       </Box>
-                      {file && (
-                        <Box sx={{ marginBottom: "16px" }}>
-                          <InsertDriveFileIcon
-                            sx={{ fontSize: 48, color: "#4caf50" }}
-                          />
-                          <Typography>{file?.name}</Typography>
-                          <Typography variant="body2">{`${(
-                            file?.size / 1024
-                          ).toFixed(2)} KB`}</Typography>
-                          <LinearProgress
-                            variant="determinate"
-                            value={progress}
-                            sx={{ marginTop: "8px" }}
-                          />
-                          <Typography variant="body2" sx={{ marginTop: "8px" }}>
-                            {progress?.toFixed(2)}% uploaded
-                          </Typography>
-                        </Box>
-                      )}
                     </Box>
                   </Grid>
                   <Grid item md={5.8}>
@@ -266,22 +295,38 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       }
                     />
                   </Grid>
-                  {!selectedDevice && (
-                    <Grid item md={5.8}>
-                      <Controller
-                        name="purchaseDate"
-                        control={control}
-                        defaultValue={null}
-                        render={({ field }) => (
-                          <DatePicker
-                            sx={{ width: "100%", color: "#ACACAC" }}
-                            label="Date of Purchase"
-                            {...field}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  )}
+                  <Grid item md={5.8}>
+                    <CustomTextField
+                      {...register("category", {
+                        required: "Trolley type is required",
+                      })}
+                      select="select"
+                      selectData={''}
+                      name="Trolley"
+                      label="Trolley type"
+                      placeholder="Select trolley type"
+                      error={!!errors.category}
+                      helperText={errors.category?.message}
+                      onChange={handleInputChange}
+                      defaultValue={selectedDevice ? "" : ""}
+                    />
+                  </Grid>
+                  <Grid item md={5.8}>
+                    <CustomTextField
+                      {...register("trolleyColor", {
+                        required: "Trolley Color is required",
+                      })}
+                      name="trolleyColor"
+                      label="Trolley color"
+                      placeholder="Color"
+                      error={!!errors.trolleyColor}
+                      helperText={errors.trolleyColor?.message}
+                      onChange={handleInputChange}
+                      defaultValue={
+                        selectedDevice ? selectedDevice?.trolleyColor : ""
+                      }
+                    />
+                  </Grid>
                 </Grid>
               )}
               {activeStep === 1 && (
@@ -291,19 +336,24 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               )}
               {activeStep === 2 && (
                 <Grid container justifyContent={"space-between"}>
-                  <TrolleyRoute points={points} setPoints={setPoints} />
+                  <SelectRoute points={points} setPoints={setPoints} />
+                </Grid>
+              )}
+                {activeStep === 3 && (
+                <Grid container justifyContent={"space-between"}>
+                  <FinalDetails points={points} setPoints={setPoints} />
                 </Grid>
               )}
             </DialogContent>
             <DialogActions className="dialog-action-btn">
-              <ConfirmationDialog
-                title={"Cancel"}
-                handleCloseFirst={handleClose}
-                message={"Are you sure you want to cancel?"}
-              />
-              {activeStep < steps.length - 1 ? (
-                <>
-                  {activeStep !== 0 && (
+              {activeStep == 0 && (
+                <ConfirmationDialog
+                  title={"Cancel"}
+                  handleCloseFirst={handleClose}
+                  message={"Are you sure you want to cancel?"}
+                />
+              )}
+              {activeStep !== 0 && (
                     <Button
                       variant="outlined"
                       onClick={handleBack}
@@ -312,6 +362,9 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       Back
                     </Button>
                   )}
+              {activeStep < steps.length - 1 ? (
+                <>
+                  
                   <Button
                     variant="contained"
                     onClick={handleNext}

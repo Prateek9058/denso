@@ -104,6 +104,8 @@ const Table: React.FC<TableProps> = ({
   };
 
   const getFormattedData = (data: any[]) => {
+    console.log("item organidation",data)
+
     return data?.map((item, index) => ({
       sno: index + 1,
       uId: item?.uId ?? "N/A",

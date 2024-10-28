@@ -37,6 +37,8 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
 
   const ListItemStyled = styled(ListItem)(() => ({
     padding: 0,
+
+    // backgroundColor:'lime',
     ".MuiButtonBase-root": {
       whiteSpace: "nowrap",
       marginBottom: "12px",
@@ -46,22 +48,31 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
       color: "#464255",
       paddingLeft: "20px",
       "&:hover": {
-        backgroundColor: "#ff9999  ",
+        backgroundColor: "#ff9999",
         color: "#464255",
+        // paddingLeft:15,
+        padding:10,
+
       },
       "&.Mui-selected": {
         color: "#FFFFFF",
         backgroundColor: "#DC0032",
+        // paddingHorizontal:15,
+        padding:10,
+        // margin:10,
         "&:hover": {
           backgroundColor: "#DC0032",
           color: "#FFFFFF",
+          // padding:15,
+        padding:10,
         },
       },
     },
   }));
+  
 
   return (
-    <List component="div" disablePadding key={item?.id}>
+    <List component="div" disablePadding key={item?.id}  >
       <ListItemStyled>
         <ListItemButton
           component={Link}
@@ -80,7 +91,7 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
             src={pathDirect.startsWith(item?.href) ? IconActive : Icon}
             alt="man power track"
           />
-          <ListItemText sx={{ px: 3 }}>
+          <ListItemText sx={{ px:2.7 }}>
             <>{item?.title}</>
           </ListItemText>
         </ListItemButton>

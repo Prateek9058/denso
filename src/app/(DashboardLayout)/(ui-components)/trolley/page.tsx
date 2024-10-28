@@ -77,6 +77,7 @@ const Page: React.FC = () => {
   ]);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+
     setSearchQuery("");
     setPage(0);
     setRowsPerPage(10);
@@ -135,6 +136,7 @@ const Page: React.FC = () => {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           loading={loading}
+          value={value}
         />
       ),
     },
@@ -149,6 +151,7 @@ const Page: React.FC = () => {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           loading={loading}
+          value={value}
         />
       ),
     },

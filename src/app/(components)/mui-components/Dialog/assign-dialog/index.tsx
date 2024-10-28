@@ -50,6 +50,7 @@ export default function AssignAssessment({
   const [loading, setLoading] = useState<boolean>(true);
   const [value, setTabValue] = useState<number>(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    console.log("valueeee",newValue)
     setTabValue(newValue);
   };
   const [zoneId, setZoneId] = useState<any>("");
@@ -180,6 +181,7 @@ export default function AssignAssessment({
       ),
     },
   ];
+  console.log("valueeee")
 
   return (
     <Grid item xs={12} md={12}>

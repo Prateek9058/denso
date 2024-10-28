@@ -17,6 +17,7 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  value:any;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -27,19 +28,51 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
+  value,
 }) => {
-  const columns = [
-    "Sno.",
+  const columns1 = [
     "Trolley ID",
+    "Trolley name",
     "MAC ID",
-    "Purchase Date",
-    "Created At",
-    "Zone",
-    "View",
+    "Running Time" ,
+     "Ideal Time",
+    "Assign status" ,
+    "Action" ,
   ];
+  const columns2 = [
+    "Sno.",
+    "Trolley name",
+    'Trolly color',
+    'Date',
+  ];
+  const data =
+    [
+      {
+          "_id": "671645b6740b31a416f231c1",
+          "uId": "C30000288FFF",
+          "name": "test",
+          "color": "black",
+         
+      },
+      {
+          "_id": "67177d3bb5491ed7dad99c75",
+          "uId": "GGTR",
+          "name": "test",
+          "color": "red",
+     
+      },
+      {
+          "_id": "671f552da5ec829121b895de",
+          "uId": "123ABC",
+          "name": "1stK",
+          "color": "blue",
+       
+      }
+  ]
+  
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
-
+console.log("deviceData123456",deviceData)
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -89,7 +122,7 @@ const Table: React.FC<TableProps> = ({
       ],
     }));
   };
-
+console.log("value trolly",value)
   return (
     <>
       <CommonDialog
@@ -136,12 +169,22 @@ const Table: React.FC<TableProps> = ({
             tableCell={new Array(5).fill("15%")}
             actions={new Array(2).fill(0)}
           />
-        ) : (
+        ) : value == 0 ? (
           <CustomTable
             page={page}
             rows={getFormattedData(deviceData?.data)}
             count={deviceData?.totalCount}
-            columns={columns}
+            columns={columns1}
+            setPage={setPage}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+          />
+        ) :  (
+          <CustomTable
+            page={page}
+            rows={(data)}
+            count={deviceData?.totalCount}
+            columns={columns2}
             setPage={setPage}
             rowsPerPage={rowsPerPage}
             setRowsPerPage={setRowsPerPage}
