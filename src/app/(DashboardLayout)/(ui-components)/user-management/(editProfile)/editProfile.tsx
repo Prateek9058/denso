@@ -1,11 +1,14 @@
 "use client";
-import React, { ChangeEvent, useEffect } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   DialogActions,
   Button,
   DialogContent,
   Grid,
+  Box,
+  Typography,
+  LinearProgress,
   Stack,
 } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
@@ -17,11 +20,16 @@ import {
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
 import { AxiosError } from "axios";
+import { useDropzone } from "react-dropzone";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import EditIcon from "@mui/icons-material/Edit";
+
 const selectData = ["A", "B"];
 interface AddDeviceProps {
   open: boolean;
@@ -34,13 +42,14 @@ interface AddDeviceProps {
 interface ErrorResponse {
   message?: string;
 }
-const AddDevice: React.FC<AddDeviceProps> = ({
+const EditProfile: React.FC<AddDeviceProps> = ({
   open,
   setOpen,
   getDeviceData,
   selectedDevice,
   selectedSite,
   selectedShift,
+
 }) => {
   const {
     register,
@@ -51,16 +60,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     getValues,
     reset,
   } = useForm();
-  const [startTime, setStartTime] = React.useState<Dayjs | null>(
-    dayjs('')
-  );
-  const [endTime, setEndTime] = React.useState<Dayjs | null>(
-    dayjs('')
-  );
-  useEffect(() => {
-    setStartTime(dayjs(dayjs(selectedShift?.startTime).format('lll')))
-    setEndTime(dayjs(dayjs(selectedShift?.endTime).format("lll")))
-  }, [selectedShift]);
+ 
+
 
   const handleClose = () => {
     setOpen(false);
@@ -74,48 +75,49 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     }
   };
   const onSubmit = async () => {
-    let res;
+    
     const formData = getValues();
     const shiftId = selectedShift?._id;
     const body = {
-      shiftName: formData?.shiftName,
-      startTime: dayjs(startTime).format("lll"),
-      endTime: dayjs(endTime).format("lll"),
+    fullName: formData?.name,
+    phoneNumber: formData?.phone,
+    password: formData?.password,
     };
     try {
-      if (selectedShift) {
-        res = await axiosInstance.patch(
-          `/api/v1/shifts/updateShiftTime/${shiftId}`,
+      
+        const res = await axiosInstance.patch(
+          `/api/v1/auth/updateAdminProfile`,
           body
         );
-      } else {
-        res = await axiosInstance.post(
-          `/api/v1/shifts/addShift/`,
-          body
-        );
-      }
+       
       if (res?.status === 200 || res?.status === 201) {
-        notifySuccess("Shift added successfully");
+        notifySuccess("Profile updated successfully");
         getDeviceData();
         handleClose();
       }
     } catch (error) {
+      console.log("error data",error)
+
       const axiosError = error as AxiosError<ErrorResponse>;
+    //   console.log("error data",axiosError?.response?.data?.message)
+
       notifyError(
         axiosError?.response?.data?.message || "Error creating shift"
       );
-      console.log(error);
+    //   console.log(error);
       // handleClose();
     }
   };
+
+console.log('selectedShift',selectedShift)
 
   return (
     <>
       <CommonDialog
         open={open}
-        maxWidth={"sm"}
+        maxWidth={"md"}
         fullWidth={true}
-        title="Add a New Shift"
+        title="Update Profile Detials"
         message={"Are you sure you want to cancel?"}
         titleConfirm={"Cancel"}
         onClose={handleClose}
@@ -127,54 +129,87 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               justifyContent={"center"}
               alignItems={"center"}
               mt={1}
+              spacing={3}
             >
-              <Grid item md={12}>
+              <Grid item md={6} >
                 <Stack >
                   <CustomTextField
-                    {...register("shiftName", {
-                      required: "Shift Name is required",
+                    {...register("name", {
+                      required: "Name is required",
                     })}
-                    name="shiftName"
-                    label="Shift Name"
-                    placeholder="Enter Shift Name"
+                    name="name"
+                    label="Name"
+                    placeholder="Enter name"
                     error={!!errors.name}
                     helperText={errors.name?.message}
                     onChange={handleInputChange}
                     defaultValue={
-                      selectedShift ? selectedShift?.shiftName : ""
+                      selectedShift ? selectedShift?.fullName : ""
                     }
                   />
                 </Stack>
               </Grid>
               <Grid item md={6}>
-                <Stack alignItems={"center"}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["TimePicker"]}>
-                      <TimePicker
-                        label="Shift Start Time"
-                        value={startTime}
-                        onChange={(newValue) => setStartTime(newValue)}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>{" "}
+                <Stack >
+                  <CustomTextField
+                      {...register("phone", {
+                        required: "Phone is required",
+                        validate: {
+                          length: (value) =>
+                            value.length === 10 ||
+                            "Phone number must be exactly 10 digits without country code",
+                        },
+                      })}
+                    field="number"
+                    name="phone"
+                    label="Phone Number"
+                    placeholder="Enter Phone Number"
+                    error={!!errors.phone}
+                    helperText={errors.phone?.message}
+                    onChange={handleInputChange}
+                    defaultValue={
+                      selectedShift ? selectedShift?.phoneNumber : ""
+                    }
+                  />
                 </Stack>
               </Grid>
               <Grid item md={6}>
-                <Stack alignItems={"center"}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["TimePicker"]}>
-                      <TimePicker
-                        label="Shift End Time"
-                        value={endTime}
-                        onChange={(newValue) => setEndTime(newValue)}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>{" "}
+              <Stack >
+                  <CustomTextField
+                   {...register("email")}
+                    name="email"
+                    label="Email Address"
+                    placeholder="Enter email address"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                    onChange={handleInputChange}
+                    defaultValue={selectedShift?.email || ""}
+                    disabled={true}
+                  />
+                </Stack>
+              </Grid>
+              <Grid item md={6} >
+              <Stack >
+                  <CustomTextField
+                    {...register("password", {
+                      required: "Password is required",
+                    })}
+                    field='password'
+                    name="password"
+                    label="Password"
+                    placeholder="Enter Password"
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                    onChange={handleInputChange}
+                    defaultValue={
+                      ''
+                    }
+                  />
                 </Stack>
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions className="dialog-action-btn">
+          <DialogActions className="dialog-action-btn"   >
             <ConfirmationDialog
               title={"Cancel"}
               handleCloseFirst={handleClose}
@@ -194,4 +229,4 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   );
 };
 
-export default AddDevice;
+export default EditProfile;

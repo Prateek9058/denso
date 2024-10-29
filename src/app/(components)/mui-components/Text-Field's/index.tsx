@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Stack,
   TextField,
@@ -8,10 +8,11 @@ import {
 } from "@mui/material";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { FaMagnifyingGlass } from "react-icons/fa6";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { TextFieldProps } from "@mui/material";
 
 interface CustomTextFieldProps {
-  type?: "email" | "text" | "search";
+  type?: "email" | "text" | "search" | "password";
   label?: string;
   placeholder?: string;
   error?: boolean;
@@ -42,6 +43,10 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
   field,
   ...restProps
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev); 
+  };
   return (
     <Stack>
       <TextField
@@ -50,7 +55,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         label={label}
         error={error}
         value={value}
-        type={field}
+        type={field === 'password' ? (showPassword ? "text" : "password") : field}
         select={!!select}
         defaultValue={defaultValue}
         variant="outlined"
@@ -63,20 +68,21 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
           borderRadius: "8px",
           mb: 3,
         }}
-        InputProps={
-          type
-            ? {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    {type === "email" && (
-                      <MdOutlineMailOutline fontSize="medium" />
-                    )}
-                    {type === "search" && <FaMagnifyingGlass />}
-                  </InputAdornment>
-                ),
-              }
-            : {}
-        }
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              {type === "email" && (
+                <MdOutlineMailOutline fontSize="medium" />
+              )}
+              {type === "search" && <FaMagnifyingGlass />}
+            </InputAdornment>
+          ),
+          endAdornment: field === 'password' && (
+            <InputAdornment position="end" onClick={handleTogglePassword} style={{ cursor: "pointer" }}>
+              {showPassword ? <FaEyeSlash /> : <FaEye />} 
+            </InputAdornment>
+          ),
+        }}
       >
         {" "}
         {select && selectData?.length > 0 ? (

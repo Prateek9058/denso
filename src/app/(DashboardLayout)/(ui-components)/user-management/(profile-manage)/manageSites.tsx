@@ -70,9 +70,6 @@ function ManageSites() {
     }
   };
   const handleClickOpenUpload = (shiftId: number) => {
-    console.log("shiftId",shiftId)
-    console.log("shiftId",allShifts)
-
     const selectedShiftData = allShifts.find((shift: any) => shift._id === shiftId); 
     setSelectedShift(selectedShiftData);
     setOpen(true);
@@ -82,13 +79,12 @@ function ManageSites() {
     name: site.shiftName,
     timeRange: `${new Date(site.startTime).toLocaleTimeString()} - ${new Date(site.endTime).toLocaleTimeString()}`
   }));
-  console.log("gggggg",selectedShift)
 
   return (
     <>
       <AddSite open={open} setOpen={setOpen} getDeviceData={getAllSites} selectedShift={selectedShift}  />
       <ManagementGrid
-        moduleName="Shifts"
+        moduleName="Shifts:"
         button="Add Shift"
         handleClickOpen={handleClickOpenUpload}
       />

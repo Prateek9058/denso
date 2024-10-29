@@ -13,6 +13,7 @@ import { IoMdClose } from "react-icons/io";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PersonRemoveAlt1Icon from "@mui/icons-material/PersonRemoveAlt1";
 import DesktopAccessDisabledIcon from "@mui/icons-material/DesktopAccessDisabled";
+import { IoLogOutOutline } from "react-icons/io5";
 interface AssignProps {
   title: string | undefined;
   message: string;

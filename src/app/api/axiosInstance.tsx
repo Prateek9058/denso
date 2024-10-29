@@ -18,6 +18,7 @@ const requestInterceptor = axiosInstance.interceptors.request.use(
     throw error;
   }
 );
+
 const responseInterceptor = axiosInstance.interceptors.response.use(
   (response) => {
     return response;

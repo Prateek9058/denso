@@ -152,7 +152,6 @@ const Page = () => {
   useEffect(() => {
     getOverAllCount();
   }, [selectedSite]);
-
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <Grid container spacing={2}>

@@ -15,6 +15,8 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loginData, setLoginData] = useState<any>(null);
+
   async function handleLogin(event: FormEvent) {
     event.preventDefault();
     const body = {
@@ -29,6 +31,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     try {
       const response = await axiosInstance.post("api/v1/auth/login", body);
       if (response.status) {
+        console.log("response",setLoginData(response))
         login(
           response?.data?.data?.token,
           response?.data?.data?.role,
@@ -46,6 +49,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       setErrorMessage(error?.response?.data?.message);
     }
   }
+
   return (
     <>
       {title ? (

@@ -15,11 +15,13 @@ import { ImProfile } from "react-icons/im";
 import profile from "../../../../../public/Img/profile.png";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import axiosInstance from "@/app/api/axiosInstance";
 
 export default function AccountMenu() {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [userData , setData] = React.useState<any>()
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -32,6 +34,21 @@ export default function AccountMenu() {
     localStorage.removeItem("loginId");
     signOut({ callbackUrl: "/login", redirect: true });
   };
+  React.useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get("api/v1/auth/getAdminData");
+        if(response){
+          setData(response?.data?.data)
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+    fetchData();
+
+  },[])
   return (
     <React.Fragment>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
@@ -68,7 +85,7 @@ export default function AccountMenu() {
               />
             </Grid>
             <Grid>
-              <Typography variant="body1">Vishal Singh</Typography>
+              <Typography variant="body1">{userData ? userData?.fullName :''}</Typography>
               <Typography variant="body2" color="#DC0032">
                 {"Admin"}
               </Typography>
@@ -132,7 +149,7 @@ export default function AccountMenu() {
             />
           </Grid>
           <Grid>
-            <Typography variant="body1">Vishal Singh</Typography>
+            <Typography variant="body1">{userData ? userData?.fullName :''}</Typography>
             <Typography variant="body2" color="#DC0032">
               {"Admin"}
             </Typography>
@@ -141,7 +158,7 @@ export default function AccountMenu() {
         <Divider />
         <MenuItem
           onClick={() => {
-            handleClose(), router.push("/");
+            handleClose(), router.push("/user-management");
           }}
         >
           <ListItemIcon>
