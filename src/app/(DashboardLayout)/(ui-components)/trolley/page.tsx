@@ -102,7 +102,7 @@ const Page: React.FC = () => {
       if (res?.status === 200 || res?.status === 201) {
         setDeviceData(res?.data?.data);
         setLoading(false);
-        console.log(res);
+        console.log('Api responseee',res);
       }
     } catch (err) {
       setLoading(false);

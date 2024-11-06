@@ -45,6 +45,11 @@ interface AddDeviceProps {
 interface ErrorResponse {
   message?: string;
 }
+type Point = [number, number];
+interface PointWithMarker {
+  coordinates: Point;
+  showMarker?: boolean;
+}
 const AddDevice: React.FC<AddDeviceProps> = ({
   open,
   setOpen,
@@ -56,7 +61,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const [userData, setUserData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState<number>(0);
-  const [points, setPoints] = useState<[number, number][]>([]);
+  const [points, setPoints] = useState<PointWithMarker[]>([]);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const steps = [
     "Add trolley",
@@ -184,7 +189,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <CommonDialog
           open={open}
-          maxWidth={activeStep !== 2 ? "md" : "xl"}
+          maxWidth={"lg"}
           fullWidth={true}
           // title={`${selectedDevice ? "Edit" : "Add"} Trolley `}
           title={`${trolleyBoxLabel()}`}
@@ -341,7 +346,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               )}
                 {activeStep === 3 && (
                 <Grid container justifyContent={"space-between"}>
-                  <FinalDetails points={points} setPoints={setPoints} />
+                  <FinalDetails points={points}  />
                 </Grid>
               )}
             </DialogContent>

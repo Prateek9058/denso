@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from "react-leaflet";
 import L from "leaflet";
-import Site from "../../../../../../public/Img/Layoutdenso.jpg";
+import Site from "../../../../../../public/Img/Layoutdenso.png";
 import "leaflet/dist/leaflet.css";
 import trolleyIconSrc from "../../../../../../public/Img/trolleyLive.png";
 interface empProps {
@@ -32,18 +32,18 @@ const EmpTrack: React.FC<empProps> = ({ userDetails }) => {
     [9.234375, 9.03125],
     [9.140625, 18.03125],
     [9.203125, 27.09375],
-    [26.78125, 27.0625],
-    [26.96875, 35.1875],
-    [5.09375, 35.0625],
-    [5.03125, 49.125],
-    [26.84375, 49.25],
-    [27.5625, 66.125],
-    [47.0625, 65.875],
-    [47.3125, 93.5],
-    [27.3125, 93.875],
-    [27.0625, 102],
-    [64.5625, 101.625],
-    [78.8125, 101.5],
+    // [26.78125, 27.0625],
+    // [26.96875, 35.1875],
+    // [5.09375, 35.0625],
+    // [5.03125, 49.125],
+    // [26.84375, 49.25],
+    // [27.5625, 66.125],
+    // [47.0625, 65.875],
+    // [47.3125, 93.5],
+    // [27.3125, 93.875],
+    // [27.0625, 102],
+    // [64.5625, 101.625],
+    // [78.8125, 101.5],
   ];
 
   const points = coordinates.map((coord: any, index: any) => ({

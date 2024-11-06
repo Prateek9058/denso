@@ -79,7 +79,7 @@ function ManageSites() {
     name: site.shiftName,
     timeRange: `${new Date(site.startTime).toLocaleTimeString()} - ${new Date(site.endTime).toLocaleTimeString()}`
   }));
-
+console.log("shifts data",shifts)
   return (
     <>
       <AddSite open={open} setOpen={setOpen} getDeviceData={getAllSites} selectedShift={selectedShift}  />

@@ -44,6 +44,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
 
   const onSubmit = async () => {
     const formData = getValues();
+    console.log("app data",formData)
     const body = {
       name: formData?.name,
       uId: formData?.macId,
@@ -58,7 +59,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
         notifySuccess(`Category added successfully`);
         getCategoryData();
         handleClose();
-      }
+      }  
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
       notifyError(

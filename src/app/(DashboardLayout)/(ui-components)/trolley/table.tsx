@@ -40,35 +40,11 @@ const Table: React.FC<TableProps> = ({
     "Action" ,
   ];
   const columns2 = [
-    "Sno.",
+    "Trolley ID",
     "Trolley name",
     'Trolly color',
     'Date',
   ];
-  const data =
-    [
-      {
-          "_id": "671645b6740b31a416f231c1",
-          "uId": "C30000288FFF",
-          "name": "test",
-          "color": "black",
-         
-      },
-      {
-          "_id": "67177d3bb5491ed7dad99c75",
-          "uId": "GGTR",
-          "name": "test",
-          "color": "red",
-     
-      },
-      {
-          "_id": "671f552da5ec829121b895de",
-          "uId": "123ABC",
-          "name": "1stK",
-          "color": "blue",
-       
-      }
-  ]
   
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
@@ -98,16 +74,15 @@ console.log("deviceData123456",deviceData)
   const handleCancel = () => {
     setOpenDialog(false);
   };
-
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
-      sno: index + 1,
+      // sno: index + 1,
       trolleyUid: item?.trolleyUid ?? "N/A",
-      trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
+      trolleyMacId: value == 0 ? item?.trolleyMacId ? item?.trolleyMacId : "N/A" : item?.uId ?? "N/A",
       purchaseDate: moment(item?.purchaseDate).format("lll") ?? "N/A",
       createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
       zoneName: item?.zone ? `zone ${item?.zone}` : "N/A",
-      Action: [
+      Action: value == 0 ? [
         <Grid container justifyContent="center" key={index}>
           <Grid item>
             <Link href={`/trolley/${item?._id}`}>
@@ -119,10 +94,21 @@ console.log("deviceData123456",deviceData)
             </Link>
           </Grid>
         </Grid>,
-      ],
+      ] : null,
     }));
   };
-console.log("value trolly",value)
+
+  const getFormattedDataTable2 = (data: any[]) => {
+    console.log("table2 response data", data)
+    return data?.map((item, index) => ({
+      // sno: index + 1,
+      trolleyUid: item?.uId ?? "N/A",
+      trolleyName: item?.name ?? "N/A",
+      color:item?.color ?? "N/A",
+      createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
+    }));
+  };
+  
   return (
     <>
       <CommonDialog
@@ -179,17 +165,19 @@ console.log("value trolly",value)
             rowsPerPage={rowsPerPage}
             setRowsPerPage={setRowsPerPage}
           />
-        ) :  (
+        ) 
+        :  (
           <CustomTable
             page={page}
-            rows={(data)}
+            rows={getFormattedDataTable2(deviceData?.data)}
             count={deviceData?.totalCount}
             columns={columns2}
             setPage={setPage}
             rowsPerPage={rowsPerPage}
             setRowsPerPage={setRowsPerPage}
           />
-        )}
+        )
+        }
       </Grid>
     </>
   );

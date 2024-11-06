@@ -6,7 +6,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axiosInstance from "@/app/api/axiosInstance";
 import { Rectangle } from "react-leaflet";
-import Site from "../../../../public/Img/Layoutdenso.jpg";
+import Site from "../../../../public/Img/Layoutdenso.png";
 import trolleyIconSrc from "../../../../public/Img/trolleyLive.png";
 import Tabs from "@/app/(components)/mui-components/Tabs/TabsZone";
 interface TabData {
