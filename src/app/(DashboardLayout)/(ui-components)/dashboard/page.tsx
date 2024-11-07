@@ -99,7 +99,7 @@ const Page = () => {
   const getOverAllCount = useCallback(async () => {
     try {
       const res = await axiosInstance.get(
-        `/api/v1/dashboard/dashboardData/${selectedSite?._id}`
+        `dashboard/dashboardData/${selectedSite?._id}`
       );
       if (res?.status === 200 || res?.status === 201) {
         console.log(res);

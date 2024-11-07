@@ -86,7 +86,7 @@ const EditProfile: React.FC<AddDeviceProps> = ({
     try {
       
         const res = await axiosInstance.patch(
-          `/api/v1/auth/updateAdminProfile`,
+          `auth/updateAdminProfile`,
           body
         );
        

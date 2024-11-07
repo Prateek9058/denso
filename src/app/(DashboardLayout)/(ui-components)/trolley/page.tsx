@@ -92,7 +92,7 @@ const Page: React.FC = () => {
     const Url =
       value == 0
         ? "trolleys/getAllTrolleys"
-        : "/api/v1/trolleyCategory/getAllTrolleyCategories";
+        : "trolleyCategory/getAllTrolleyCategories";
     try {
       const res = await axiosInstance.get(
         `${Url}?page=${

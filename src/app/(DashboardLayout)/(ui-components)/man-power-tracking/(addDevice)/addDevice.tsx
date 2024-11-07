@@ -119,7 +119,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/shifts/getAllShifts/`
+        `shifts/getAllShifts/`
       );
       if (res?.status === 200 || res?.status === 201) {
         setSelectData(res?.data?.data);
@@ -163,7 +163,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         );
       } else {
         res = await axiosInstance.post(
-          `/api/v1/employees/addEmployee/${selectedSite._id}`,
+          `employees/addEmployee/${selectedSite._id}`,
           body
         );
       }

@@ -39,7 +39,7 @@ const Table: React.FC<TableProps> = ({ deviceId, empJoinedDate }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/employees/employeeAttendanceData/${deviceId}?page=${
+        `employees/employeeAttendanceData/${deviceId}?page=${
           page + 1
         }&limit=${rowsPerPage}&startDate=${moment(date?.[0]?.startDate).format(
           "YYYY-MM-DD"

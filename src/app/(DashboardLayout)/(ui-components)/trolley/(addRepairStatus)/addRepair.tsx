@@ -62,7 +62,7 @@ const AddRepair: React.FC<AddDeviceProps> = ({
         repairDate: dayjs(formData?.repairDate).format("YYYY-MM-DD"),
       };
       const res = await axiosInstance.post(
-        `/api/v1/trolleyRepairing/addTrolleyRepairing/${selectedSite?._id}/${selectedDevice?._id}`,
+        `trolleyRepairing/addTrolleyRepairing/${selectedSite?._id}/${selectedDevice?._id}`,
         body
       );
       if (res?.status === 200 || res?.status === 201) {

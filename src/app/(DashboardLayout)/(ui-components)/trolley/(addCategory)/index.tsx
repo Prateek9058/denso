@@ -52,7 +52,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
     };
     try {
       const res = await axiosInstance.post(
-        `/api/v1/trolleyCategory/addTrolleyCategory`,
+        `trolleyCategory/addTrolleyCategory`,
         body
       );
       if (res?.status === 200 || res?.status === 201) {

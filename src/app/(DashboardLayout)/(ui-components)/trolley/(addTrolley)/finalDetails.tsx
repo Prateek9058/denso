@@ -32,13 +32,9 @@ const MapWrapper = styled('div')({
   width: '100%'
 });
 
-// Types
-interface Point {
-  coordinates: [number, number];
-  showMarker: boolean;
-}
+
 interface PointWithMarker {
-  coordinates: Point;
+  coordinates: [number, number];
   showMarker?: boolean;
 }
 interface FinalDetailsProps {
@@ -46,7 +42,7 @@ interface FinalDetailsProps {
 }
 
 const FinalDetails: React.FC<FinalDetailsProps> = ({
-    points,
+    points
   }) => {
   const {
     register,
@@ -55,16 +51,30 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
     clearErrors,
   } = useForm();
 
+  let markerCounter = 1;
   const bounds: [[number, number], [number, number]] = [
     [0, 0],
     [100, 220]
   ];
 
-  const trolleyIcon = L.icon({
-    iconUrl: '/Img/trolleyLive.png',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-  });
+  const getNumberedIcon = (number:number) => {
+        return L.divIcon({
+
+            html: `<div style="display: flex; align-items: center; justify-content: center;
+
+              width: 25px; height: 25px; background-color: red; border-radius: 50%; color: white;
+
+              font-size: 14px;">${number}</div>`,
+
+            className: '',
+
+            iconSize: [25, 25],
+
+            iconAnchor: [12, 12],
+
+        });
+
+    };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -80,12 +90,14 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
         <StyledDialogTitle>
           <MapWrapper>
             <MapContainer
-              center={[50, 50]}
-              zoom={2}
-              style={{ height: '100%', width: '100%' }}
-              crs={L.CRS.Simple}
-              minZoom={-2}
-              maxZoom={4}
+             center={[50, 100]}
+             zoom={2}
+             minZoom={1}
+             maxZoom={3}
+             style={{ height: '100%', width: '100%' }}
+             crs={L.CRS.Simple}
+             maxBounds={[[-10, -10], [110, 210]]}
+             maxBoundsViscosity={1.0}
             >
               <ImageOverlay 
                 url="/Img/Layoutdenso.png"
@@ -99,7 +111,7 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
               
               <Polyline
                 positions={points.map(point => point.coordinates)}
-                color="blue"
+                color="black"
                 weight={2}
               />
               
@@ -108,7 +120,7 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                   <Marker
                     key={index}
                     position={point.coordinates}
-                    icon={trolleyIcon}
+                    icon={getNumberedIcon(markerCounter++)}
                   />
                 )
               )}
@@ -122,20 +134,18 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
             spacing={2} 
             sx={{ mt: 2 }}
           >
-            {/* First row - three equal fields */}
             {[1, 2, 3].map((_, index) => (
               <Grid item xs={12} md={5.8} key={`field-large-${index}`}>
                 <CustomTextField
-                  {...register(`trolleyId${index}`, {
+                  {...register(`department${index}`, {
                     required: "Trolley ID is required",
                   })}
-                  name={`trolleyId${index}`}
-                  label="Trolley ID"
-                  placeholder="Enter Trolley ID"
+                  name={`departments${index}`}
+                  label="Department"
+                  placeholder="Department"
                   error={!!errors[`trolleyId${index}`]}
                   helperText={errors[`trolleyId${index}`]?.message}
                   onChange={handleInputChange}
-                  fullWidth
                 />
               </Grid>
             ))}
@@ -153,7 +163,6 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                   error={!!errors[`smallField${index}`]}
                   helperText={errors[`smallField${index}`]?.message}
                   onChange={handleInputChange}
-                  fullWidth
                 />
               </Grid>
             ))}
@@ -170,7 +179,6 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 error={!!errors.lastField}
                 helperText={errors.lastField?.message}
                 onChange={handleInputChange}
-                fullWidth
               />
             </Grid>
           </Grid>

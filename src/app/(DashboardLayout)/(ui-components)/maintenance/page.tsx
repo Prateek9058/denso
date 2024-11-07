@@ -72,7 +72,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/trolleys/getAllTrolleys/${selectedSite._id}?page=${
+        `trolleys/getAllTrolleys/${selectedSite._id}?page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}&zone=${zoneId}`
       );
@@ -101,7 +101,7 @@ const Page: React.FC = () => {
     if (!selectedSite?._id) return;
     try {
       const res = await axiosInstance.get(
-        `/api/v1/zone/zoneData/${selectedSite?._id}`
+        `zone/zoneData/${selectedSite?._id}`
       );
       if (res?.status === 200 || res?.status === 201) {
         const zoneData = Object.values(res?.data?.data[0]?.zones);

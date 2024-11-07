@@ -84,7 +84,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       let res = await axiosInstance.get(
-        `/api/v1/trolleys/getSingleTrollye/${trolleyId}`
+        `trolleys/getSingleTrollye/${trolleyId}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setTrolleyDetails(res?.data?.data);
@@ -110,7 +110,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/trolleyRepairing/getSingleTrolleyRepairingData/${trolleyId}?page=${
+        `trolleyRepairing/getSingleTrolleyRepairingData/${trolleyId}?page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );
@@ -129,7 +129,7 @@ const Page: React.FC = () => {
   const deleteTrolley = async () => {
     try {
       const res = await axiosInstance.delete(
-        `/api/v1/trolleys/deleteTrolley/${trolleyId}`
+        `trolleys/deleteTrolley/${trolleyId}`
       );
       if (res?.status === 200 || res?.status === 201) {
         console.log(res);

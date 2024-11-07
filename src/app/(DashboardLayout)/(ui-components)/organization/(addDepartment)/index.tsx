@@ -56,7 +56,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       type: type,
     };
     try {
-      const res = await axiosInstance.post(`/api/v1/organizations/add`, body);
+      const res = await axiosInstance.post(`organizations/add`, body);
       if (res?.status === 200 || res?.status === 201) {
         notifySuccess(
           `${type.charAt(0).toUpperCase() + type.slice(1)} added successfully`
@@ -78,7 +78,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/organizations/getUid?type=${type}`
+        `organizations/getUid?type=${type}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setUid(res?.data?.data);

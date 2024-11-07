@@ -24,7 +24,7 @@ export const SitesProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true);
     try {
       const storedSite = localStorage.getItem("selectedSite");
-      const res = await axiosInstance.get("/api/v1/site/getAllSites");
+      const res = await axiosInstance.get("site/getAllSites");
       if (res?.status === 200 || res?.status === 201) {
         const siteData = res?.data?.data?.data;
         setSites(siteData);

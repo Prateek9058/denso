@@ -45,7 +45,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/organizations/getAllData?type=${value == 0 ? "department" : value == 1 ? "section" : "line"}&page=${
+        `organizations/getAllData?type=${value == 0 ? "department" : value == 1 ? "section" : "line"}&page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );

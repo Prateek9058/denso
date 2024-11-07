@@ -74,7 +74,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     };
     try {
       const res = await axiosInstance.post(
-        `/api/v1/shifts/addShift/${selectedSite?._id}`,
+        `shifts/addShift/${selectedSite?._id}`,
         body
       );
       if (res?.status === 200 || res?.status === 201) {

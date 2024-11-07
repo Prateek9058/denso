@@ -60,7 +60,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       let res = await axiosInstance.get(
-        `/api/v1/employees/getEmployee/${deviceId}`
+        `employees/getEmployee/${deviceId}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setUserDetails(res?.data?.data);
@@ -84,7 +84,7 @@ const Page: React.FC = () => {
   const deleteUser = async () => {
     try {
       const res = await axiosInstance.delete(
-        `/api/v1/employees/deleteEmployee/${deviceId}`
+        `employees/deleteEmployee/${deviceId}`
       );
       if (res?.status === 200 || res?.status === 201) {
         console.log(res);
@@ -101,7 +101,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/employees/employeeAttendanceDayMonthGraphData/${deviceId}?startDate=${moment(
+        `employees/employeeAttendanceDayMonthGraphData/${deviceId}?startDate=${moment(
           date?.[0]?.startDate
         ).format("YYYY-MM-DD")}&endDate=${moment(date?.[0]?.endDate).format(
           "YYYY-MM-DD"

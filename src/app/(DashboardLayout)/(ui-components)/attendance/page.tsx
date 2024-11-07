@@ -42,7 +42,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/shifts/getAllShifts/${selectedSite?._id}`
+        `shifts/getAllShifts/${selectedSite?._id}`
       );
       if (res?.status === 200 || res?.status === 201) {
         const shiftData = res?.data?.data?.map((item: any) => ({
@@ -67,7 +67,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/api/v1/shifts/shiftWiseEmployeeData/${shiftId}?page=${
+        `shifts/shiftWiseEmployeeData/${shiftId}?page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );

@@ -58,7 +58,7 @@ function ManageSites() {
   const getAllSites = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get("/api/v1/shifts/getAllShifts/");
+      const res = await axiosInstance.get("shifts/getAllShifts/");
       if (res?.status === 200 || res?.status === 201) {
         console.log("get all shift data", res)
         setAllShifts(res?.data?.data?.data);

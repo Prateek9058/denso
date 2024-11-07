@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import {
   DialogActions,
   Button,
@@ -50,6 +50,20 @@ interface PointWithMarker {
   coordinates: Point;
   showMarker?: boolean;
 }
+interface ProcessFormRow {
+  process: string;
+  activityName: string;
+  jobRole: string;
+  jobNature: string;
+  startTime: string;
+  endTime: string;
+  totalTime: {
+    time: number;
+    unit: string;
+  };
+  remarks: string;
+}
+
 const AddDevice: React.FC<AddDeviceProps> = ({
   open,
   setOpen,
@@ -63,6 +77,19 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const [progress, setProgress] = useState<number>(0);
   const [points, setPoints] = useState<PointWithMarker[]>([]);
   const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [rows, setRows] = useState<ProcessFormRow[]>([{
+    process: "",
+    activityName: "",
+    jobRole: "",
+    jobNature: "",
+    startTime: "",
+    endTime: "",
+    totalTime: {
+      time: 0,
+      unit: "min"
+    },
+    remarks: ""
+  }]);
   const steps = [
     "Add trolley",
     "Mark pointers",
@@ -78,6 +105,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     getValues,
     reset,
     control,
+    watch,
   } = useForm();
 
   useEffect(() => {
@@ -88,6 +116,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       reset();
     }
   }, [setValue, reset, selectedDevice]);
+ 
   useEffect(() => {
     return () => {
       if (filePreview) {
@@ -95,6 +124,36 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       }
     };
   }, [filePreview]);
+  const [selectData, setSelectData] = useState<any>(null);
+  const getCreateGroup = async () => {
+    try {
+      const res = await axiosInstance.get("trolleyCategory/getAllTrolleyCategories");
+      if (res?.status === 200 || res?.status === 201) {
+        const dropdownData = res.data.data.data.map((value: any) => ({
+          _id:value._id,
+          label: value.name,
+          value: value.color, 
+        }));
+        setSelectData(dropdownData);
+      }
+    } catch (err) {
+      console.error("Error fetching trolley categories:", err);
+    }
+  };
+  const selectedCategory = watch("category");
+  useEffect(() => {
+    if (selectedCategory && selectData) {
+      const selectedOption = selectData.find(
+        (option: any) => option.label === selectedCategory
+      );
+    }
+  }, [selectedCategory, selectData, setValue]);
+  useEffect(() => {
+    if (open) {
+      getCreateGroup();
+    }
+  }, [open]);
+
   const handleClose = () => {
     setOpen(false);
     getTrolleyData();
@@ -114,6 +173,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       return 'Final detalis'
     }
   }
+  console.log("filePreview",file)
   const onDrop = (acceptedFiles: File[]) => {
     // setFile(acceptedFiles[0]);
     const selectedFile = acceptedFiles[0];
@@ -144,7 +204,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         );
       } else {
         res = await axiosInstance.post(
-          `/api/v1/trolleys/createTrolley/${selectedSite._id}`,
+          `trolleys/createTrolley/${selectedSite._id}`,
           body
         );
       }
@@ -176,6 +236,12 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     if (activeStep < steps.length - 1) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
+    setValue("trolleyColor", selectedCategory?.value);
+    setValue("pathPointers", points);
+    setValue("routeProcess", rows);
+    const formData1 = getValues();
+    console.log("formData",formData1)
+
   };
 
   const handleBack = () => {
@@ -183,7 +249,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
   };
-  console.log(points);
+
+
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -306,8 +373,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                         required: "Trolley type is required",
                       })}
                       select="select"
-                      selectData={''}
-                      name="Trolley"
+                      selectData={selectData}
+                      name="category"
                       label="Trolley type"
                       placeholder="Select trolley type"
                       error={!!errors.category}
@@ -317,18 +384,19 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                     />
                   </Grid>
                   <Grid item md={5.8}>
-                    <CustomTextField
+                  <CustomTextField
                       {...register("trolleyColor", {
                         required: "Trolley Color is required",
                       })}
                       name="trolleyColor"
                       label="Trolley color"
+                      value={selectedCategory ? selectedCategory.value : ''}
                       placeholder="Color"
                       error={!!errors.trolleyColor}
                       helperText={errors.trolleyColor?.message}
                       onChange={handleInputChange}
                       defaultValue={
-                        selectedDevice ? selectedDevice?.trolleyColor : ""
+                        selectedDevice ? "" : ""
                       }
                     />
                   </Grid>
@@ -341,7 +409,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               )}
               {activeStep === 2 && (
                 <Grid container justifyContent={"space-between"}>
-                  <SelectRoute points={points} setPoints={setPoints} />
+                  <SelectRoute rows={rows} setRows={setRows} />
                 </Grid>
               )}
                 {activeStep === 3 && (

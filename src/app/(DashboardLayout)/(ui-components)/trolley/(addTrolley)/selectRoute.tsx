@@ -19,65 +19,53 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import {
-  MapContainer,
-  ImageOverlay,
-  Marker,
-  Polyline,
-  useMapEvents,
-} from "react-leaflet";
-import L from "leaflet";
-import Site from "../../../../../../public/Img/Layoutdenso.png";
 import "leaflet/dist/leaflet.css";
-import trolleyIconSrc from "../../../../../../public/Img/trolleyLive.png";
+import dayjs, { Dayjs } from "dayjs";
 
 interface ProcessFormRow {
   process: string;
-  activity: string;
-  jobType: string;
+  activityName: string;
+  jobRole: string;
   jobNature: string;
-  timeFrom: string;
-  timeTo: string;
-  totalTime: string;
+  startTime: string;
+  endTime: string;
+  totalTime: {
+    time: number;
+    unit: string;
+  };
   remarks: string;
 }
 
 interface empProps {
   points: any;
   setPoints: any;
+  rows:ProcessFormRow[]
+  setRows:React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
 }
 
-const SelectRoute: React.FC<empProps> = ({ points, setPoints }) => {
-  const [rows, setRows] = useState<ProcessFormRow[]>([{
-    process: "",
-    activity: "",
-    jobType: "Regular",
-    jobNature: "",
-    timeFrom: "",
-    timeTo: "",
-    totalTime: "",
-    remarks: ""
-  }]);
+const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
 
   const handleAddRow = () => {
     setRows([...rows, {
       process: "",
-      activity: "",
-      jobType: "Regular",
+      activityName: "",
+      jobRole: "",
       jobNature: "",
-      timeFrom: "",
-      timeTo: "",
-      totalTime: "",
+      startTime: "",
+      endTime: "",
+      totalTime: {
+        time: 0,
+        unit: "min"
+      },
       remarks: ""
     }]);
   };
-
   const handleRemoveRow = (index: number) => {
     const newRows = rows.filter((_, idx) => idx !== index);
     setRows(newRows);
   };
 
-  const handleChange = (index: number, field: keyof ProcessFormRow, value: string) => {
+  const handleChange = (index: number, field: keyof ProcessFormRow, value: string | { time: number; unit: string }) => {
     const newRows = [...rows];
     newRows[index] = {
       ...newRows[index],
@@ -85,7 +73,7 @@ const SelectRoute: React.FC<empProps> = ({ points, setPoints }) => {
     };
     setRows(newRows);
   };
-
+console.log('row data',rows)
   return (
     <Grid
       item
@@ -118,7 +106,7 @@ const SelectRoute: React.FC<empProps> = ({ points, setPoints }) => {
             <TableCell>Job Nature</TableCell>
             <TableCell>Time (From)</TableCell>
             <TableCell>Time (To)</TableCell>
-            <TableCell>Total Time (Minutes)</TableCell>
+            <TableCell>Total Time</TableCell>
             <TableCell>Remarks</TableCell>
             <TableCell>Action</TableCell>
           </TableRow>
@@ -136,8 +124,8 @@ const SelectRoute: React.FC<empProps> = ({ points, setPoints }) => {
               </TableCell>
               <TableCell>
                 <TextField
-                  value={row.activity}
-                  onChange={(e) => handleChange(index, 'activity', e.target.value)}
+                  value={row.activityName}
+                  onChange={(e) => handleChange(index, 'activityName', e.target.value)}
                   size="small"
                   fullWidth
                 />
@@ -145,11 +133,12 @@ const SelectRoute: React.FC<empProps> = ({ points, setPoints }) => {
               <TableCell>
                 <FormControl size="small" fullWidth>
                   <Select
-                    value={row.jobType}
-                    onChange={(e) => handleChange(index, 'jobType', e.target.value)}
+                    value={row.jobRole}
+                    onChange={(e) => handleChange(index, 'jobRole', e.target.value)}
                   >
-                    <MenuItem value="Regular">Regular</MenuItem>
-                    <MenuItem value="Irregular">Irregular</MenuItem>
+                    <MenuItem value="Permanent">Permanent</MenuItem>
+                    <MenuItem value="Contractual">Contractual</MenuItem>
+                    <MenuItem value="Internship">Internship</MenuItem>
                   </Select>
                 </FormControl>
               </TableCell>
@@ -164,26 +153,24 @@ const SelectRoute: React.FC<empProps> = ({ points, setPoints }) => {
               <TableCell>
                 <TextField
                   type="time"
-                  value={row.timeFrom}
-                  onChange={(e) => handleChange(index, 'timeFrom', e.target.value)}
+                  value={row.startTime}
+                  onChange={(e) => handleChange(index, 'startTime', e.target.value)}
                   size="small"
                   fullWidth
-                  inputProps={{ step: 300 }}
                 />
               </TableCell>
               <TableCell>
                 <TextField
                   type="time"
-                  value={row.timeTo}
-                  onChange={(e) => handleChange(index, 'timeTo', e.target.value)}
+                  value={row.endTime}
+                  onChange={(e) => handleChange(index, 'endTime', e.target.value)}
                   size="small"
                   fullWidth
-                  inputProps={{ step: 300 }}
                 />
               </TableCell>
               <TableCell>
                 <TextField
-                  value={row.totalTime}
+                  value={row.totalTime.time}
                   onChange={(e) => handleChange(index, 'totalTime', e.target.value)}
                   size="small"
                   type="number"
@@ -191,12 +178,16 @@ const SelectRoute: React.FC<empProps> = ({ points, setPoints }) => {
                 />
               </TableCell>
               <TableCell>
-                <TextField
-                  value={row.remarks}
-                  onChange={(e) => handleChange(index, 'remarks', e.target.value)}
-                  size="small"
-                  fullWidth
-                />
+                <FormControl size="small" fullWidth>
+                  <Select
+                    value={row.remarks}
+                    onChange={(e) => handleChange(index, 'remarks', e.target.value)}
+                  >
+                    <MenuItem value="Positive">Positive</MenuItem>
+                    <MenuItem value="Neutral">Neutral</MenuItem>
+                    <MenuItem value="Negative">Negative</MenuItem>
+                  </Select>
+                </FormControl>
               </TableCell>
               <TableCell>
                 <Box sx={{ display: 'flex', gap: 1 }}>
