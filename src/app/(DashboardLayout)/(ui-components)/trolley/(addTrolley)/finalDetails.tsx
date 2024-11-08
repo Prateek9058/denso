@@ -1,7 +1,7 @@
-import React, { ChangeEvent } from "react";
-import { 
-  Grid, 
-  DialogTitle, 
+import React, { ChangeEvent, useState } from "react";
+import {
+  Grid,
+  DialogTitle,
   DialogContent,
   styled,
   Paper
@@ -11,6 +11,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useForm } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
+
 
 // Styled components using MUI's styled API
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
@@ -37,13 +38,24 @@ interface PointWithMarker {
   coordinates: [number, number];
   showMarker?: boolean;
 }
+interface FinalSectionDropDownDataProps {
+  createdAt: string
+  createdBy: string;
+  name: string;
+  type: string;
+  uId: string;
+  updatedAt: string;
+  _id: string;
+};
 interface FinalDetailsProps {
   points: PointWithMarker[];
+  finalSectionDropDownData: FinalSectionDropDownDataProps[]
 }
 
 const FinalDetails: React.FC<FinalDetailsProps> = ({
-    points
-  }) => {
+  points,
+  finalSectionDropDownData
+}) => {
   const {
     register,
     formState: { errors },
@@ -51,30 +63,48 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
     clearErrors,
   } = useForm();
 
+  // Separate arrays based on type
+  const departments: { label: string, _id: string }[] = finalSectionDropDownData
+    .filter(item => item.type === "department")
+    .map(item => ({ label: item.name, _id: item._id }));
+
+  const sections: { label: string, _id: string }[] = finalSectionDropDownData
+    .filter(item => item.type === "section")
+    .map(item => ({ label: item.name, _id: item._id }));
+
+  const lines: { label: string, _id: string }[] = finalSectionDropDownData
+    .filter(item => item.type === "line")
+    .map(item => ({ label: item.name, _id: item._id }));
+
+  console.log("Departments:", departments);
+  console.log("Sections:", sections);
+  console.log("Lines:", lines);
   let markerCounter = 1;
+  console.log("finalSectionDropDownData:", finalSectionDropDownData);
+
   const bounds: [[number, number], [number, number]] = [
     [0, 0],
     [100, 220]
   ];
 
-  const getNumberedIcon = (number:number) => {
-        return L.divIcon({
+  const getNumberedIcon = (number: number) => {
+    return L.divIcon({
 
-            html: `<div style="display: flex; align-items: center; justify-content: center;
+      html: `<div style="display: flex; align-items: center; justify-content: center;
 
               width: 25px; height: 25px; background-color: red; border-radius: 50%; color: white;
 
               font-size: 14px;">${number}</div>`,
 
-            className: '',
+      className: '',
 
-            iconSize: [25, 25],
+      iconSize: [25, 25],
 
-            iconAnchor: [12, 12],
+      iconAnchor: [12, 12],
 
-        });
+    });
 
-    };
+  };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -85,104 +115,163 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
   };
 
   return (
-    <Grid container>
+    <Grid container justifyContent={"space-between"}>
       <Grid item xs={12}>
         <StyledDialogTitle>
-          <MapWrapper>
-            <MapContainer
-             center={[50, 100]}
-             zoom={2}
-             minZoom={1}
-             maxZoom={3}
-             style={{ height: '100%', width: '100%' }}
-             crs={L.CRS.Simple}
-             maxBounds={[[-10, -10], [110, 210]]}
-             maxBoundsViscosity={1.0}
-            >
-              <ImageOverlay 
-                url="/Img/Layoutdenso.png"
-                bounds={bounds}
-                eventHandlers={{
-                  error: (e) => {
-                    console.error('Error loading image:', e);
-                  }
-                }}
-              />
-              
-              <Polyline
-                positions={points.map(point => point.coordinates)}
-                color="black"
-                weight={2}
-              />
-              
-              {points.map((point, index) => 
-                point.showMarker && (
-                  <Marker
-                    key={index}
-                    position={point.coordinates}
-                    icon={getNumberedIcon(markerCounter++)}
-                  />
-                )
-              )}
-            </MapContainer>
-          </MapWrapper>
-        </StyledDialogTitle>
 
-        <DialogContent>
-          <Grid 
-            container 
-            spacing={2} 
-            sx={{ mt: 2 }}
+          <MapContainer
+            center={[50, 100]}
+            zoom={2}
+            minZoom={1}
+            maxZoom={3}
+            style={{ height: '100%', width: '100%' }}
+            crs={L.CRS.Simple}
+            maxBounds={[[-10, -10], [110, 210]]}
+            maxBoundsViscosity={1.0}
           >
-            {[1, 2, 3].map((_, index) => (
-              <Grid item xs={12} md={5.8} key={`field-large-${index}`}>
-                <CustomTextField
-                  {...register(`department${index}`, {
-                    required: "Trolley ID is required",
-                  })}
-                  name={`departments${index}`}
-                  label="Department"
-                  placeholder="Department"
-                  error={!!errors[`trolleyId${index}`]}
-                  helperText={errors[`trolleyId${index}`]?.message}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-            ))}
+            <ImageOverlay
+              url="/Img/Layoutdenso.png"
+              bounds={bounds}
+              eventHandlers={{
+                error: (e) => {
+                  console.error('Error loading image:', e);
+                }
+              }}
+            />
 
-            {/* Second row - two smaller fields */}
-            {[1, 2].map((_, index) => (
-              <Grid item xs={12} md={2.7} key={`field-small-${index}`}>
-                <CustomTextField
-                  {...register(`smallField${index}`, {
-                    required: "Field is required",
-                  })}
-                  name={`smallField${index}`}
-                  label="Trolley ID"
-                  placeholder="Enter Trolley ID"
-                  error={!!errors[`smallField${index}`]}
-                  helperText={errors[`smallField${index}`]?.message}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-            ))}
+            <Polyline
+              positions={points.map(point => point.coordinates)}
+              color="black"
+              weight={2}
+            />
 
-            {/* Last field */}
-            <Grid item xs={12} md={5.8}>
+            {points.map((point, index) =>
+              point.showMarker && (
+                <Marker
+                  key={index}
+                  position={point.coordinates}
+                  icon={getNumberedIcon(markerCounter++)}
+                />
+              )
+            )}
+          </MapContainer>
+
+        </StyledDialogTitle>
+        
+        <DialogContent>
+          <Grid container justifyContent={"space-between"} spacing={2} sx={{ mt: 2 }}>
+            <Grid item md={5.8}>
               <CustomTextField
-                {...register("lastField", {
-                  required: "Field is required",
+                {...register("department", {
+                  required: "Department is required",
                 })}
-                name="lastField"
-                label="Trolley ID"
-                placeholder="Enter Trolley ID"
-                error={!!errors.lastField}
-                helperText={errors.lastField?.message}
+                select="select"
+                selectData={departments}
+                name="department"
+                label="Department"
+                placeholder="Enter department"
+                error={!!errors.department}
+                helperText={errors.department?.message}
+                onChange={handleInputChange}
+                defaultValue={finalSectionDropDownData ? "" : ""}
+
+              />
+            </Grid>
+            <Grid item md={5.8}>
+              <CustomTextField
+                {...register("section", {
+                  required: "Trolley ID is required",
+                })}
+                select="select"
+                selectData={sections}
+                name="section"
+                label="Section"
+                placeholder="Enter section"
+                error={!!errors.section}
+                helperText={errors.section?.message}
+                onChange={handleInputChange}
+                defaultValue={finalSectionDropDownData ? "" : ""}
+
+              />
+            </Grid>
+            <Grid item md={5.8}>
+              <CustomTextField
+                {...register("line", {
+                  required: "Line is required",
+                })}
+                select="select"
+                selectData={lines}
+                name="line"
+                label="Line"
+                placeholder="Enter line"
+                error={!!errors.line}
+                helperText={errors.line?.message}
+                onChange={handleInputChange}
+                defaultValue={finalSectionDropDownData ? "" : ""}
+              />
+               {/* 
+                      defaultValue={selectedDevice ? "" : ""} */}
+            </Grid>
+            <Grid item md={2.7}>
+              <CustomTextField
+                {...register("totalDistance", {
+                  required: "Total distance is required",
+                  pattern: {
+                    value:
+                      /^\d+$/,
+                    message: "Enter a valid number",
+                  },
+                })}
+                field="number"
+                name="totalDistance"
+                label="Total distance"
+                placeholder="Distance in meters"
+                error={!!errors.totalDistance}
+                helperText={errors.totalDistance?.message}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item md={2.7}>
+              <CustomTextField
+                {...register("totalTime", {
+                  required: "Total Time is required",
+                  pattern: {
+                    value:
+                      /^\d+$/,
+                    message: "Enter a valid number",
+                  },
+                })}
+                field="number"
+                name="totalTime"
+                label="Total Time"
+                placeholder="Time in seconds"
+                error={!!errors.totalTime}
+                helperText={errors.totalTime?.message}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item md={5.8}>
+              <CustomTextField
+                {...register("repetedCycles", {
+                  required: "Repeated Cycle is required",
+                  pattern: {
+                    value:
+                      /^\d+$/,
+                    message: "Enter a valid number",
+                  },
+                })}
+                field="number"
+                name="repetedCycles"
+                label="Repeated Cycle"
+                placeholder="Enter repeated cycle"
+                error={!!errors.repetedCycles}
+                helperText={errors.repetedCycles?.message}
                 onChange={handleInputChange}
               />
             </Grid>
           </Grid>
         </DialogContent>
+        
       </Grid>
     </Grid>
   );

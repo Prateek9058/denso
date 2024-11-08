@@ -37,8 +37,6 @@ interface ProcessFormRow {
 }
 
 interface empProps {
-  points: any;
-  setPoints: any;
   rows:ProcessFormRow[]
   setRows:React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
 }

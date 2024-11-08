@@ -50,6 +50,8 @@ const Page: React.FC = () => {
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );
       if (res?.status === 200 || res?.status === 201) {
+  console.log("deviceData",res)
+
         setDeviceData(res?.data?.data);
         console.log(res);
       }
@@ -58,6 +60,7 @@ const Page: React.FC = () => {
       setLoading(false);
     }
   };
+  // console.log("deviceData",deviceData)
   useEffect(() => {
     getDeviceData();
   }, [page, rowsPerPage, searchQuery, value]);

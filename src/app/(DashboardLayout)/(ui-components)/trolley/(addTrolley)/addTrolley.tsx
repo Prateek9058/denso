@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useForm, Controller, useFieldArray, FormProvider } from "react-hook-form";
 import {
   DialogActions,
   Button,
@@ -64,6 +64,16 @@ interface ProcessFormRow {
   remarks: string;
 }
 
+interface FinalSectionDropDownDataProps {
+  createdAt: string
+  createdBy: string;
+  name: string;
+  type: string;
+  uId: string;
+  updatedAt: string;
+  _id: string;
+};
+
 const AddDevice: React.FC<AddDeviceProps> = ({
   open,
   setOpen,
@@ -77,10 +87,19 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const [progress, setProgress] = useState<number>(0);
   const [points, setPoints] = useState<PointWithMarker[]>([]);
   const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [finalSectionDropDownData, setFinalSectionDropDownData] = useState<FinalSectionDropDownDataProps[]>([]);
+  const [finalSectionDistance , setFinalSectionDistance] = useState({});
+  const [finalSectionTotalTime , setFinalSectionTotalTime] = useState({});
+  const [finalSectionRepetedCycles , setFinalSectionRepetedCycles] = useState<number>(0);
+  const [finalSectionTrolleyCategoryId , setFinalSectionTrolleyCategoryId] = useState<string>('');
+  const [finalSectionDepartmentId , setFinalSectionDepartmentId] = useState<string>('');
+  const [finalSectionSectionId , setFinalSectionSectionId] = useState<string>('');
+  const [finalSectionLineId , setFinalSectionLineId] = useState<string>('');
+  const methods = useForm<any>();
   const [rows, setRows] = useState<ProcessFormRow[]>([{
     process: "",
     activityName: "",
-    jobRole: "",
+    jobRole: "Permanent",
     jobNature: "",
     startTime: "",
     endTime: "",
@@ -88,7 +107,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       time: 0,
       unit: "min"
     },
-    remarks: ""
+    remarks: "Neutral"
   }]);
   const steps = [
     "Add trolley",
@@ -116,7 +135,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       reset();
     }
   }, [setValue, reset, selectedDevice]);
- 
+
   useEffect(() => {
     return () => {
       if (filePreview) {
@@ -125,19 +144,43 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     };
   }, [filePreview]);
   const [selectData, setSelectData] = useState<any>(null);
-  const getCreateGroup = async () => {
+  const getTrolleyCategoriesData = async () => {
     try {
       const res = await axiosInstance.get("trolleyCategory/getAllTrolleyCategories");
       if (res?.status === 200 || res?.status === 201) {
         const dropdownData = res.data.data.data.map((value: any) => ({
-          _id:value._id,
+          _id: value._id,
           label: value.name,
-          value: value.color, 
+          value: value.color,
         }));
         setSelectData(dropdownData);
       }
     } catch (err) {
       console.error("Error fetching trolley categories:", err);
+    }
+  };
+  const getFinalSectionDropdownData = async () => {
+    try {
+      const [departmentRes, sectionRes, lineRes] = await Promise.all([
+        axiosInstance.get(`organizations/getAllData?type=department`),
+        axiosInstance.get(`organizations/getAllData?type=section`),
+        axiosInstance.get(`organizations/getAllData?type=line`),
+      ]);
+
+      // Filter responses with status 204 to ensure you only process those with data
+      const validResponses = [departmentRes, sectionRes, lineRes].filter(
+        (res) => res?.status === 200 || res?.status === 201
+      );
+
+      if (validResponses.length > 0) {
+        const allData = validResponses.flatMap((res) => res?.data?.data?.data || []);
+        setFinalSectionDropDownData(allData);
+        console.log('setFinalSectionDropDownData', allData);
+      } else {
+        console.log("No data available for dropdown.");
+      }
+    } catch (err) {
+      console.error("Error fetching section dropdown data:", err);
     }
   };
   const selectedCategory = watch("category");
@@ -150,16 +193,18 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   }, [selectedCategory, selectData, setValue]);
   useEffect(() => {
     if (open) {
-      getCreateGroup();
+      getTrolleyCategoriesData();
+      getFinalSectionDropdownData();
     }
   }, [open]);
-
+  console.log("finalSectionDropDownData", finalSectionDropDownData)
   const handleClose = () => {
     setOpen(false);
     getTrolleyData();
     setFile(null);
     setActiveStep(0);
     setPoints([]);
+    setRows([]);
     reset();
   };
   const trolleyBoxLabel = () => {
@@ -173,7 +218,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       return 'Final detalis'
     }
   }
-  console.log("filePreview",file)
+  console.log("filePreview", file)
   const onDrop = (acceptedFiles: File[]) => {
     // setFile(acceptedFiles[0]);
     const selectedFile = acceptedFiles[0];
@@ -188,41 +233,46 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   });
 
   const onSubmit = async () => {
-    if (!selectedSite?._id) return;
-    try {
-      const formData = getValues();
-      const body = {
-        trolleyUid: formData?.trolleyId,
-        trolleyMacId: formData?.macId,
-        purchaseDate: dayjs(formData?.purchaseDate).format("YYYY-MM-DD"),
-      };
-      let res;
-      if (selectedDevice) {
-        res = await axiosInstance.patch(
-          `api/v1/trolleys/updateTrolley/${selectedDevice?._id}`,
-          body
-        );
-      } else {
-        res = await axiosInstance.post(
-          `trolleys/createTrolley/${selectedSite._id}`,
-          body
-        );
-      }
-      if (res?.status === 200 || res?.status === 201) {
-        console.log(res);
-        notifySuccess(
-          `Trolley ${selectedDevice ? "Edit" : "created"} successfully`
-        );
-        getTrolleyData();
-        handleClose();
-      }
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      notifyError(
-        axiosError?.response?.data?.message || "Error creating trolley"
-      );
-      console.log(error);
-    }
+
+
+    handleNext()
+    const values=getValues()
+    console.log("DATA====>",values)
+    // if (!selectedSite?._id) return;
+    // try {
+    //   const formData = getValues();
+    //   const body = {
+    //     trolleyUid: formData?.trolleyId,
+    //     trolleyMacId: formData?.macId,
+    //     purchaseDate: dayjs(formData?.purchaseDate).format("YYYY-MM-DD"),
+    //   };
+    //   let res;
+    //   if (selectedDevice) {
+    //     res = await axiosInstance.patch(
+    //       `api/v1/trolleys/updateTrolley/${selectedDevice?._id}`,
+    //       body
+    //     );
+    //   } else {
+    //     res = await axiosInstance.post(
+    //       `trolleys/createTrolley/${selectedSite._id}`,
+    //       body
+    //     );
+    //   }
+    //   if (res?.status === 200 || res?.status === 201) {
+    //     console.log(res);
+    //     notifySuccess(
+    //       `Trolley ${selectedDevice ? "Edit" : "created"} successfully`
+    //     );
+    //     getTrolleyData();
+    //     handleClose();
+    //   }
+    // } catch (error) {
+    //   const axiosError = error as AxiosError<ErrorResponse>;
+    //   notifyError(
+    //     axiosError?.response?.data?.message || "Error creating trolley"
+    //   );
+    //   console.log(error);
+    // }
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -236,11 +286,11 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     if (activeStep < steps.length - 1) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
-    setValue("trolleyColor", selectedCategory?.value);
+    // setValue("trolleyColor", selectedCategory?.value);
     setValue("pathPointers", points);
     setValue("routeProcess", rows);
-    const formData1 = getValues();
-    console.log("formData",formData1)
+    const formData1 = methods.getValues();
+    console.log("formData", formData1)
 
   };
 
@@ -248,6 +298,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     if (activeStep > 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
+
   };
 
 
@@ -275,6 +326,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               </Step>
             ))}
           </Stepper>
+          <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogContent>
               {activeStep === 0 && (
@@ -369,28 +421,28 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   </Grid>
                   <Grid item md={5.8}>
                     <CustomTextField
-                      {...register("category", {
+                      {...register("name", {
                         required: "Trolley type is required",
                       })}
                       select="select"
                       selectData={selectData}
-                      name="category"
+                      name="name"
                       label="Trolley type"
                       placeholder="Select trolley type"
-                      error={!!errors.category}
-                      helperText={errors.category?.message}
+                      error={!!errors.name}
+                      helperText={errors.name?.message}
                       onChange={handleInputChange}
                       defaultValue={selectedDevice ? "" : ""}
                     />
                   </Grid>
                   <Grid item md={5.8}>
-                  <CustomTextField
+                    <CustomTextField
                       {...register("trolleyColor", {
                         required: "Trolley Color is required",
                       })}
                       name="trolleyColor"
                       label="Trolley color"
-                      value={selectedCategory ? selectedCategory.value : ''}
+                      // value={selectedCategory ? selectedCategory.value : ''}
                       placeholder="Color"
                       error={!!errors.trolleyColor}
                       helperText={errors.trolleyColor?.message}
@@ -412,9 +464,12 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   <SelectRoute rows={rows} setRows={setRows} />
                 </Grid>
               )}
-                {activeStep === 3 && (
+              {activeStep === 3 && (
                 <Grid container justifyContent={"space-between"}>
-                  <FinalDetails points={points}  />
+                  <FinalDetails points={points} finalSectionDropDownData={finalSectionDropDownData} setFinalSectionDistance={setFinalSectionDistance} setFinalSectionTotalTime={setFinalSectionTotalTime}
+                    setFinalSectionRepetedCycles={setFinalSectionRepetedCycles} setFinalSectionTrolleyCategoryId={setFinalSectionTrolleyCategoryId}
+                    setFinalSectionDepartmentId={setFinalSectionDepartmentId} setFinalSectionSectionId={setFinalSectionSectionId}
+                    setFinalSectionLineId={setFinalSectionLineId} />
                 </Grid>
               )}
             </DialogContent>
@@ -427,20 +482,25 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                 />
               )}
               {activeStep !== 0 && (
-                    <Button
-                      variant="outlined"
-                      onClick={handleBack}
-                      sx={{ width: "150px" }}
-                    >
-                      Back
-                    </Button>
-                  )}
+                <Button
+                  variant="outlined"
+                  onClick={handleBack}
+                     type="submit"
+                  sx={{ width: "150px" }}
+
+                >
+
+                  Back
+                </Button>
+              )}
               {activeStep < steps.length - 1 ? (
                 <>
-                  
+
                   <Button
                     variant="contained"
-                    onClick={handleNext}
+                  type="submit"
+
+                    // onClick={handleNext}
                     sx={{ width: "150px" }}
                   >
                     Next
@@ -457,6 +517,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               )}
             </DialogActions>
           </form>
+          </FormProvider>
+         
         </CommonDialog>
       </LocalizationProvider>
     </>
