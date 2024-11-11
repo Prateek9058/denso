@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, forwardRef, useImperativeHandle, ForwardedRef } from "react";
 import {
   Grid,
   DialogTitle,
@@ -9,11 +9,9 @@ import {
 import { MapContainer, ImageOverlay, Marker, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 
-
-// Styled components using MUI's styled API
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   padding: 0,
@@ -33,11 +31,11 @@ const MapWrapper = styled('div')({
   width: '100%'
 });
 
-
 interface PointWithMarker {
   coordinates: [number, number];
   showMarker?: boolean;
 }
+
 interface FinalSectionDropDownDataProps {
   createdAt: string
   createdBy: string;
@@ -46,42 +44,128 @@ interface FinalSectionDropDownDataProps {
   uId: string;
   updatedAt: string;
   _id: string;
-};
+}
+interface FinalSectionData {
+  _id?: string;
+}
+interface Distance {
+  distance: number;
+  unit: string;
+}
+interface Time {
+  time: number;
+  unit: string;
+}
 interface FinalDetailsProps {
   points: PointWithMarker[];
-  finalSectionDropDownData: FinalSectionDropDownDataProps[]
+  finalSectionDropDownData: FinalSectionDropDownDataProps[];
+  setFinalSectionDistance: React.Dispatch<React.SetStateAction<Distance[]>>;
+  setFinalSectionTotalTime: React.Dispatch<React.SetStateAction<Time[]>>;
+  setFinalSectionRepetedCycles: React.Dispatch<React.SetStateAction<number>>;
+  setFinalSectionDepartmentId: React.Dispatch<React.SetStateAction<FinalSectionData[]>>;
+  setFinalSectionSectionId: React.Dispatch<React.SetStateAction<FinalSectionData[]>>;
+  setFinalSectionLineId: React.Dispatch<React.SetStateAction<FinalSectionData[]>>;
 }
 
-const FinalDetails: React.FC<FinalDetailsProps> = ({
+export interface FinalDetailsRef {
+  validateAndUpdateParent: () => Promise<boolean>;
+}
+
+const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
   points,
-  finalSectionDropDownData
-}) => {
+  finalSectionDropDownData,
+  setFinalSectionDistance,
+  setFinalSectionTotalTime,
+  setFinalSectionRepetedCycles,
+  setFinalSectionDepartmentId,
+  setFinalSectionSectionId,
+  setFinalSectionLineId
+}, ref) => {
   const {
     register,
     formState: { errors },
     setValue,
     clearErrors,
+    getValues,
+    trigger 
   } = useForm();
 
-  // Separate arrays based on type
-  const departments: { label: string, _id: string }[] = finalSectionDropDownData
+  const validateAndUpdateParent = async () => {
+    const isValid = await trigger();
+    if (isValid) {
+      const values = getValues();
+      // Format the values correctly when submitting
+      setFinalSectionDepartmentId([{ _id: values.department }]);
+      setFinalSectionSectionId([{ _id: values.section }]);
+      setFinalSectionLineId([{ _id: values.line }]);
+      setFinalSectionDistance([{ distance: Number(values.totalDistance), unit: 'meters' }]);
+      setFinalSectionTotalTime([{ time: Number(values.totalTime), unit: 'seconds' }]);
+      setFinalSectionRepetedCycles(Number(values.repetedCycles));
+      return true;
+    }
+    return false;
+  };
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setValue(name, value);
+    
+    if (errors[name]) {
+      clearErrors(name);
+    }
+    const values = getValues();
+console.log("valuessss",value)
+    // Update parent state immediately when values change
+    switch (name) {
+      case 'department': {
+        const selectedDept = departments.find(dept => dept._id === value);
+        if (selectedDept) {
+          setFinalSectionDepartmentId([{ _id: selectedDept._id }]);
+        }
+        break;
+      }
+      case 'section': {
+        const selectedSection = sections.find(section => section._id === value);
+        if (selectedSection) {
+          setFinalSectionSectionId([{ _id: selectedSection._id }]);
+        }
+        break;
+      }
+      case 'line': {
+        const selectedLine = lines.find(line => line._id === value);
+        if (selectedLine) {
+          setFinalSectionLineId([{ _id: selectedLine._id }]);
+        }
+        break;
+      }
+      case 'totalDistance':
+        setFinalSectionDistance([{ distance: Number(value), unit: 'meters' }]);
+        break;
+      case 'totalTime':
+        setFinalSectionTotalTime([{ time: Number(value), unit: 'seconds' }]);
+        break;
+      case 'repetedCycles':
+        setFinalSectionRepetedCycles(Number(value));
+        break;
+    }
+  };
+
+  // Filter dropdown data
+  const departments = finalSectionDropDownData
     .filter(item => item.type === "department")
     .map(item => ({ label: item.name, _id: item._id }));
 
-  const sections: { label: string, _id: string }[] = finalSectionDropDownData
+  const sections = finalSectionDropDownData
     .filter(item => item.type === "section")
     .map(item => ({ label: item.name, _id: item._id }));
 
-  const lines: { label: string, _id: string }[] = finalSectionDropDownData
+  const lines = finalSectionDropDownData
     .filter(item => item.type === "line")
     .map(item => ({ label: item.name, _id: item._id }));
 
-  console.log("Departments:", departments);
-  console.log("Sections:", sections);
-  console.log("Lines:", lines);
+    
   let markerCounter = 1;
-  console.log("finalSectionDropDownData:", finalSectionDropDownData);
-
+console.log("departments",departments)
   const bounds: [[number, number], [number, number]] = [
     [0, 0],
     [100, 220]
@@ -89,36 +173,53 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
 
   const getNumberedIcon = (number: number) => {
     return L.divIcon({
-
       html: `<div style="display: flex; align-items: center; justify-content: center;
-
               width: 25px; height: 25px; background-color: red; border-radius: 50%; color: white;
-
               font-size: 14px;">${number}</div>`,
-
       className: '',
-
       iconSize: [25, 25],
-
       iconAnchor: [12, 12],
-
     });
-
   };
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setValue(name, value);
-    if (errors[name]) {
-      clearErrors(name);
-    }
-  };
+  useImperativeHandle(ref, () => ({
+    validateAndUpdateParent
+  }));
+
+  
+  //   const { name, value } = event.target;
+  //   setValue(name, value);
+  //   if (errors[name]) {
+  //     clearErrors(name);
+  //   }
+  
+  //   const values = getValues();
+  //   // switch (name) {
+  //   //   case 'department':
+  //   //     setFinalSectionDepartmentId([{ _id: value._id }]);
+  //   //     break;
+  //   //   case 'section':
+  //   //     setFinalSectionSectionId([{ _id: value }]);
+  //   //     break;
+  //   //   case 'line':
+  //   //     setFinalSectionLineId([{ _id: value }]);
+  //   //     break;
+  //   //   case 'totalDistance':
+  //   //     setFinalSectionDistance([{ distance: Number(value), unit: 'meters' }]);
+  //   //     break;
+  //   //   case 'totalTime':
+  //   //     setFinalSectionTotalTime([{ time: Number(value), unit: 'seconds' }]);
+  //   //     break;
+  //   //   case 'repetedCycles':
+  //   //     setFinalSectionRepetedCycles(Number(value));
+  //   //     break;
+  //   // }
+  // };
 
   return (
     <Grid container justifyContent={"space-between"}>
       <Grid item xs={12}>
         <StyledDialogTitle>
-
           <MapContainer
             center={[50, 100]}
             zoom={2}
@@ -138,13 +239,11 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 }
               }}
             />
-
             <Polyline
               positions={points.map(point => point.coordinates)}
               color="black"
               weight={2}
             />
-
             {points.map((point, index) =>
               point.showMarker && (
                 <Marker
@@ -155,9 +254,7 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
               )
             )}
           </MapContainer>
-
         </StyledDialogTitle>
-        
         <DialogContent>
           <Grid container justifyContent={"space-between"} spacing={2} sx={{ mt: 2 }}>
             <Grid item md={5.8}>
@@ -174,7 +271,6 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 helperText={errors.department?.message}
                 onChange={handleInputChange}
                 defaultValue={finalSectionDropDownData ? "" : ""}
-
               />
             </Grid>
             <Grid item md={5.8}>
@@ -191,7 +287,6 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 helperText={errors.section?.message}
                 onChange={handleInputChange}
                 defaultValue={finalSectionDropDownData ? "" : ""}
-
               />
             </Grid>
             <Grid item md={5.8}>
@@ -209,16 +304,13 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 onChange={handleInputChange}
                 defaultValue={finalSectionDropDownData ? "" : ""}
               />
-               {/* 
-                      defaultValue={selectedDevice ? "" : ""} */}
             </Grid>
             <Grid item md={2.7}>
               <CustomTextField
                 {...register("totalDistance", {
                   required: "Total distance is required",
                   pattern: {
-                    value:
-                      /^\d+$/,
+                    value: /^\d+$/,
                     message: "Enter a valid number",
                   },
                 })}
@@ -236,8 +328,7 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 {...register("totalTime", {
                   required: "Total Time is required",
                   pattern: {
-                    value:
-                      /^\d+$/,
+                    value: /^\d+$/,
                     message: "Enter a valid number",
                   },
                 })}
@@ -255,8 +346,7 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 {...register("repetedCycles", {
                   required: "Repeated Cycle is required",
                   pattern: {
-                    value:
-                      /^\d+$/,
+                    value: /^\d+$/,
                     message: "Enter a valid number",
                   },
                 })}
@@ -271,10 +361,11 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
             </Grid>
           </Grid>
         </DialogContent>
-        
       </Grid>
     </Grid>
   );
-};
+});
+
+FinalDetails.displayName = 'FinalDetails';
 
 export default FinalDetails;
