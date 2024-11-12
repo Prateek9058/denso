@@ -64,7 +64,11 @@ interface FinalDetailsProps {
   setFinalSectionTotalTime: React.Dispatch<React.SetStateAction<Time[]>>;
 }
 
-const FinalDetails: React.FC<FinalDetailsProps> = ({
+export interface FinalDetailsRef {
+  validateAndUpdateParent: () => Promise<boolean>;
+}
+
+const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
   points,
   finalSectionDropDownData,
   setFinalSectionDistance,
@@ -312,7 +316,7 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
       </Grid>
     </Grid>
   );
-};
+});
 
 
 export default FinalDetails;

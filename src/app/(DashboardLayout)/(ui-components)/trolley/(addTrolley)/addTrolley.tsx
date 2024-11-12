@@ -80,7 +80,9 @@ interface FinalSectionDropDownDataProps {
   updatedAt: string;
   _id: string;
 };
-
+interface FinalDetailsRefType {
+  validateAndUpdateParent: () => Promise<boolean>;
+}
 const AddDevice: React.FC<AddDeviceProps> = ({
   open,
   setOpen,
@@ -88,6 +90,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   selectedDevice,
   selectedSite,
 }) => {
+  // const finalDetailsRef = useRef(null);
+  const finalDetailsRef = useRef<FinalDetailsRefType>(null);
   const [activeStep, setActiveStep] = useState(0);
   const [userData, setUserData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -321,10 +325,10 @@ console.log("bodyyyyy",body)
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setValue(name, value);
-    if (errors[name]) {
-      clearErrors(name);
-    }
+      setValue(name, value);
+      if (errors[name]) {
+        clearErrors(name);
+      }
   };
   const handleNext = () => {
     const values = getValues();
