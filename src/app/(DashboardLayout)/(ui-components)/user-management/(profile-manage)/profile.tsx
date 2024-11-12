@@ -37,19 +37,18 @@ const Profile: React.FC = () => {
       setLoading(false);
     }
   }, []);
+  const fetchData = async () => {
+    try {
+      const response = await axiosInstance.get("auth/getAdminData");
+      setAdminData(response?.data?.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get("api/v1/auth/getAdminData");
-        if (response) {
-          setAdminData(response?.data?.data)
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
     fetchData();
-  }, [])
+  }, []);
   const handleClickOpen = (shiftId: number) => {
     setOpen(true);
   };
@@ -163,7 +162,7 @@ const Profile: React.FC = () => {
             mb={2}
             mt={-1}
           >
-            <EditProfile open={open} setOpen={setOpen} getDeviceData={adminData} selectedShift={adminData} />
+            <EditProfile open={open} setOpen={setOpen} getDeviceData={fetchData} selectedShift={adminData} />
             <ManagementGrid
               button={"Edit"}
               handleClickOpen={handleClickOpen}

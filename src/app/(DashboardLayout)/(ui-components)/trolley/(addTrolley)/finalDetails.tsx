@@ -1,19 +1,18 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, forwardRef, useImperativeHandle, ForwardedRef } from "react";
 import {
   Grid,
   DialogTitle,
   DialogContent,
   styled,
-  Paper
+  Paper,
+  TextField
 } from '@mui/material';
 import { MapContainer, ImageOverlay, Marker, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useForm } from "react-hook-form";
+import { useForm, Controller, useFormContext, FieldValues  } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 
-
-// Styled components using MUI's styled API
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   padding: 0,
@@ -33,11 +32,11 @@ const MapWrapper = styled('div')({
   width: '100%'
 });
 
-
 interface PointWithMarker {
   coordinates: [number, number];
   showMarker?: boolean;
 }
+
 interface FinalSectionDropDownDataProps {
   createdAt: string
   createdBy: string;
@@ -46,42 +45,76 @@ interface FinalSectionDropDownDataProps {
   uId: string;
   updatedAt: string;
   _id: string;
-};
+}
+interface FinalSectionData {
+  _id?: string;
+}
+interface Distance {
+  distance: number;
+  unit: string;
+}
+interface Time {
+  time: number;
+  unit: string;
+}
 interface FinalDetailsProps {
   points: PointWithMarker[];
-  finalSectionDropDownData: FinalSectionDropDownDataProps[]
+  finalSectionDropDownData: FinalSectionDropDownDataProps[];
+  setFinalSectionDistance: React.Dispatch<React.SetStateAction<Distance[]>>;
+  setFinalSectionTotalTime: React.Dispatch<React.SetStateAction<Time[]>>;
 }
 
 const FinalDetails: React.FC<FinalDetailsProps> = ({
   points,
-  finalSectionDropDownData
+  finalSectionDropDownData,
+  setFinalSectionDistance,
+  setFinalSectionTotalTime,
 }) => {
   const {
     register,
     formState: { errors },
     setValue,
     clearErrors,
-  } = useForm();
+    getValues,
+    trigger ,
+    control,
+   } = useFormContext<FieldValues>();
+  console.log('finalSectionDropDownData',finalSectionDropDownData)
+ 
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setValue(name, value);
 
-  // Separate arrays based on type
-  const departments: { label: string, _id: string }[] = finalSectionDropDownData
+    // const numericValue = Number(value);
+
+    // if (name === 'totalDistance') {
+    //   setValue(name, { distance: numericValue, unit: 'meters' });
+    // } else if (name === 'totalTime') {
+    //   setValue(name, { time: numericValue, unit: 'seconds' });
+    // } else {
+    //   setValue(name, value);
+    // }
+
+    if (errors[name]) {
+      clearErrors(name);
+    }
+
+  };
+
+  const departments = finalSectionDropDownData
     .filter(item => item.type === "department")
     .map(item => ({ label: item.name, _id: item._id }));
 
-  const sections: { label: string, _id: string }[] = finalSectionDropDownData
+  const sections = finalSectionDropDownData
     .filter(item => item.type === "section")
     .map(item => ({ label: item.name, _id: item._id }));
 
-  const lines: { label: string, _id: string }[] = finalSectionDropDownData
+  const lines = finalSectionDropDownData
     .filter(item => item.type === "line")
     .map(item => ({ label: item.name, _id: item._id }));
 
-  console.log("Departments:", departments);
-  console.log("Sections:", sections);
-  console.log("Lines:", lines);
+    
   let markerCounter = 1;
-  console.log("finalSectionDropDownData:", finalSectionDropDownData);
-
   const bounds: [[number, number], [number, number]] = [
     [0, 0],
     [100, 220]
@@ -89,36 +122,19 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
 
   const getNumberedIcon = (number: number) => {
     return L.divIcon({
-
       html: `<div style="display: flex; align-items: center; justify-content: center;
-
               width: 25px; height: 25px; background-color: red; border-radius: 50%; color: white;
-
               font-size: 14px;">${number}</div>`,
-
       className: '',
-
       iconSize: [25, 25],
-
       iconAnchor: [12, 12],
-
     });
-
-  };
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setValue(name, value);
-    if (errors[name]) {
-      clearErrors(name);
-    }
   };
 
   return (
     <Grid container justifyContent={"space-between"}>
       <Grid item xs={12}>
         <StyledDialogTitle>
-
           <MapContainer
             center={[50, 100]}
             zoom={2}
@@ -138,13 +154,11 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
                 }
               }}
             />
-
             <Polyline
               positions={points.map(point => point.coordinates)}
               color="black"
               weight={2}
             />
-
             {points.map((point, index) =>
               point.showMarker && (
                 <Marker
@@ -155,126 +169,150 @@ const FinalDetails: React.FC<FinalDetailsProps> = ({
               )
             )}
           </MapContainer>
-
         </StyledDialogTitle>
-        
         <DialogContent>
           <Grid container justifyContent={"space-between"} spacing={2} sx={{ mt: 2 }}>
             <Grid item md={5.8}>
-              <CustomTextField
-                {...register("department", {
-                  required: "Department is required",
-                })}
-                select="select"
-                selectData={departments}
+              <Controller
                 name="department"
-                label="Department"
-                placeholder="Enter department"
-                error={!!errors.department}
-                helperText={errors.department?.message}
-                onChange={handleInputChange}
-                defaultValue={finalSectionDropDownData ? "" : ""}
-
+                control={control}
+                rules={{ required: "Department is required" }}
+                render={({ field }) => (
+                  <CustomTextField
+                    {...field}
+                    select="select"
+                    selectData={departments}
+                    label="Department"
+                    placeholder="Enter department"
+                    error={!!errors.department}
+                    helperText={errors.department?.message}
+                    onChange={handleInputChange}
+                    defaultValue={finalSectionDropDownData ? "" :""}
+                  />
+                )}
               />
             </Grid>
             <Grid item md={5.8}>
-              <CustomTextField
-                {...register("section", {
-                  required: "Trolley ID is required",
-                })}
-                select="select"
-                selectData={sections}
+              <Controller
                 name="section"
-                label="Section"
-                placeholder="Enter section"
-                error={!!errors.section}
-                helperText={errors.section?.message}
-                onChange={handleInputChange}
-                defaultValue={finalSectionDropDownData ? "" : ""}
-
+                control={control}
+                rules={{ required: "Section is required" }}
+                render={({ field }) => (
+                  <CustomTextField
+                    {...field}
+                    select="select"
+                    selectData={sections}
+                    label="Section"
+                    placeholder="Enter section"
+                    error={!!errors.section}
+                    helperText={errors.section?.message}
+                    onChange={handleInputChange}
+                    defaultValue={finalSectionDropDownData ? "" :""}
+                  />
+                )}
               />
             </Grid>
             <Grid item md={5.8}>
-              <CustomTextField
-                {...register("line", {
-                  required: "Line is required",
-                })}
-                select="select"
-                selectData={lines}
+              <Controller
                 name="line"
-                label="Line"
-                placeholder="Enter line"
-                error={!!errors.line}
-                helperText={errors.line?.message}
-                onChange={handleInputChange}
-                defaultValue={finalSectionDropDownData ? "" : ""}
+                control={control}
+                rules={{ required: "Line is required" }}
+                render={({ field }) => (
+                  <CustomTextField
+                    {...field}
+                    select="select"
+                    selectData={lines}
+                    label="Line"
+                    placeholder="Enter line"
+                    error={!!errors.line}
+                    helperText={errors.line?.message}
+                    onChange={handleInputChange}
+                    defaultValue={finalSectionDropDownData ? "" :""}
+                  />
+                )}
               />
-               {/* 
-                      defaultValue={selectedDevice ? "" : ""} */}
             </Grid>
             <Grid item md={2.7}>
-              <CustomTextField
-                {...register("totalDistance", {
+              <Controller
+                name="totalDistance"
+                control={control}
+                rules={{
                   required: "Total distance is required",
                   pattern: {
-                    value:
-                      /^\d+$/,
+                    value: /^(?:[1-9]\d*|0)$/,
                     message: "Enter a valid number",
                   },
-                })}
-                field="number"
-                name="totalDistance"
-                label="Total distance"
-                placeholder="Distance in meters"
-                error={!!errors.totalDistance}
-                helperText={errors.totalDistance?.message}
-                onChange={handleInputChange}
+                }}
+                render={({ field }) => (
+                  <CustomTextField
+                    {...field}
+                    field="number"
+                    label="Total distance"
+                    placeholder="Distance in meters"
+                    error={!!errors.totalDistance}
+                    helperText={errors.totalDistance?.message}
+                    // onChange={handleInputChange}
+                    defaultValue={finalSectionDropDownData ? "" :""}
+                  />
+                )}
               />
             </Grid>
             <Grid item md={2.7}>
-              <CustomTextField
-                {...register("totalTime", {
+              <Controller
+                name="totalTime"
+                control={control}
+                rules={{
                   required: "Total Time is required",
                   pattern: {
-                    value:
-                      /^\d+$/,
+                    value: /^(?:[1-9]\d*|0)$/,
                     message: "Enter a valid number",
                   },
-                })}
-                field="number"
-                name="totalTime"
-                label="Total Time"
-                placeholder="Time in seconds"
-                error={!!errors.totalTime}
-                helperText={errors.totalTime?.message}
-                onChange={handleInputChange}
+                }}
+                render={({ field }) => (
+                  <CustomTextField
+                    {...field}
+                    field="number"
+                    label="Total Time"
+                    placeholder="Time in seconds"
+                    error={!!errors.totalTime}
+                    helperText={errors.totalTime?.message}
+                    // onChange={handleInputChange}
+                    defaultValue={finalSectionDropDownData ? "" :""}
+                  />
+                )}
               />
             </Grid>
             <Grid item md={5.8}>
-              <CustomTextField
-                {...register("repetedCycles", {
+              <Controller
+                name="repetedCycles"
+                control={control}
+                rules={{
                   required: "Repeated Cycle is required",
                   pattern: {
-                    value:
-                      /^\d+$/,
+                    value: /^(?:[1-9]\d*|0)$/,
                     message: "Enter a valid number",
                   },
-                })}
-                field="number"
-                name="repetedCycles"
-                label="Repeated Cycle"
-                placeholder="Enter repeated cycle"
-                error={!!errors.repetedCycles}
-                helperText={errors.repetedCycles?.message}
-                onChange={handleInputChange}
+                }}
+                render={({ field }) => (
+                  <CustomTextField
+                    {...field}
+                    field="number"
+                    label="Repeated Cycle"
+                    placeholder="Enter Repeated Cycles"
+                    error={!!errors.repetedCycles}
+                    helperText={errors.repetedCycles?.message}
+                    onChange={handleInputChange}
+                    defaultValue={finalSectionDropDownData ? "" :""}
+                  />
+                )}
               />
             </Grid>
           </Grid>
         </DialogContent>
-        
       </Grid>
     </Grid>
   );
 };
+
 
 export default FinalDetails;

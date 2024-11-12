@@ -99,7 +99,7 @@ const EditProfile: React.FC<AddDeviceProps> = ({
       console.log("error data",error)
 
       const axiosError = error as AxiosError<ErrorResponse>;
-    //   console.log("error data",axiosError?.response?.data?.message)
+      // console.log("error data11",axiosError)
 
       notifyError(
         axiosError?.response?.data?.message || "Error creating shift"

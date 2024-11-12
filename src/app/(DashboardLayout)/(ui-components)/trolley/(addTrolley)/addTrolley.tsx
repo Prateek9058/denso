@@ -1,5 +1,5 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { useForm, Controller, useFieldArray, FormProvider } from "react-hook-form";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
 import {
   DialogActions,
   Button,
@@ -63,7 +63,14 @@ interface ProcessFormRow {
   };
   remarks: string;
 }
-
+interface Distance {
+  distance: number;
+  unit: string;
+}
+interface Time {
+  time: number;
+  unit: string;
+}
 interface FinalSectionDropDownDataProps {
   createdAt: string
   createdBy: string;
@@ -88,14 +95,22 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const [points, setPoints] = useState<PointWithMarker[]>([]);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [finalSectionDropDownData, setFinalSectionDropDownData] = useState<FinalSectionDropDownDataProps[]>([]);
-  const [finalSectionDistance , setFinalSectionDistance] = useState({});
-  const [finalSectionTotalTime , setFinalSectionTotalTime] = useState({});
-  const [finalSectionRepetedCycles , setFinalSectionRepetedCycles] = useState<number>(0);
-  const [finalSectionTrolleyCategoryId , setFinalSectionTrolleyCategoryId] = useState<string>('');
-  const [finalSectionDepartmentId , setFinalSectionDepartmentId] = useState<string>('');
-  const [finalSectionSectionId , setFinalSectionSectionId] = useState<string>('');
-  const [finalSectionLineId , setFinalSectionLineId] = useState<string>('');
+  const [finalSectionDistance, setFinalSectionDistance] = useState<Distance[]>([
+    {
+      distance: 0,
+      unit: "meters",
+    },
+  ]);
+  const [finalSectionTotalTime, setFinalSectionTotalTime] = useState<Time[]>([
+    {
+      time: 0,
+      unit: "seconds",
+    },
+  ]);
+  const [finalSectionTrolleyCategoryId, setFinalSectionTrolleyCategoryId] = useState<string>('');
+
   const methods = useForm<any>();
+  const { setValue, reset, handleSubmit, trigger, clearErrors, getValues, watch, formState: { errors }, register } = methods
   const [rows, setRows] = useState<ProcessFormRow[]>([{
     process: "",
     activityName: "",
@@ -115,17 +130,19 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     "Select route",
     "Final details",
   ];
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    clearErrors,
-    getValues,
-    reset,
-    control,
-    watch,
-  } = useForm();
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors },
+  //   setValue,
+  //   clearErrors,
+  //   getValues,
+  //   reset,
+  //   control,
+  //   watch,
+  // } = useForm();
+
+  const [selectData, setSelectData] = useState<any>(null);
 
   useEffect(() => {
     if (selectedDevice) {
@@ -143,7 +160,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       }
     };
   }, [filePreview]);
-  const [selectData, setSelectData] = useState<any>(null);
   const getTrolleyCategoriesData = async () => {
     try {
       const res = await axiosInstance.get("trolleyCategory/getAllTrolleyCategories");
@@ -167,7 +183,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         axiosInstance.get(`organizations/getAllData?type=line`),
       ]);
 
-      // Filter responses with status 204 to ensure you only process those with data
       const validResponses = [departmentRes, sectionRes, lineRes].filter(
         (res) => res?.status === 200 || res?.status === 201
       );
@@ -175,7 +190,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       if (validResponses.length > 0) {
         const allData = validResponses.flatMap((res) => res?.data?.data?.data || []);
         setFinalSectionDropDownData(allData);
-        console.log('setFinalSectionDropDownData', allData);
       } else {
         console.log("No data available for dropdown.");
       }
@@ -183,21 +197,13 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       console.error("Error fetching section dropdown data:", err);
     }
   };
-  const selectedCategory = watch("category");
-  useEffect(() => {
-    if (selectedCategory && selectData) {
-      const selectedOption = selectData.find(
-        (option: any) => option.label === selectedCategory
-      );
-    }
-  }, [selectedCategory, selectData, setValue]);
+  const selectedCategory = watch("name");
   useEffect(() => {
     if (open) {
       getTrolleyCategoriesData();
       getFinalSectionDropdownData();
     }
   }, [open]);
-  console.log("finalSectionDropDownData", finalSectionDropDownData)
   const handleClose = () => {
     setOpen(false);
     getTrolleyData();
@@ -233,19 +239,57 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   });
 
   const onSubmit = async () => {
+    console.log("hello123");
+    const values = getValues();
+    console.log("valuessss",values)
+
+    setValue("trolleyColor", selectedCategory?.value);
+    setValue("pathPointers", points);
+    setValue("routeProcess", rows);
 
 
-    handleNext()
-    const values=getValues()
-    console.log("DATA====>",values)
-    // if (!selectedSite?._id) return;
+    // const formdata = new FormData();
+    // const values = getValues();
+    // console.log("keyss",formdata)
+    // for (const key in values) {
+    // console.log("keyss",key)
+
+    // console.log("values33",values)
+
+    // console.log("values34",values[key])
+
+    //   formdata.append(key, values[key]);
+    // }
+    // console.log("values38",formdata)
+
+    handleNext();
     // try {
-    //   const formData = getValues();
-    //   const body = {
-    //     trolleyUid: formData?.trolleyId,
-    //     trolleyMacId: formData?.macId,
-    //     purchaseDate: dayjs(formData?.purchaseDate).format("YYYY-MM-DD"),
-    //   };
+    //   // Your API call
+    //   console.log("Form data to submit:");
+    //   // handleNext() or close dialog based on response
+    // } catch (error) {
+    //   console.error("Submission error:", error);
+    // }
+
+    // if (!selectedSite?._id) return;
+    const formData = getValues();
+    const body = {
+      trolleyId: formData?.trolleyId,
+      macId: formData?.macId,
+      name: formData?.name?._id,
+      trolleyColor:formData?.formData,
+      pathPointers:formData?.pathPointers,
+      routeProcess:formData?.routeProcess,
+      department:formData?.department?._id,
+      section:formData?.section?._id,
+      line:formData?.line?._id,
+      totalDistance:formData?.totalDistance,
+      totalTime:formData?.totalTime,
+      repetedCycles:formData?.repetedCycles
+    };
+console.log("bodyyyyy",body)
+
+    // try {
     //   let res;
     //   if (selectedDevice) {
     //     res = await axiosInstance.patch(
@@ -254,7 +298,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     //     );
     //   } else {
     //     res = await axiosInstance.post(
-    //       `trolleys/createTrolley/${selectedSite._id}`,
+    //       `trolleys/createTrolley`,
     //       body
     //     );
     //   }
@@ -283,24 +327,51 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     }
   };
   const handleNext = () => {
+    const values = getValues();
+    console.log("values1",values)
+    if (activeStep === 1) {
+      if (points.length === 0 || points.length === 1) {
+        notifyError("Please mark a trolley route");
+        return;  
+      }
+    }
+    if (activeStep === 2) {
+      if (rows.length === 0) {
+        notifyError("Please add at least one process row");
+        return;
+      }
+
+      const allRowsValid = rows.every((row) => {
+        return (
+          row.process.trim() !== "" &&
+          row.activityName.trim() !== "" &&
+          row.jobRole.trim() !== "" &&
+          row.jobNature.trim() !== "" &&
+          row.startTime.trim() !== "" &&
+          row.endTime.trim() !== "" &&
+          row.totalTime.time > 0 &&
+          row.remarks.trim() !== ""
+        );
+      });
+      if (!allRowsValid) {
+        notifyError("Please fill out all fields in each process row");
+        return;
+      }
+    }
     if (activeStep < steps.length - 1) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
-    // setValue("trolleyColor", selectedCategory?.value);
-    setValue("pathPointers", points);
-    setValue("routeProcess", rows);
-    const formData1 = methods.getValues();
-    console.log("formData", formData1)
 
   };
-
   const handleBack = () => {
+    
+
     if (activeStep > 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
 
   };
-
+  console.log("selectData", selectData)
 
   return (
     <>
@@ -327,198 +398,186 @@ const AddDevice: React.FC<AddDeviceProps> = ({
             ))}
           </Stepper>
           <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <DialogContent>
-              {activeStep === 0 && (
-                <Grid container justifyContent={"space-between"}>
-                  <Grid item md={12}>
-                    <Box
-                      sx={{
-                        borderRadius: "8px",
-                        textAlign: "center",
-                        marginBottom: "24px",
-                      }}
-                    >
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <DialogContent>
+                {activeStep === 0 && (
+                  <Grid container justifyContent={"space-between"}>
+                    <Grid item md={12}>
                       <Box
-                        {...(filePreview === null ? getRootProps() : {})}
                         sx={{
-                          marginBottom: "16px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                          padding: 0,
-                          borderStyle: "solid",
-                          mx: "auto",
-                          borderWidth: 1,
-                          borderColor: "#E6E6E6",
-                          boxShadow: 3,
-                          position: "relative",
-                          width: "200px",
-                          height: "200px",
-                          overflow: "hidden",
+                          borderRadius: "8px",
+                          textAlign: "center",
+                          marginBottom: "24px",
                         }}
                       >
-                        <input {...getInputProps()} style={{ display: "none" }} />
-                        {filePreview === null ? (
-                          <Avatar
-                            sx={{
-                              width: 40,
-                              height: 40,
-                              backgroundColor: "#E8E8EA",
-                              border: "1px solid #24AE6E1A",
-                            }}
-                          >
-                            <Image src={TrolleyIcon} alt="icon" />
-                          </Avatar>
-                        ) : (
-                          <Image
-                            src={filePreview}
-                            alt="Uploaded file"
-                            layout="fill"
-                            objectFit="cover"
-                          />
-                        )}
+                        <Box
+                          {...(filePreview === null ? getRootProps() : {})}
+                          sx={{
+                            marginBottom: "16px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                            padding: 0,
+                            borderStyle: "solid",
+                            mx: "auto",
+                            borderWidth: 1,
+                            borderColor: "#E6E6E6",
+                            boxShadow: 3,
+                            position: "relative",
+                            width: "200px",
+                            height: "200px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <input {...getInputProps()} style={{ display: "none" }} />
+                          {filePreview === null ? (
+                            <Avatar
+                              sx={{
+                                width: 40,
+                                height: 40,
+                                backgroundColor: "#E8E8EA",
+                                border: "1px solid #24AE6E1A",
+                              }}
+                            >
+                              <Image src={TrolleyIcon} alt="icon" />
+                            </Avatar>
+                          ) : (
+                            <Image
+                              src={filePreview}
+                              alt="Uploaded file"
+                              layout="fill"
+                              objectFit="cover"
+                            />
+                          )}
+                        </Box>
                       </Box>
-                    </Box>
-                  </Grid>
-                  <Grid item md={5.8}>
+                    </Grid>
+                    <Grid item md={5.8}>
+                      <CustomTextField
+                        {...register("trolleyId", {
+                          required: "Trolley ID is required",
+                        })}
+                        name="trolleyId"
+                        label="Trolley ID"
+                        placeholder="Enter Trolley ID"
+                        error={!!errors.trolleyId}
+                        helperText={errors.trolleyId?.message}
+                        onChange={handleInputChange}
+                        defaultValue={
+                          selectedDevice ? "" : ""
+                        }
+                      />
+                    </Grid>
+                    <Grid item md={5.8}>
+                      <CustomTextField
+                        {...register("macId", {
+                          required: "Trolley Mac ID is required",
+                          pattern: {
+                            value: /^[a-zA-Z0-9]/,
+                            message:
+                              "Trolley Mac ID must be alphanumeric characters",
+                          },
+                        })}
+                        name="macId"
+                        label="Mac ID"
+                        placeholder="Enter Mac ID"
+                        error={!!errors.macId}
+                        helperText={errors.macId?.message}
+                        onChange={handleInputChange}
+                        defaultValue={
+                          selectedDevice ? selectedDevice?.trolleyMacId : ""
+                        }
+                      />
+                    </Grid>
+                    <Grid item md={5.8}>
+                      <CustomTextField
+                        {...register("name", {
+                          required: "Trolley type is required",
+                        })}
+                        select="select"
+                        selectData={selectData}
+                        name="name"
+                        label="Trolley type"
+                        placeholder="Select trolley type"  
+                        error={!!errors.name}
+                        helperText={errors.name?.message}
+                        onChange={handleInputChange}
+                        defaultValue={selectedDevice ? "" : ""}
+                      />
+                    </Grid>
+                    <Grid item md={5.8}>
                     <CustomTextField
-                      {...register("trolleyId", {
-                        required: "Trolley ID is required",
-                      })}
-                      name="trolleyId"
-                      label="Trolley ID"
-                      placeholder="Enter Trolley ID"
-                      error={!!errors.trolleyId}
-                      helperText={errors.trolleyId?.message}
-                      onChange={handleInputChange}
-                      defaultValue={
-                        selectedDevice ? selectedDevice?.trolleyUid : ""
-                      }
-                    />
-                  </Grid>
-                  <Grid item md={5.8}>
-                    <CustomTextField
-                      {...register("macId", {
-                        required: "Trolley Mac ID is required",
-                        pattern: {
-                          value: /^[a-zA-Z0-9]/,
-                          message:
-                            "Trolley Mac ID must be alphanumeric characters",
-                        },
-                      })}
-                      name="macId"
-                      label="Mac ID"
-                      placeholder="Enter Mac ID"
-                      error={!!errors.macId}
-                      helperText={errors.macId?.message}
-                      onChange={handleInputChange}
-                      defaultValue={
-                        selectedDevice ? selectedDevice?.trolleyMacId : ""
-                      }
-                    />
-                  </Grid>
-                  <Grid item md={5.8}>
-                    <CustomTextField
-                      {...register("name", {
-                        required: "Trolley type is required",
-                      })}
-                      select="select"
-                      selectData={selectData}
-                      name="name"
-                      label="Trolley type"
-                      placeholder="Select trolley type"
-                      error={!!errors.name}
-                      helperText={errors.name?.message}
-                      onChange={handleInputChange}
-                      defaultValue={selectedDevice ? "" : ""}
-                    />
-                  </Grid>
-                  <Grid item md={5.8}>
-                    <CustomTextField
-                      {...register("trolleyColor", {
-                        required: "Trolley Color is required",
-                      })}
                       name="trolleyColor"
                       label="Trolley color"
-                      // value={selectedCategory ? selectedCategory.value : ''}
-                      placeholder="Color"
-                      error={!!errors.trolleyColor}
-                      helperText={errors.trolleyColor?.message}
-                      onChange={handleInputChange}
-                      defaultValue={
-                        selectedDevice ? "" : ""
-                      }
+                      value={selectedCategory?.value || ""}
+                      disabled
                     />
                   </Grid>
-                </Grid>
-              )}
-              {activeStep === 1 && (
-                <Grid container justifyContent={"space-between"}>
-                  <TrolleyRoute points={points} setPoints={setPoints} />
-                </Grid>
-              )}
-              {activeStep === 2 && (
-                <Grid container justifyContent={"space-between"}>
-                  <SelectRoute rows={rows} setRows={setRows} />
-                </Grid>
-              )}
-              {activeStep === 3 && (
-                <Grid container justifyContent={"space-between"}>
-                  <FinalDetails points={points} finalSectionDropDownData={finalSectionDropDownData} setFinalSectionDistance={setFinalSectionDistance} setFinalSectionTotalTime={setFinalSectionTotalTime}
-                    setFinalSectionRepetedCycles={setFinalSectionRepetedCycles} setFinalSectionTrolleyCategoryId={setFinalSectionTrolleyCategoryId}
-                    setFinalSectionDepartmentId={setFinalSectionDepartmentId} setFinalSectionSectionId={setFinalSectionSectionId}
-                    setFinalSectionLineId={setFinalSectionLineId} />
-                </Grid>
-              )}
-            </DialogContent>
-            <DialogActions className="dialog-action-btn">
-              {activeStep == 0 && (
-                <ConfirmationDialog
-                  title={"Cancel"}
-                  handleCloseFirst={handleClose}
-                  message={"Are you sure you want to cancel?"}
-                />
-              )}
-              {activeStep !== 0 && (
-                <Button
-                  variant="outlined"
-                  onClick={handleBack}
-                     type="submit"
-                  sx={{ width: "150px" }}
-
-                >
-
-                  Back
-                </Button>
-              )}
-              {activeStep < steps.length - 1 ? (
-                <>
-
+                  </Grid>
+                )}
+                {activeStep === 1 && (
+                  <Grid container justifyContent={"space-between"}>
+                    <TrolleyRoute points={points} setPoints={setPoints} />
+                  </Grid>
+                )}
+                {activeStep === 2 && (
+                  <Grid container justifyContent={"space-between"}>
+                    <SelectRoute rows={rows} setRows={setRows} />
+                  </Grid>
+                )}
+                {activeStep === 3 && (
+                  <Grid container justifyContent={"space-between"}>
+                    <FinalDetails
+                      points={points}
+                      finalSectionDropDownData={finalSectionDropDownData}
+                      setFinalSectionDistance={setFinalSectionDistance}
+                      setFinalSectionTotalTime={setFinalSectionTotalTime}
+                    />
+                  </Grid>
+                )}
+              </DialogContent>
+              <DialogActions className="dialog-action-btn">
+                {activeStep == 0 && (
+                  <ConfirmationDialog
+                    title={"Cancel"}
+                    handleCloseFirst={handleClose}
+                    message={"Are you sure you want to cancel?"}
+                  />
+                )}
+                {activeStep !== 0 && (
                   <Button
-                    variant="contained"
-                  type="submit"
-
-                    // onClick={handleNext}
+                    variant="outlined"
+                    onClick={handleBack}
                     sx={{ width: "150px" }}
                   >
-                    Next
+                    Back
                   </Button>
-                </>
-              ) : (
-                <Button
-                  variant="contained"
-                  type="submit"
-                  sx={{ width: "150px" }}
-                >
-                  Submit
-                </Button>
-              )}
-            </DialogActions>
-          </form>
+                )}
+                {activeStep < steps.length - 1 ? (
+                  <>
+                    <Button
+                      variant="contained"
+                      type="submit"
+                      // onClick={handleNext}
+                      sx={{ width: "150px" }}
+                    >
+                      Next
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    sx={{ width: "150px" }}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </DialogActions>
+            </form>
           </FormProvider>
-         
+
         </CommonDialog>
       </LocalizationProvider>
     </>

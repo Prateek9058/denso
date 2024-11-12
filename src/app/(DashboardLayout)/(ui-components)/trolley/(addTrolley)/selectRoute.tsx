@@ -63,14 +63,30 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     setRows(newRows);
   };
 
-  const handleChange = (index: number, field: keyof ProcessFormRow, value: string | { time: number; unit: string }) => {
+  const handleChange = (
+    index: number,
+    field: keyof ProcessFormRow,
+    value: string | number | { time: number; unit: string },
+    nestedField?: keyof ProcessFormRow["totalTime"]
+  ) => {
     const newRows = [...rows];
-    newRows[index] = {
-      ...newRows[index],
-      [field]: value
-    };
+    if (field === "totalTime" && nestedField) {
+      newRows[index] = {
+        ...newRows[index],
+        totalTime: {
+          ...newRows[index].totalTime,
+          [nestedField]: value,
+        },
+      };
+    } else {
+      newRows[index] = {
+        ...newRows[index],
+        [field]: value,
+      };
+    }
     setRows(newRows);
   };
+  
 console.log('row data',rows)
   return (
     <Grid
@@ -167,13 +183,21 @@ console.log('row data',rows)
                 />
               </TableCell>
               <TableCell>
-                <TextField
+                {/* <TextField
                   value={row.totalTime.time}
-                  onChange={(e) => handleChange(index, 'totalTime', e.target.value)}
+                  onChange={(e) => handleChange(index, 'totalTime', e.target.value )}
                   size="small"
                   type="number"
                   fullWidth
-                />
+                /> */}
+                <TextField
+                  value={row.totalTime.time}
+                  onChange={(e) => handleChange(index, "totalTime", Number(e.target.value), "time")}
+                  size="small"
+                  type="number"
+                  fullWidth
+                  placeholder="Min"
+                  />
               </TableCell>
               <TableCell>
                 <FormControl size="small" fullWidth>
