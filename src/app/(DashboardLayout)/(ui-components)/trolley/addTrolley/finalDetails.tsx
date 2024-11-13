@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, forwardRef, useImperativeHandle, ForwardedRef } from "react";
+import React, { ChangeEvent, forwardRef } from "react";
 import {
   Grid,
   DialogTitle,
@@ -10,9 +10,8 @@ import {
 import { MapContainer, ImageOverlay, Marker, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useForm, Controller, useFormContext, FieldValues  } from "react-hook-form";
+import { useForm, Controller, useFormContext, FieldValues, FormProvider  } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
-
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   marginBottom: theme.spacing(5),
   padding: 0,
@@ -26,17 +25,11 @@ const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   flexDirection: 'column',
   position: 'relative'
 }));
-
-const MapWrapper = styled('div')({
-  height: '100%',
-  width: '100%'
-});
-
 interface PointWithMarker {
-  coordinates: [number, number];
-  showMarker?: boolean;
+  x: number;
+  y: number;
+  showMarker: boolean;
 }
-
 interface FinalSectionDropDownDataProps {
   createdAt: string
   createdBy: string;
@@ -46,84 +39,45 @@ interface FinalSectionDropDownDataProps {
   updatedAt: string;
   _id: string;
 }
-interface FinalSectionData {
-  _id?: string;
-}
-interface Distance {
-  distance: number;
-  unit: string;
-}
-interface Time {
-  time: number;
-  unit: string;
-}
 interface FinalDetailsProps {
   points: PointWithMarker[];
   finalSectionDropDownData: FinalSectionDropDownDataProps[];
-  setFinalSectionDistance: React.Dispatch<React.SetStateAction<Distance[]>>;
-  setFinalSectionTotalTime: React.Dispatch<React.SetStateAction<Time[]>>;
+  methods: ReturnType<typeof useForm>;
 }
-
 export interface FinalDetailsRef {
   validateAndUpdateParent: () => Promise<boolean>;
 }
-
 const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
   points,
   finalSectionDropDownData,
-  setFinalSectionDistance,
-  setFinalSectionTotalTime,
-}) => {
-  const {
-    register,
-    formState: { errors },
-    setValue,
-    clearErrors,
-    getValues,
-    trigger ,
-    control,
-   } = useFormContext<FieldValues>();
+  methods,
+}, ref) => {
+  const { formState: { errors }, setValue, clearErrors, getValues, trigger, control } = methods;
   console.log('finalSectionDropDownData',finalSectionDropDownData)
- 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    console.log('name',name)
+
     setValue(name, value);
-
-    // const numericValue = Number(value);
-
-    // if (name === 'totalDistance') {
-    //   setValue(name, { distance: numericValue, unit: 'meters' });
-    // } else if (name === 'totalTime') {
-    //   setValue(name, { time: numericValue, unit: 'seconds' });
-    // } else {
-    //   setValue(name, value);
-    // }
-
     if (errors[name]) {
       clearErrors(name);
     }
-
   };
-
   const departments = finalSectionDropDownData
     .filter(item => item.type === "department")
-    .map(item => ({ label: item.name, _id: item._id }));
-
+    .map(item => ({ label: item.name, _id: item._id, value:item._id }));
   const sections = finalSectionDropDownData
     .filter(item => item.type === "section")
-    .map(item => ({ label: item.name, _id: item._id }));
-
+    .map(item => ({ label: item.name, _id: item._id, value:item._id }));
   const lines = finalSectionDropDownData
     .filter(item => item.type === "line")
-    .map(item => ({ label: item.name, _id: item._id }));
-
-    
+    .map(item => ({ label: item.name, _id: item._id, value:item._id }));
   let markerCounter = 1;
   const bounds: [[number, number], [number, number]] = [
     [0, 0],
     [100, 220]
   ];
-
+  console.log("department",departments)
   const getNumberedIcon = (number: number) => {
     return L.divIcon({
       html: `<div style="display: flex; align-items: center; justify-content: center;
@@ -134,7 +88,8 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
       iconAnchor: [12, 12],
     });
   };
-
+  const values = getValues();
+  console.log("values final",values)
   return (
     <Grid container justifyContent={"space-between"}>
       <Grid item xs={12}>
@@ -159,7 +114,7 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
               }}
             />
             <Polyline
-              positions={points.map(point => point.coordinates)}
+              positions={points.map(point => [point.x, point.y])} 
               color="black"
               weight={2}
             />
@@ -167,7 +122,7 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
               point.showMarker && (
                 <Marker
                   key={index}
-                  position={point.coordinates}
+                  position={[point.x, point.y]}  
                   icon={getNumberedIcon(markerCounter++)}
                 />
               )
@@ -176,7 +131,8 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
         </StyledDialogTitle>
         <DialogContent>
           <Grid container justifyContent={"space-between"} spacing={2} sx={{ mt: 2 }}>
-            <Grid item md={5.8}>
+           <FormProvider {...methods}>
+            <Grid item md={5.8}> 
               <Controller
                 name="department"
                 control={control}
@@ -191,10 +147,14 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
                     error={!!errors.department}
                     helperText={errors.department?.message}
                     onChange={handleInputChange}
-                    defaultValue={finalSectionDropDownData ? "" :""}
+                    defaultValue={departments ? "" :""}
                   />
+
+
                 )}
               />
+
+
             </Grid>
             <Grid item md={5.8}>
               <Controller
@@ -235,7 +195,7 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
                   />
                 )}
               />
-            </Grid>
+            </Grid> 
             <Grid item md={2.7}>
               <Controller
                 name="totalDistance"
@@ -255,7 +215,6 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
                     placeholder="Distance in meters"
                     error={!!errors.totalDistance}
                     helperText={errors.totalDistance?.message}
-                    // onChange={handleInputChange}
                     defaultValue={finalSectionDropDownData ? "" :""}
                   />
                 )}
@@ -267,20 +226,20 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
                 control={control}
                 rules={{
                   required: "Total Time is required",
-                  pattern: {
-                    value: /^(?:[1-9]\d*|0)$/,
-                    message: "Enter a valid number",
+                  max: {
+                    value: 60, 
+                    message: "Total Time cannot exceed 60 second",
                   },
                 }}
                 render={({ field }) => (
                   <CustomTextField
                     {...field}
                     field="number"
+                    
                     label="Total Time"
                     placeholder="Time in seconds"
                     error={!!errors.totalTime}
                     helperText={errors.totalTime?.message}
-                    // onChange={handleInputChange}
                     defaultValue={finalSectionDropDownData ? "" :""}
                   />
                 )}
@@ -310,13 +269,12 @@ const FinalDetails = forwardRef<FinalDetailsRef, FinalDetailsProps>(({
                   />
                 )}
               />
-            </Grid>
+             </Grid>
+           </FormProvider>
           </Grid>
         </DialogContent>
       </Grid>
     </Grid>
   );
 });
-
-
 export default FinalDetails;

@@ -14,8 +14,9 @@ import 'leaflet/dist/leaflet.css';
 type Point = [number, number];
 
 interface PointWithMarker {
-    coordinates: Point;
-    showMarker?: boolean;
+    x: number;
+    y: number;
+    showMarker: boolean;
 }
 interface TrolleyRouteProps {
     points: PointWithMarker[];
@@ -3967,24 +3968,18 @@ const allowedCoordinates: Point[] = [
         24.078125,
         69.82644477463153
     ]
-]
-
+];
 interface Graph {
     [key: string]: { [key: string]: number };
 }
 
-const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
-    points,
-    setPoints
-
-}) => {
-    //   const [points, setPoints] = useState<PointWithMarker[]>([]);
+const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
     const [activePoints, setActivePoints] = useState<Point[]>([]);
     const coordInfoRef = useRef<HTMLDivElement>(null);
     let markerCounter = 1;
+
     useEffect(() => {
         const img = new Image();
-
         img.src = '/Img/Layoutdenso.png';
     }, []);
 
@@ -3994,23 +3989,19 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
 
     const buildGraph = (): Graph => {
         const graph: Graph = {};
-
         allowedCoordinates.forEach((point1, i) => {
             const pointKey1 = `${point1[0]},${point1[1]}`;
             graph[pointKey1] = {};
-
             allowedCoordinates.forEach((point2, j) => {
                 if (i !== j) {
                     const pointKey2 = `${point2[0]},${point2[1]}`;
                     const distance = getDistance(point1, point2);
-
                     if (distance < 3) {
                         graph[pointKey1][pointKey2] = distance;
                     }
                 }
             });
         });
-
         return graph;
     };
 
@@ -4018,7 +4009,6 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
         const graph = buildGraph();
         const startKey = `${start[0]},${start[1]}`;
         const endKey = `${end[0]},${end[1]}`;
-
         const distances: { [key: string]: number } = {};
         const previous: { [key: string]: string | null } = {};
         const unvisited = new Set<string>();
@@ -4041,7 +4031,6 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
             });
 
             if (current === endKey) break;
-
             unvisited.delete(current);
 
             Object.entries(graph[current] || {}).forEach(([neighbor, distance]) => {
@@ -4062,7 +4051,6 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
             path.unshift([lat, lng]);
             current = previous[current] || '';
         }
-
         return path;
     };
 
@@ -4082,13 +4070,14 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
 
                 setPoints(prev => {
                     if (prev.length === 0) {
-                        return [{ coordinates: newPoint, showMarker: true }];
+                        return [{ x: newPoint[0], y: newPoint[1], showMarker: true }];
                     }
 
-                    const lastPoint = prev[prev.length - 1].coordinates;
-                    const path = findShortestPath(lastPoint, newPoint);
+                    const lastPoint = prev[prev.length - 1];
+                    const path = findShortestPath([lastPoint.x, lastPoint.y], newPoint);
                     const pathWithMarkers = path.slice(1).map((point, index, array) => ({
-                        coordinates: point,
+                        x: point[0],
+                        y: point[1],
                         showMarker: index === array.length - 1
                     }));
                     return [...prev, ...pathWithMarkers];
@@ -4108,35 +4097,20 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
         return null;
     };
 
-    //   const trolleyIcon = L.icon({
-    //     iconUrl: '/Img/trolleyLive.png',
-    //     iconSize: [25, 25],
-    //     iconAnchor: [12, 12],
-    //   });
-    const getNumberedIcon = (number:number) => {
+    const getNumberedIcon = (number: number) => {
         return L.divIcon({
-
             html: `<div style="display: flex; align-items: center; justify-content: center;
-
               width: 25px; height: 25px; background-color: red; border-radius: 50%; color: white;
-
               font-size: 14px;">${number}</div>`,
-
             className: '',
-
             iconSize: [25, 25],
-
             iconAnchor: [12, 12],
-
         });
-
     };
-    const handleMarkerClick = (point: Point) => {
-        setPoints(prevPoints => prevPoints.filter(p =>
-            !(p.coordinates[0] === point[0] && p.coordinates[1] === point[1])
-        ));
 
-        setActivePoints(prev => prev.filter(p => p[0] !== point[0] || p[1] !== point[1]));
+    const handleMarkerClick = (point: PointWithMarker) => {
+        setPoints(prevPoints => prevPoints.filter(p => p.x !== point.x || p.y !== point.y));
+        setActivePoints(prev => prev.filter(p => p[0] !== point.x || p[1] !== point.y));
     };
 
     const imageBounds: [[number, number], [number, number]] = [
@@ -4144,11 +4118,13 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
         [100, 220],
     ];
 
-      useEffect(() => {
-        const activeMarkers = points.filter(point => point.showMarker).map(point => point.coordinates);
-        setActivePoints(activeMarkers);
-      }, [points]);
-console.log("point",points)
+    useEffect(() => {
+        const activeMarkers: Point[] = points
+        .filter(point => point.showMarker)
+        .map(point => [point.x, point.y] as Point); // Cast to `Point` type
+    setActivePoints(activeMarkers);
+    }, [points]);
+console.log("points",points)
     return (
         <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -4167,22 +4143,21 @@ console.log("point",points)
                         <MapClickHandler />
 
                         {points.map((point, index) => (
-                            <React.Fragment key={`${point.coordinates[0]}-${point.coordinates[1]}-${index}`}>
-                             
+                            <React.Fragment key={`${point.x}-${point.y}-${index}`}>
                                 {point.showMarker && (
                                     <Marker
-                                        position={point.coordinates}
-                                        icon={ getNumberedIcon(markerCounter++) } 
+                                        position={[point.x, point.y]}
+                                        icon={getNumberedIcon(markerCounter++)}
                                         eventHandlers={{
-                                            click: () => handleMarkerClick(point.coordinates),
+                                            click: () => handleMarkerClick(point),
                                         }}
                                     />
                                 )}
                                 {index < points.length - 1 && (
                                     <Polyline
                                         positions={[
-                                            point.coordinates,
-                                            points[index + 1].coordinates
+                                            [point.x, point.y],
+                                            [points[index + 1].x, points[index + 1].y]
                                         ]}
                                         pathOptions={{ color: 'black' }}
                                     />

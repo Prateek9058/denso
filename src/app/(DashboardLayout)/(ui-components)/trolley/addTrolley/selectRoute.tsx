@@ -58,6 +58,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
       remarks: ""
     }]);
   };
+  const currentDate = new Date();
   const handleRemoveRow = (index: number) => {
     const newRows = rows.filter((_, idx) => idx !== index);
     setRows(newRows);
@@ -167,8 +168,11 @@ console.log('row data',rows)
               <TableCell>
                 <TextField
                   type="time"
-                  value={row.startTime}
-                  onChange={(e) => handleChange(index, 'startTime', e.target.value)}
+                  value={row.startTime ? row.startTime.slice(11, 16) : ""}
+                  onChange={(e) => {
+                    const updatedDate = new Date(currentDate.toDateString() + ' ' + e.target.value);
+                    handleChange(index, 'startTime', updatedDate.toISOString());
+                  }}
                   size="small"
                   fullWidth
                 />
@@ -176,20 +180,16 @@ console.log('row data',rows)
               <TableCell>
                 <TextField
                   type="time"
-                  value={row.endTime}
-                  onChange={(e) => handleChange(index, 'endTime', e.target.value)}
+                  value={row.endTime ? row.endTime.slice(11, 16) : ""}
+                  onChange={(e) => {
+                    const updatedDate = new Date(currentDate.toDateString() + ' ' + e.target.value);
+                    handleChange(index, 'endTime', updatedDate.toISOString());
+                  }}
                   size="small"
                   fullWidth
                 />
               </TableCell>
               <TableCell>
-                {/* <TextField
-                  value={row.totalTime.time}
-                  onChange={(e) => handleChange(index, 'totalTime', e.target.value )}
-                  size="small"
-                  type="number"
-                  fullWidth
-                /> */}
                 <TextField
                   value={row.totalTime.time}
                   onChange={(e) => handleChange(index, "totalTime", Number(e.target.value), "time")}
@@ -197,6 +197,7 @@ console.log('row data',rows)
                   type="number"
                   fullWidth
                   placeholder="Min"
+                  inputProps={{ min: 0 }}
                   />
               </TableCell>
               <TableCell>

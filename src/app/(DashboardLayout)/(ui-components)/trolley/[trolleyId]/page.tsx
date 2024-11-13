@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import AddDevice from "../(addTrolley)/addTrolley";
+import AddDevice from "../addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";

@@ -11,6 +11,7 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { TextFieldProps } from "@mui/material";
 
+
 interface CustomTextFieldProps {
   type?: "email" | "text" | "search" | "password";
   label?: string;
@@ -85,14 +86,15 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         }}
       >
         {" "}
+        {console.log("slectDat ",selectData)}
         {select && selectData?.length > 0 ? (
           selectData?.map((option: any) => (
             <MenuItem
               key={option?._id}
-              value={option}
+              value={option?._id}
               sx={{ fontSize: "12px" }}
             >
-               {option?.label ? option?.label : option}
+               {option?.label ? option?.label : ''}
             </MenuItem>
           ))
         ) : (
