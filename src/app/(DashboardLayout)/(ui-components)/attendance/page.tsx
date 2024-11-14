@@ -4,7 +4,7 @@ import { Grid, Box } from "@mui/material";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
-import AddShift from "./(addShift)/addShift";
+import AddShift from "@/app/(components)/pages/attendance/addShift";
 import Image from "next/image";
 import noData from "../../../../../public/Img/nodata.png";
 import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";

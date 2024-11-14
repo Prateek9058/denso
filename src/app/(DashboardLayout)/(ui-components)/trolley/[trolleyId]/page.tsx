@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import AddDevice from "../addTrolley/addTrolley";
+import AddDevice from "@/app/(components)/pages/trolley/addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -9,7 +9,6 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import empImg from "../../../../../../public/Img/trolleyImg.png";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
-import Site from "../../../../../../public/Img/Layout.jpg";
 import ToastComponent, {
   notifyError,
   notifySuccess,
@@ -18,7 +17,7 @@ import { AxiosError } from "axios";
 import moment from "moment";
 import TrolleyTrack from "./trolleyTrack";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
-import AddRepair from "../(addRepairStatus)/addRepair";
+import AddRepair from "@/app/(components)/pages/trolley/addRepair";
 import { useSitesData } from "@/app/(context)/SitesContext";
 
 const viewCount = [
@@ -47,6 +46,12 @@ type Breadcrumb = {
   label: string;
   link: string;
 };
+interface PointWithMarker {
+  x: number;
+  y: number;
+  showMarker: boolean;
+  _id:string;
+}
 interface ErrorResponse {
   error?: string;
 }
@@ -65,6 +70,8 @@ const Page: React.FC = () => {
   const [date, setDate] = useState<any>(null);
   const [graphData, setGraphData] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
+  const [trolleyCoordinates, setTrolleyCoordinates] = useState<PointWithMarker[]>([]);
+  
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
     { label: "Trolley Tracking ", link: "/trolley" },
@@ -75,18 +82,22 @@ const Page: React.FC = () => {
       link: "",
     },
   ];
+  console.log("trolleyIdssss",trolleyDetails)
   const getDataFromChildHandler = (date: any, dataArr: any) => {
     setDate(date);
     setAnalyticsDate(dataArr);
   };
   /// api call's ///
   const getTrolleyDetails = async () => {
+    console.log("getSingleTrolleyRepairingDatakkk")
     setLoading(true);
     try {
       let res = await axiosInstance.get(
         `trolleys/getSingleTrollye/${trolleyId}`
       );
       if (res?.status === 200 || res?.status === 201) {
+  console.log("trolleyIdssss response",res?.data?.data)
+
         setTrolleyDetails(res?.data?.data);
         setLoading(false);
       }
@@ -99,6 +110,12 @@ const Page: React.FC = () => {
       getTrolleyDetails();
     }
   }, [trolleyId]);
+
+  useEffect(() => {
+    if (trolleyDetails?.pathPointers) {
+      setTrolleyCoordinates(trolleyDetails?.pathPointers);
+    }
+  }, [trolleyDetails?.pathPointers]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -145,6 +162,8 @@ const Page: React.FC = () => {
     const formattedName = name?.toUpperCase().replace(/\s+/g, "-");
     router.push(`/trolley/${trolleyId}/${formattedName}`);
   };
+
+  console.log("trolleyCoordinates",trolleyCoordinates)
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
@@ -213,7 +232,7 @@ const Page: React.FC = () => {
                 <CustomTextField
                   disabled
                   defaultValue={
-                    trolleyDetails ? trolleyDetails?.trolleyUid : ""
+                    trolleyDetails ? trolleyDetails?.uId : ""
                   }
                 />
               </Grid>
@@ -241,7 +260,7 @@ const Page: React.FC = () => {
                 <CustomTextField
                   disabled
                   defaultValue={
-                    trolleyDetails ? trolleyDetails?.trolleyMacId : ""
+                    trolleyDetails ? trolleyDetails?.macId : ""
                   }
                 />
               </Grid>
@@ -335,7 +354,7 @@ const Page: React.FC = () => {
           </Button>
         </Grid>
       </Grid>
-      <TrolleyTrack userDetails={trolleyId} />
+      {trolleyCoordinates.length> 0 && (<TrolleyTrack userDetails={trolleyId} trolleyCoordinates={trolleyCoordinates} />) }
 
       <Table
         deviceData={deviceData}

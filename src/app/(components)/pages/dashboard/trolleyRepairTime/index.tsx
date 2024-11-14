@@ -3,7 +3,7 @@ import { Grid, Typography, Button } from "@mui/material";
 import MultiBarChart from "@/app/(components)/mui-components/CustomGraph/MultiBarChart";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 
-const page = () => {
+const Page = () => {
   const [date, setDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
   const getDataFromChildHandler = (date: any, dataArr: any) => {
@@ -53,4 +53,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

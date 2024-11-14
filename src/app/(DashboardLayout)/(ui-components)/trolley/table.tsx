@@ -75,13 +75,16 @@ console.log("deviceData123456",deviceData)
     setOpenDialog(false);
   };
   const getFormattedData = (data: any[]) => {
+    console.log("data main table ",data)
+
     return data?.map((item, index) => ({
       // sno: index + 1,
-      trolleyUid: item?.trolleyUid ?? "N/A",
-      trolleyMacId: value == 0 ? item?.trolleyMacId ? item?.trolleyMacId : "N/A" : item?.uId ?? "N/A",
-      purchaseDate: moment(item?.purchaseDate).format("lll") ?? "N/A",
-      createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
-      zoneName: item?.zone ? `zone ${item?.zone}` : "N/A",
+      trolleyUid: item?.uId ?? "N/A",
+      name: item?.name ?? "N/A",
+      trolleyMacId: item?.macId ?? "N/A",
+      runningTime: item?.runningTime ?? "N/A",
+      idealTime:item?.idealTime ?? "N/A",
+      assignStatus: item?.assignStatus ?? 'false',
       Action: value == 0 ? [
         <Grid container justifyContent="center" key={index}>
           <Grid item>

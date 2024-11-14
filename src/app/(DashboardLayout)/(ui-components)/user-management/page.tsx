@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
-import Profile from "./(profile-manage)/profile";
+import Profile from "@/app/(components)/pages/userManangement/profileDetials";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 interface TabData {
   label: string;

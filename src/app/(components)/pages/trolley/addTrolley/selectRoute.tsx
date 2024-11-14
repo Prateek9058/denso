@@ -98,17 +98,17 @@ console.log('row data',rows)
     >
       <Box sx={{ display: 'flex', gap: 2, mb: 4, justifyContent: 'flex-end' }}>
         <Button 
-          variant="outlined" 
+          variant="contained" 
           startIcon={<FileDownloadIcon />}
           onClick={() => window.location.href='/sample.csv'}
         >
           Download sample csv
         </Button>
         <Button 
-          variant="contained" 
+          variant="outlined" 
           startIcon={<FileUploadIcon />}
         >
-          Upload standard's
+          Upload standard
         </Button>
       </Box>
       
@@ -170,7 +170,7 @@ console.log('row data',rows)
                   type="time"
                   value={row.startTime ? row.startTime.slice(11, 16) : ""}
                   onChange={(e) => {
-                    const updatedDate = new Date(currentDate.toDateString() + ' ' + e.target.value);
+                    const updatedDate = new Date(currentDate.toDateString() + " " + e.target.value);
                     handleChange(index, 'startTime', updatedDate.toISOString());
                   }}
                   size="small"
@@ -182,7 +182,7 @@ console.log('row data',rows)
                   type="time"
                   value={row.endTime ? row.endTime.slice(11, 16) : ""}
                   onChange={(e) => {
-                    const updatedDate = new Date(currentDate.toDateString() + ' ' + e.target.value);
+                    const updatedDate = new Date(currentDate.toDateString() + " " + e.target.value);
                     handleChange(index, 'endTime', updatedDate.toISOString());
                   }}
                   size="small"

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import axiosInstance from "@/app/api/axiosInstance";
-import AddSite from "../(addShift)/addShift";
+import AddSite from "./addShift";
 import { Grid, Card, Typography, Button, Box } from "@mui/material";
 
 // Define the type for each shift

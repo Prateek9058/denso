@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import MultiBarChart from "@/app/(components)/mui-components/CustomGraph/MultiBarChart";
+import MultiLineChart from "@/app/(components)/mui-components/CustomGraph/Line";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 
-const page = () => {
+const Page = () => {
   const [date, setDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
   const getDataFromChildHandler = (date: any, dataArr: any) => {
@@ -13,33 +13,23 @@ const page = () => {
   const deviceData = [
     {
       date: "12/08",
-      workTime: 20,
-      waitTime: 24,
-      requiredTime: 34,
+      Alerts: 20,
     },
     {
       date: "13/08",
-      workTime: 30,
-      waitTime: 20,
-      requiredTime: 44,
+      Alerts: 30,
     },
     {
       date: "14/08",
-      workTime: 26,
-      waitTime: 14,
-      requiredTime: 12,
+      Alerts: 26,
     },
     {
       date: "15/08",
-      workTime: 27,
-      waitTime: 36,
-      requiredTime: 4,
+      Alerts: 27,
     },
     {
       date: "16/08",
-      workTime: 40,
-      waitTime: 14,
-      requiredTime: 24,
+      Alerts: 40,
     },
   ];
   return (
@@ -47,9 +37,7 @@ const page = () => {
       <Grid sx={{ backgroundColor: "white", borderRadius: "10px" }} p={2}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <Typography variant="h5">
-              Manpower working and waiting time
-            </Typography>
+            <Typography variant="h5">Average trolley repair time</Typography>
           </Grid>
           <Grid item>
             <CommonDatePicker
@@ -58,11 +46,11 @@ const page = () => {
           </Grid>
         </Grid>
         <Grid pt={2}>
-          <MultiBarChart deviceData={deviceData} multichart={true} />
+          <MultiLineChart deviceData={deviceData} multichart={false} />
         </Grid>
       </Grid>
     </Grid>
   );
 };
 
-export default page;
+export default Page;

@@ -1,17 +1,20 @@
 "use client";
-import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Grid } from "@mui/material";
-import AddDevice from "./addTrolley/addTrolley";
+import dynamic from 'next/dynamic';
+
+const AddDevice = dynamic(() => import('@/app/(components)/pages/trolley/addTrolley/addTrolley'), { ssr: false });
+// import AddDevice from "@/app/(components)/pages/trolley/addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
-import UploadFile from "./(upload-file)/uploadFile";
+import UploadFile from "@/app/(components)/pages/trolley/uploadFile";
 import { useSitesData } from "@/app/(context)/SitesContext";
 import salesIcon from "../../../../../public/Img/trolleydash.png";
 import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";
 import CountCard from "@/app/(components)/mui-components/Card/CountCard";
-import AddCategory from "./(addCategory)";
+import AddCategory from "@/app/(components)/pages/trolley/addCategory";
 type Breadcrumb = {
   label: string;
   link: string;
@@ -27,7 +30,17 @@ const tabs: TabData[] = [
   { label: "Trolley details" },
   { label: "Trolley Category" },
 ];
+const useClientSide = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  return isClient;
+};
 const Page: React.FC = () => {
+  const isClient = useClientSide();  
   const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
   const [openCat, setOpenCat] = useState<boolean>(false);
@@ -75,6 +88,13 @@ const Page: React.FC = () => {
       icon: salesIcon,
     },
   ]);
+ 
+console.log("deviceData",deviceData)
+  
+  useEffect(() => {
+    getTrolleyData();
+  }, [page, rowsPerPage, searchQuery, value]);
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
 
@@ -111,9 +131,7 @@ const Page: React.FC = () => {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    getTrolleyData();
-  }, [page, rowsPerPage, searchQuery, value]);
+
   const handleClickOpen = () => {
     setOpen(true);
   };

@@ -23,7 +23,7 @@ interface AddDeviceProps {
 interface ErrorResponse {
   message?: string;
 }
-const AddDevice: React.FC<AddDeviceProps> = ({
+const AddDepartment: React.FC<AddDeviceProps> = ({
   open,
   setOpen,
   getDeviceData,
@@ -163,4 +163,4 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   );
 };
 
-export default AddDevice;
+export default AddDepartment;

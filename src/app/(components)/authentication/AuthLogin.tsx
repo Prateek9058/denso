@@ -29,7 +29,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       return;
     }
     try {
-      const response = await axiosInstance.post("api/v1/auth/login", body);
+      const response = await axiosInstance.post("auth/login", body);
       if (response.status) {
         console.log("response",setLoginData(response))
         login(

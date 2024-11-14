@@ -21,11 +21,12 @@ import axiosInstance from "@/app/api/axiosInstance";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import { useSitesData } from "@/app/(context)/SitesContext";
 import dynamic from "next/dynamic";
-import ManpowerWaiting from "./manPowerWaitingTime";
-import TrolleyDetails from "./trolleyDetails.tsx";
-import TrolleyRepairTime from "./trolleyRepairTime";
-import TotalAlerts from "./totalAlerts";
-import NotificationList from "./notificationList";
+import ManpowerWaiting from "@/app/(components)/pages/dashboard/manPowerWaitingTime";
+import TrolleyDetails from "@/app/(components)/pages/dashboard/trolleyDetails.tsx";
+import TrolleyRepairTime from "@/app/(components)/pages/dashboard/trolleyRepairTime";
+import TotalAlerts from "@/app/(components)/pages/dashboard/totalAlerts";
+import NotificationList from "@/app/(components)/pages/dashboard/notificationList";
+
 const DynamicHeader = dynamic(
   () => import("../../../(components)/pages/track"),
   {
