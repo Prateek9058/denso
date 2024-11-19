@@ -56,10 +56,10 @@ const AddShift: React.FC<AddDeviceProps> = ({
     reset,
   } = useForm();
   const [startTime, setStartTime] = React.useState<Dayjs | null>(
-    dayjs("2022-04-17T15:30")
+    dayjs("")
   );
   const [endTime, setEndTime] = React.useState<Dayjs | null>(
-    dayjs("2022-04-17T15:30")
+    dayjs("")
   );
   const handleClose = () => {
     setOpen(false);

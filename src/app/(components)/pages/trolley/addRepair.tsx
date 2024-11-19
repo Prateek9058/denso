@@ -51,19 +51,49 @@ const AddRepair: React.FC<AddDeviceProps> = ({
       setSelectedSite(JSON.parse(storedSite));
     }
   }, []);
+  const dropDownData = [
+    {
+        "_id": "671645b6740b31a416f231c1",
+        "label": "test",
+    },
+    {
+        "_id": "67177d3bb5491ed7dad99c75",
+        "label": "test",
+    },
+    {
+        "_id": "671f552da5ec829121b895de",
+        "label": "1stK",
+    },
+    {
+        "_id": "672870361e4a8366fba338e7",
+        "label": "TEST5",
+    },
+    {
+        "_id": "672892d91e4a8366fba33a1f",
+        "label": "rohit",
+    },
+    {
+        "_id": "67358445ee949f08984414e1",
+        "label": "test",
+    }
+]
+console.log('selectedDevice55o',selectedDevice?._id)
+
   const onSubmit = async () => {
-    if (!selectedSite?._id) return;
+
+    console.log('selectedDevice55o',selectedDevice?._id)
+    if (!selectedDevice?._id) return;
     try {
-      const formData = getValues();
-      const body = {
-        issue: formData?.issue,
-        status: formData?.status,
-        repairingStatus: true,
-        repairDate: dayjs(formData?.repairDate).format("YYYY-MM-DD"),
-      };
+      // const formData = getValues();
+      // const body = {
+      //   issue: formData?.issue,
+      //   // status: formData?.status,
+      //   // repairingStatus: true,
+      //   // repairDate: dayjs(formData?.repairDate).format("YYYY-MM-DD"),
+      // };
       const res = await axiosInstance.post(
-        `trolleyRepairing/addTrolleyRepairing/${selectedSite?._id}/${selectedDevice?._id}`,
-        body
+        `trolleyRepairing/addTrolleyRepairing/${selectedDevice?._id}`,
+        // body
       );
       if (res?.status === 200 || res?.status === 201) {
         console.log(res);
@@ -78,7 +108,7 @@ const AddRepair: React.FC<AddDeviceProps> = ({
           "Error updating trolley repair info"
       );
       console.log(error);
-      // handleClose();
+      handleClose();
     }
   };
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -95,53 +125,28 @@ const AddRepair: React.FC<AddDeviceProps> = ({
           open={open}
           maxWidth={"sm"}
           fullWidth={true}
-          title="Add a repair information"
+          title="Trolley issue"
           message={"Are you sure you want to cancel?"}
           titleConfirm={"Cancel"}
           onClose={handleClose}
         >
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogContent>
-              <Grid container justifyContent={"space-between"} mt={1}>
-                <Grid item md={5.8}>
+              <Grid container justifyContent={"center"} mt={1}>
+                <Grid item md={12}>
                   <CustomTextField
                     {...register("issue", {
                       required: "Trolley issue is required",
                     })}
+                    select
+                    selectData={dropDownData}
                     name="issue"
-                    label="Issue"
+                    label="Select Issue"
                     placeholder="Enter issue"
                     error={!!errors.issue}
                     helperText={errors.issue?.message}
                     onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item md={5.8}>
-                  <CustomTextField
-                    {...register("status", {
-                      required: "Status is required",
-                    })}
-                    name="status"
-                    label="Status"
-                    placeholder="Enter status"
-                    error={!!errors.status}
-                    helperText={errors.status?.message}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-
-                <Grid item md={5.8}>
-                  <Controller
-                    name="repairDate"
-                    control={control}
-                    defaultValue={null}
-                    render={({ field }) => (
-                      <DatePicker
-                        sx={{ width: "100%", color: "#ACACAC" }}
-                        label="Date of repair"
-                        {...field}
-                      />
-                    )}
+                    defaultValue={""}
                   />
                 </Grid>
               </Grid>

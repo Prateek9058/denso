@@ -78,6 +78,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   selectedDevice,
   selectedSite,
 }) => {
+  console.log("Check selectedDevice------------------------------",selectedDevice)
   const [activeStep, setActiveStep] = useState(0);
   const [userData, setUserData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -123,15 +124,36 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   ];
 
   const [selectDropDownData, setSelectDropDownData] = useState<any>(null);
-console.log("selectedDevice",selectedDevice)
-  // useEffect(() => {
-  //   if (selectedDevice) {
-  //     setValue("trolleyId", selectedDevice?.trolleyUid);
-  //     setValue("macId", selectedDevice?.trolleyMacId);
-  //   } else {
-  //     reset();
-  //   }
-  // }, [setValue, reset, selectedDevice]);
+
+  useEffect(() => {
+    if (selectedDevice && open) {
+      const categoryId = selectedDevice?.trolleyCategoryId?._id;
+
+      if (categoryId?.length > 0) {
+        setValue("trolleyCategoryId", categoryId);
+      }
+
+      setValue("trolleyId", selectedDevice?.uId);
+      setValue("macId", selectedDevice?.macId);
+      setValue("name", selectedDevice?.name);
+      setValue("trolleyColor", selectedDevice?.trolleyColor);
+      setValue("routeProcess", selectedDevice?.routeProcess);
+      setValue("pathPointers",selectedDevice?.pathPointers);
+      setPoints(selectedDevice?.pathPointers);
+      setValue("routeProcess", selectedDevice?.routeProcess);
+      setValue("departmentId", selectedDevice?.departmentId);
+      setValue("sectionId", selectedDevice?.sectionId);
+      setValue("lineId", selectedDevice?.lineId);
+      setValue("distance", selectedDevice?.distance);
+      setValue("totalTime", selectedDevice?.totalTime);
+      setValue("repetedCycles", selectedDevice?.repetedCycles);
+      setRows(selectedDevice?.routeProcess)
+    } else {
+      reset();
+    }
+
+    // console.log('selectedDevice1',selectedDevice?.trolleyCategoryId?._id)
+  }, [open, selectedDevice]);
 
   useEffect(() => {
     return () => {
@@ -146,17 +168,20 @@ console.log("selectedDevice",selectedDevice)
         "trolleyCategory/getAllTrolleyCategories"
       );
       if (res?.status === 200 || res?.status === 201) {
+        console.log("responsess",res)
         const dropdownData = res?.data?.data?.data.map((value: any) => ({
           _id: value?._id,
           label: value?.name,
-          value: value?.color,
-        }));
+          color: value?.color,
+        })) || [];
         setSelectDropDownData(dropdownData);
       }
     } catch (err) {
       console.error("Error fetching trolley categories:", err);
+       setSelectDropDownData([]);
     }
   };
+
   const getFinalSectionDropdownData = async () => {
     try {
       const [departmentRes, sectionRes, lineRes] = await Promise.all([
@@ -183,14 +208,14 @@ console.log("selectedDevice",selectedDevice)
   };
   const selectedCategory = watch("trolleyCategoryId");
   const color =
-    selectDropDownData?.find((item: any) => item._id === selectedCategory)
+    selectDropDownData?.find((item: any) => item?._id === selectedCategory)
       ?.value || "";
   useEffect(() => {
     if (open) {
       getTrolleyCategoriesData();
       getFinalSectionDropdownData();
     }
-  }, [open]);
+  }, [open, selectedDevice]);
 
   const handleClose = () => {
     setOpen(false);
@@ -226,9 +251,8 @@ console.log("selectedDevice",selectedDevice)
     maxSize: 10485760,
   });
 
-  const onSubmit = async () => {
-    const values = getValues();
 
+  const onSubmit = async () => {
     setValue("trolleyCategoryId", selectedCategory);
     setValue("trolleyColor", color);
     setValue("pathPointers", points);
@@ -237,7 +261,7 @@ console.log("selectedDevice",selectedDevice)
     handleNext();
 
     const formData = getValues();
-    console.log("valuuuuuu", formData?.department);
+    console.log("valuuuuuu", formData);
     const body = {
       uId: formData?.trolleyId,
       macId: formData?.macId,
@@ -264,12 +288,10 @@ console.log("selectedDevice",selectedDevice)
       repetedCycles: formData?.repetedCycles,
     };
     console.log("bodyyyyy", body);
-  
 
-    console.log("selectedDevice", selectedDevice);
     try {
       let res;
-      if (selectedDevice) {
+      if (selectedDevice && formData?.repetedCycles) {
         res = await axiosInstance.patch(
           `api/v1/trolleys/updateTrolley/${selectedDevice?._id}`,
           body
@@ -344,7 +366,7 @@ console.log("selectedDevice",selectedDevice)
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
   };
-
+console.log("selectDropDownData",selectDropDownData)
   return (
     <>
       <CommonDialog
@@ -432,7 +454,6 @@ console.log("selectedDevice",selectedDevice)
                     <Controller
                       name="name"
                       control={control}
-                      defaultValue=""
                       rules={{
                         required: "Trolley name is required",
                       }}
@@ -444,7 +465,9 @@ console.log("selectedDevice",selectedDevice)
                           error={!!errors.name}
                           helperText={errors.name?.message}
                           onChange={handleInputChange}
-                          defaultValue={selectedDevice ? selectedDevice?.age : ""}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.name : ""
+                          }
                         />
                       )}
                     />
@@ -453,7 +476,6 @@ console.log("selectedDevice",selectedDevice)
                     <Controller
                       name="trolleyId"
                       control={control}
-                      defaultValue=""
                       rules={{
                         required: "Trolley ID is required",
                       }}
@@ -465,7 +487,10 @@ console.log("selectedDevice",selectedDevice)
                           error={!!errors.trolleyId}
                           helperText={errors.trolleyId?.message}
                           onChange={handleInputChange}
-                          defaultValue={selectedDevice ? "" : ""}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.uId : ""
+                          }
+                          disabled={selectedDevice ? true : false}
                         />
                       )}
                     />
@@ -474,9 +499,6 @@ console.log("selectedDevice",selectedDevice)
                     <Controller
                       name="macId"
                       control={control}
-                      defaultValue={
-                        selectedDevice ? selectedDevice?.trolleyMacId : ""
-                      }
                       rules={{
                         required: "Trolley Mac ID is required",
                         pattern: {
@@ -493,7 +515,10 @@ console.log("selectedDevice",selectedDevice)
                           error={!!errors.macId}
                           helperText={errors.macId?.message}
                           onChange={handleInputChange}
-                          defaultValue={selectedDevice ? "" : ""}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.macId : ""
+                          }
+                          disabled={selectedDevice ? true : false}
                         />
                       )}
                     />
@@ -502,7 +527,6 @@ console.log("selectedDevice",selectedDevice)
                     <Controller
                       name="trolleyCategoryId"
                       control={control}
-                      defaultValue=""
                       rules={{
                         required: "Trolley type is required",
                       }}
@@ -516,7 +540,11 @@ console.log("selectedDevice",selectedDevice)
                           error={!!errors.trolleyCategoryId}
                           helperText={errors.trolleyCategoryId?.message}
                           onChange={handleInputChange}
-                          defaultValue={selectedDevice ? "" : ""}
+                          defaultValue={
+                            selectedDevice
+                              ? ''
+                              : ''
+                          }
                         />
                       )}
                     />
@@ -525,7 +553,13 @@ console.log("selectedDevice",selectedDevice)
                     <CustomTextField
                       name="trolleyColor"
                       label="Trolley color"
-                      value={color}
+                      value={
+                        color
+                          ? color
+                          : selectedDevice
+                            ? selectedDevice?.trolleyColor
+                            : color
+                      }
                       disabled
                     />
                   </Grid>
@@ -538,7 +572,7 @@ console.log("selectedDevice",selectedDevice)
               )}
               {activeStep === 2 && (
                 <Grid container justifyContent={"space-between"}>
-                  <SelectRoute rows={rows} setRows={setRows} />
+                  <SelectRoute rows={rows} setRows={setRows}  />
                 </Grid>
               )}
               {activeStep === 3 && (
@@ -547,6 +581,7 @@ console.log("selectedDevice",selectedDevice)
                     points={points}
                     finalSectionDropDownData={finalSectionDropDownData}
                     methods={methods}
+                    selectedDevice={selectedDevice}
                   />
                 </Grid>
               )}

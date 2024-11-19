@@ -30,28 +30,6 @@ interface StyledFormControlLabelProps extends FormControlLabelProps {
   checked: boolean;
 }
 
-const StyledFormControlLabel = styled((props: StyledFormControlLabelProps) => (
-  <FormControlLabel {...props} />
-))(({ theme, checked }) => ({
-  ".MuiFormControlLabel-label": checked && {
-    color: theme.palette.primary.main,
-  },
-}));
-function MyFormControlLabel(props: FormControlLabelProps) {
-  const radioGroup = useRadioGroup();
-console.log("radioGroup",radioGroup)
-  let checked = false;
-
-  if (radioGroup) {
-    checked = radioGroup?.value === props?.value;
-  }
-
-  return <StyledFormControlLabel checked={checked} {...props} />;
-}
-
-
-
-
 interface AssignProps {
   select: any;
   rowsPerPage: number;
@@ -60,27 +38,23 @@ interface AssignProps {
   setPage: React.Dispatch<React.SetStateAction<number>>;
   getAllList: any;
   searchQuery: string;
-  handleRadioChange: any;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   role?: any;
   handleInputChange?: any;
-  zoneId?: any;
-  departments?:any,
-  sections?:any,
-  lines?:any,
-  selectedDepartment?:string,
-  selectedSection?:string,
-  selectedLine?:string,
-  setTrolley: React.Dispatch<React.SetStateAction<string[]>>;
+  departments?: any;
+  sections?: any;
+  lines?: any;
+  selectedDepartment?: string;
+  selectedSection?: string;
+  selectedLine?: string;
 }
-export default function AssignAssessmentTabSelected({
+export default function AssignAssessmentTabNotSelected({
   select,
   rowsPerPage,
   getAllList,
   setRowsPerPage,
-  handleRadioChange,
   page,
   setPage,
   setSearchQuery,
@@ -89,16 +63,30 @@ export default function AssignAssessmentTabSelected({
   setLoading,
   handleInputChange,
   role,
-  zoneId,
   departments,
   sections,
   lines,
   selectedDepartment,
   selectedSection,
   selectedLine,
-  setTrolley,
 }: AssignProps) {
+  const getAllAssignAssessments: any = getAllList;
+  console.log("getAllListllll22", getAllList);
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(+event.target.value);
+  };
+
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -112,37 +100,16 @@ export default function AssignAssessmentTabSelected({
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDebouncedSearchQuery(event?.target?.value);
   };
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
-    setPage(newPage);
-  };
+  // departments.map((item, value)=>{
+  //   if(item._id === zoneId)
+  //   {
+  //     setSelectedDepartment(item?.label)
+  //   }
+  // })
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-  };
-  const getAllAssignAssessments: any = getAllList 
-    // ? getAllList?.users
-    // : getAllList?.device;
-console.log("getAllListllll22",getAllList)
-
-
-  const toggleTrolley = (id: string) => {
-    setTrolley((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((item) => item !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
-console.log("getAllList123",getAllList)
-console.log("getAllList456",getAllAssignAssessments)
-console.log("loading123456789",select)
+  console.log("getAllList123", getAllList);
+  console.log("getAllList456", getAllAssignAssessments);
+  console.log("loading123456789", select);
 
   return (
     <div>
@@ -174,7 +141,7 @@ console.log("loading123456789",select)
                         name: "department",
                       },
                     };
-                    handleInputChange(modifiedEvent); 
+                    handleInputChange(modifiedEvent);
                   }}
                   displayEmpty
                   renderValue={(selected) => {
@@ -186,7 +153,7 @@ console.log("loading123456789",select)
                   </MenuItem>
                   {departments.map((item: any, index: any) => (
                     <MenuItem key={index} value={item?._id}>
-                       {item?.label}
+                      {item?.label}
                     </MenuItem>
                   ))}
                 </Select>
@@ -209,10 +176,10 @@ console.log("loading123456789",select)
                       ...event,
                       target: {
                         ...event.target,
-                        name: "section", 
+                        name: "section",
                       },
                     };
-                    handleInputChange(modifiedEvent); 
+                    handleInputChange(modifiedEvent);
                   }}
                   displayEmpty
                   renderValue={(selected) => {
@@ -247,10 +214,10 @@ console.log("loading123456789",select)
                       ...event,
                       target: {
                         ...event.target,
-                        name: "line", 
+                        name: "line",
                       },
                     };
-                    handleInputChange(modifiedEvent); 
+                    handleInputChange(modifiedEvent);
                   }}
                   displayEmpty
                   renderValue={(selected) => {
@@ -317,7 +284,6 @@ console.log("loading123456789",select)
       <Grid container direction="row" mt={3}>
         {loading ? (
           <SkeletonCard width={250} arrayLength={5} />
-        
         ) : (
           <>
             {getAllAssignAssessments?.map((item: any, index: number) => {
@@ -325,52 +291,51 @@ console.log("loading123456789",select)
                 <>
                   <Grid
                     item
-                    key={item._id}
                     sm={2.8}
                     sx={{
-                      backgroundColor: "##F7F8F9",
+                      backgroundColor: "#F7F8F9",
                       border: "1px solid #ddd",
                       padding: "10px",
+                      display: "flex",
+                      alignItems: "center",
                       borderRadius: "8px",
                       marginBottom: "15px",
                     }}
-                    className="mt-20 assign-radio-grid"
+                    className="mt-20"
                   >
-                    <MyFormControlLabel
-                      className="assign-formlable"
-                      key={index}
-                      value={item?._id}
-                      label={
-                        <Typography className="width100">
-                          <Typography color="#000000">
-                          {`# ${item?.macId}`}
-                          </Typography>
-                          <Typography color="#000000">
-                          {item?.uId}
-                          </Typography>
-                          {/* <Tooltip
-                            describeChild
-                            title={item?.name ? item?.name : item?.deviceName}
-                            arrow
-                          >
-                            <Typography variant="subtitle1">
-                              {item?.user?.firstName
-                                ? item?.user?.firstName +
-                                  " " +
-                                  item?.user?.lastName
-                                : item?.deviceName}
-                            </Typography>
-                          </Tooltip> */}
-                        </Typography>
-                      }
-                      control={
-                        <Radio
-                          checked={
-                            select?.includes(item?._id)}
-                          onClick={() => toggleTrolley(item?._id)}
-                        />
-                      }
-                    />
+                    <Grid container direction="column" sx={{ flexGrow: 1 }}>
+                      <Typography
+                        sx={{
+                          color: "#000000",
+                          fontWeight: 400,
+                          fontSize: "16px",
+                        }}
+                      >
+                        {`Trolley name`}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          color: "#000000",
+                          fontWeight: 300,
+                          fontSize: "16px",
+                        }}
+                      >
+                        {"operatorName"}
+                      </Typography>
+                    </Grid>
+                    <Typography
+                      sx={{
+                        backgroundColor: "#00bd7e",
+                        color: "#ffffff",
+                        padding: "4px 12px",
+                        borderRadius: "16px",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        textAlign: "center",
+                      }}
+                    >
+                      {"shift"}
+                    </Typography>
                   </Grid>
                   <Grid item sm={0.2}></Grid>
                 </>

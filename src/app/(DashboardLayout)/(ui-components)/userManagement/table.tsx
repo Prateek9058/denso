@@ -1,24 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  Typography,
-  IconButton,
-  Tooltip,
-  Chip,
-  Button,
-} from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import moment from "moment";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
-import { saveAs } from "file-saver";
-import Papa from "papaparse";
 import { BsEye } from "react-icons/bs";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
-import { CategoryScale } from "chart.js";
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -40,14 +29,13 @@ const Table: React.FC<TableProps> = ({
   loading,
 }) => {
   const columns = [
-    "ID",
-    "Name",
-    "Job Role",
-    "Assign Trolleys",
-    "Avg waiting",
-    "Category",
-    "Shift",
-    "Action",
+    "Sno.",
+    "Trolley ID",
+    "Date",
+    "Issue",
+    "Av. repair time",
+    "Status]",
+    "View",
   ];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
@@ -78,46 +66,18 @@ const Table: React.FC<TableProps> = ({
     setOpenDialog(false);
   };
 
-  const getStatus = (str: string) => {
-    if (str?.toUpperCase() === "PRESENT")
-      return { status: "Present", color: "customChip activeGreen" };
-    else return { status: "Absent", color: "customChip activeRed" };
-  };
-  const getStatusInfo = (ele: string, index: number) => {
-    if (ele?.toUpperCase() === "PRESENT") {
-      return [
-        <Chip
-          key={index}
-          sx={{ width: "120px" }}
-          className="customChip activeGreen"
-          label={ele}
-        />,
-      ];
-    } else {
-      return [
-        <Chip
-          key={index}
-          className={getStatus(ele)?.color}
-          sx={{ width: "120px" }}
-          label={getStatus(ele)?.status}
-        />,
-      ];
-    }
-  };
-
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
-      uId: item?.uId ?? "N/A",
-      fullName: item?.fullName ? item?.fullName : "N/A",
-      jobRole: item?.jobRole ?? "N/A",
-      assignTrolley: item?.trolleyCount ?? "N/A",
-      avgWaitingTime: item?.avgWaitingTime?? "N/A",
-      category: item?.category ?? "N/A",
-      shiftName: item?.shiftName ?? "N/A",
+      sno: index + 1,
+      trolleyUid: item?.trolleyUid ?? "N/A",
+      trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
+      purchaseDate: moment(item?.purchaseDate).format("lll") ?? "N/A",
+      createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
+      zoneName: item?.zone ? `zone ${item?.zone}` : "N/A",
       Action: [
         <Grid container justifyContent="center" key={index}>
           <Grid item>
-            <Link href={`/man-power-tracking/${item?._id}`}>
+            <Link href={`/trolley/${item?._id}`}>
               <Tooltip title="View">
                 <IconButton size="small">
                   <BsEye color="#DC0032" />
@@ -129,7 +89,7 @@ const Table: React.FC<TableProps> = ({
       ],
     }));
   };
-console.log("deviceData table",deviceData)
+
   return (
     <>
       <CommonDialog
@@ -152,9 +112,9 @@ console.log("deviceData table",deviceData)
         >
           <Grid item>
             <Typography variant="h5">
-              {"Manpower Details | "}
-              {/* Showing {deviceData ? deviceData?.data?.length : 0} out of{" "} */}
-              Showing {deviceData?.data?.length} out of {deviceData?.totalCount}
+              {" "}
+              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
+              {deviceData?.totalCount} Trolleys
             </Typography>
           </Grid>
           <Grid item>

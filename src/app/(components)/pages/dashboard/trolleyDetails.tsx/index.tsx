@@ -5,10 +5,8 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
 import Image from "next/image";
 import Trolley from "../../../../../../public/Img/trolleyDashboard.png";
-
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
-
 const chartData = [
   {
     name: "Total trolleys",
@@ -26,11 +24,10 @@ const chartData = [
     color: "#008000",
   },
 ];
-
 const TrolleyDetails = () => {
   return (
-    <Grid mt={2} item md={6} sm={12} xs={12}>
-      <Grid sx={{ backgroundColor: "white", borderRadius: "10px" }} p={2}>
+    <Grid mt={2} item md={6} sm={12} xs={12} sx={{ height: "100%" }}>
+      <Grid sx={{ backgroundColor: "white", borderRadius: "10px" ,minHeight:'470px'}} p={2}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Typography variant="h5">Trolley details</Typography>
           <Grid>
@@ -49,7 +46,6 @@ const TrolleyDetails = () => {
             </Grid>
           </Grid>
         </Grid>
-
         <Grid container mt={1} spacing={2} justifyContent="center">
           {chartData.map((item, index) => (
             <Grid item xs={12} sm={4} textAlign="center" key={index}>
@@ -64,9 +60,12 @@ const TrolleyDetails = () => {
               <div
                 style={{
                   position: "relative",
-                  width: "250px",
-                  height: "250px",
-                  marginLeft: "8px",
+                  width: "100%",
+                  maxWidth: "250px",
+                  height: "auto",
+                  aspectRatio: "1",
+                  marginLeft: "auto",
+                  marginRight: "auto",
                 }}
               >
                 <Doughnut
@@ -76,7 +75,7 @@ const TrolleyDetails = () => {
                       {
                         label: item.name,
                         data: [item.value, 100 - item.value],
-                        backgroundColor: [item.color, "#e0e0e0"],
+                        backgroundColor: [item.color, "#E0E0E0"],
                         borderWidth: 1,
                       },
                     ],
@@ -92,6 +91,7 @@ const TrolleyDetails = () => {
                     },
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: "70%",
                   }}
                 />
                 <div
@@ -137,5 +137,4 @@ const TrolleyDetails = () => {
     </Grid>
   );
 };
-
 export default TrolleyDetails;

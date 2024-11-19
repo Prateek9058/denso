@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import AddDevice from "../(addDevice)/addDevice";
+import AddDevice from "../(addDevice)/addManPower";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -45,10 +45,10 @@ const Page: React.FC = () => {
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
     { label: "Manpower Tracking ", link: "/man-power-tracking" },
-    {
-      label: userDetails?.fullName ? userDetails?.fullName : deviceId,
-      link: "",
-    },
+    // {
+    //   label: userDetails?.fullName ? userDetails?.fullName : deviceId,
+    //   link: "",
+    // },
   ];
   const getDataFromChildHandler = (date: any, dataArr: any) => {
     setDate(date);
@@ -126,6 +126,8 @@ const Page: React.FC = () => {
     const formattedName = name?.toUpperCase().replace(/\s+/g, "-");
     router.push(`/man-power-tracking/${deviceId}/${formattedName}`);
   };
+  console.log("deviceIdMangg",userDetails)
+
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
@@ -183,7 +185,7 @@ const Page: React.FC = () => {
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={userDetails ? userDetails?.fullName : ""}
+                  value={userDetails ? userDetails?.fullName : ""}
                 />
               </Grid>
               <Grid item md={5.8} xs={12}>
@@ -196,20 +198,7 @@ const Page: React.FC = () => {
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={userDetails ? userDetails?.uId : ""}
-                />
-              </Grid>
-              <Grid item md={5.8} xs={12}>
-                <Typography
-                  variant="subtitle1"
-                  fontWeight={500}
-                  component="label"
-                >
-                  Mac ID
-                </Typography>
-                <CustomTextField
-                  disabled
-                  defaultValue={userDetails ? userDetails?.macId : ""}
+                  value={userDetails ? userDetails?.uId : ""}
                 />
               </Grid>
               <Grid item md={5.8} xs={12}>
@@ -222,7 +211,7 @@ const Page: React.FC = () => {
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={userDetails ? userDetails?.email : ""}
+                  value={userDetails ? userDetails?.email : ""}
                 />
               </Grid>
               <Grid item md={5.8} xs={12}>
@@ -235,7 +224,7 @@ const Page: React.FC = () => {
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={userDetails ? userDetails?.phoneNumber : ""}
+                  value={userDetails ? userDetails?.phoneNumber : ""}
                 />
               </Grid>
               <Grid item md={5.8} xs={12}>
@@ -248,7 +237,7 @@ const Page: React.FC = () => {
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={userDetails ? userDetails?.age : ""}
+                  value={userDetails ? userDetails?.age : ""}
                 />
               </Grid>
               <Grid item md={5.8} xs={12}>
@@ -261,7 +250,8 @@ const Page: React.FC = () => {
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={userDetails ? userDetails?.jobRole : ""}
+                  value={userDetails ? userDetails?.userRole
+                    : ""}
                 />
               </Grid>
               <Grid item md={5.8} xs={12}>
@@ -274,7 +264,7 @@ const Page: React.FC = () => {
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={userDetails ? userDetails?.shiftName : ""}
+                  value={userDetails ? userDetails?.shift?.shiftName : ""}
                 />
               </Grid>
             </Grid>
@@ -290,7 +280,7 @@ const Page: React.FC = () => {
         <Grid item>
           <Typography variant="h4">Location</Typography>
         </Grid>
-        <Grid item>
+        {/* <Grid item>
           {" "}
           <Button
             onClick={() => handleRoute(userDetails?.fullName)}
@@ -303,7 +293,7 @@ const Page: React.FC = () => {
           >
             Animated route
           </Button>
-        </Grid>
+        </Grid> */}
       </Grid>
       <EmpTrack userDetails={deviceId} />
       <Grid container justifyContent={"space-between"}>

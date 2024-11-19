@@ -110,9 +110,9 @@ const Page: React.FC = () => {
         getDeviceData={getAllShifts}
       />
       <ManagementGrid
-        moduleName="Attendance Details"
-        subHeading="Track Attendance"
-        button="Add Shift"
+        moduleName="Trolley history"
+        subHeading="Trolley detials"
+        button="Trolley name"
         handleClickOpen={handleClickOpen}
         breadcrumbItems={breadcrumbItems}
       />

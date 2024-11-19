@@ -57,7 +57,7 @@ const Page: React.FC = () => {
     {
       title: "Trolleys",
       value: 0,
-      active: "0",
+      active: deviceData? deviceData?.activeTrollees:"0",
       assigned: "0",
       in: "0",
       nonActive: "0",
@@ -77,7 +77,7 @@ const Page: React.FC = () => {
       icon: salesIcon,
     },
     {
-      title: "Geofence",
+      title: "Under maintenance",
       value: 0,
       active: "0",
       assigned: "0",
@@ -122,7 +122,7 @@ console.log("deviceData",deviceData)
       if (res?.status === 200 || res?.status === 201) {
         setDeviceData(res?.data?.data);
         setLoading(false);
-        console.log('Api responseee',res);
+        console.log('Api responseee',res?.data?.data);
       }
     } catch (err) {
       setLoading(false);
@@ -191,7 +191,6 @@ console.log("deviceData",deviceData)
           getCategoryData={getTrolleyData}
         />
       )}
-
       <UploadFile
         openUpload={openUpload}
         setOpenUpload={setOpenUpload}
@@ -207,7 +206,6 @@ console.log("deviceData",deviceData)
         breadcrumbItems={breadcrumbItems}
         handleInputChange={handleInputChange}
       />
-
       <Tabs
         value={value}
         handleChange={handleChange}

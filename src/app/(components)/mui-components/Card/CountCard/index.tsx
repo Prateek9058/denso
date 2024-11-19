@@ -24,6 +24,7 @@ interface CardProps {
   progress?: boolean;
 }
 const CountCard: React.FC<CardProps> = ({ cardDetails, progress }) => {
+  console.log("cardDetails",cardDetails)
   return (
     <Grid container spacing={2}>
       {cardDetails?.map((stat: any, index: any) => (
@@ -71,20 +72,49 @@ const CountCard: React.FC<CardProps> = ({ cardDetails, progress }) => {
                     />
                   </Box>
 
-                  <Grid container justifyContent="space-between" mt={1}>
+                  {stat?.title == 'Trolleys' && <Grid container justifyContent="space-between" mt={1}>
                     <Typography variant="body2" style={{ color: "#DC0032" }}>
                       <span style={{ color: "#DC0032", fontSize: "18px" }}>
                         ●
                       </span>{" "}
-                      Not assigned - {2}
+                       Active - {stat?.active ?? 0}
                     </Typography>
                     <Typography variant="body2">
                       <span style={{ color: "#b0bec5", fontSize: "18px" }}>
                         ●
                       </span>{" "}
-                      Repaired - 17
+                      Non-active - {stat?.nonActive ?? 0}
                     </Typography>
-                  </Grid>
+                  </Grid>}
+                  {stat?.title == 'Assign status' && <Grid container justifyContent="space-between" mt={1}>
+                    <Typography variant="body2" style={{ color: "#DC0032" }}>
+                      <span style={{ color: "#DC0032", fontSize: "18px" }}>
+                        ●
+                      </span>{" "}
+                       Not assigned- {stat?.notAssigned ?? 0}
+                    </Typography>
+                    <Typography variant="body2">
+                      <span style={{ color: "#b0bec5", fontSize: "18px" }}>
+                        ●
+                      </span>{" "}
+                      Assigned - {stat?.assigned ?? 0}
+                    </Typography>
+                  </Grid>}
+                  {stat?.title == 'Under maintenance' && <Grid container justifyContent="space-between" mt={1}>
+                    <Typography variant="body2" style={{ color: "#DC0032" }}>
+                      <span style={{ color: "#DC0032", fontSize: "18px" }}>
+                        ●
+                      </span>{" "}
+                       Repaired - {stat?.repair ?? 0}
+                    </Typography>
+                    <Typography variant="body2">
+                      <span style={{ color: "#b0bec5", fontSize: "18px" }}>
+                        ●
+                      </span>{" "}
+                      Not-repaired - {stat?.notRepaired ?? 0}
+                    </Typography>
+                  </Grid>}
+
                 </Box>
               )}
             </CardContent>

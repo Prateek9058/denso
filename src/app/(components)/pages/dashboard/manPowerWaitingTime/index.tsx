@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Grid, Typography, Button } from "@mui/material";
 import MultiBarChart from "@/app/(components)/mui-components/CustomGraph/MultiBarChart";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
-
-const Page = () => {
+const manPowerWaitingTime = () => {
   const [date, setDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
   const getDataFromChildHandler = (date: any, dataArr: any) => {
@@ -43,8 +42,8 @@ const Page = () => {
     },
   ];
   return (
-    <Grid mt={2} item md={6} sm={12} xs={12}>
-      <Grid sx={{ backgroundColor: "white", borderRadius: "10px" }} p={2}>
+    <Grid mt={2} item md={6} sm={12} xs={12} sx={{ height: "100%" }}>
+      <Grid sx={{ backgroundColor: "white", borderRadius: "10px",minHeight:'470px' }} p={2}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h5">
@@ -62,7 +61,7 @@ const Page = () => {
         </Grid>
       </Grid>
     </Grid>
+    // </Grid>
   );
 };
-
-export default Page;
+export default manPowerWaitingTime;

@@ -4,8 +4,8 @@ import manPower from "../../../../../public/Img/manpower.png";
 import manPowerActive from "../../../../../public/Img/manpowwerActive.png";
 import trolly from "../../../../../public/Img/trolley.png";
 import trollyActive from "../../../../../public/Img/trollyActive.png";
-import attendance from "../../../../../public/Img/attendance.png";
-import attendanceActive from "../../../../../public/Img/attendanceActive.png";
+import trolleyIcon from "../../../../../public/Img/trolleyHistrotyIcon.png";
+import activeTrolleyIcon from "../../../../../public/Img/activeTrolleyHistrotyIcon.png";
 import dasboardIcon from "../.../../../../.././../public/Img/dashboard.png";
 import setting from "../.../../../../.././../public/Img/setting1.png";
 import alert from "../.../../../../.././../public/Img/alerts.png";
@@ -15,6 +15,8 @@ import Organization from "../.../../../../.././../public/Img/gg_organisation.png
 import OrganizationAct from "../.../../../../.././../public/Img/gg_organisationActive.png";
 import Maintence from "../.../../../../.././../public/Img/maintenceT.png";
 import MaintenceAct from "../.../../../../.././../public/Img/maintenaceAct.png";
+import UserManagementIcon from '../.../../../../.././../public/Img/userManagementIcon.png';
+import UserManagementActiveIcon from '../.../../../../.././../public/Img/userManagementActiveIcon.png';
 const Menuitems = [
   {
     id: uniqueId(),
@@ -39,9 +41,9 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Attendance Details",
-    icon: attendance,
-    iconActive: attendanceActive,
+    title: "Trolley history",
+    icon: trolleyIcon,
+    iconActive: activeTrolleyIcon,
     href: "/attendance",
   },
   {
@@ -50,6 +52,13 @@ const Menuitems = [
     icon: Maintence,
     iconActive: MaintenceAct,
     href: "/maintenance",
+  },
+  {
+    id: uniqueId(),
+    title: "User management",
+    icon: UserManagementIcon,
+    iconActive: UserManagementActiveIcon,
+    href: "/userManagement",
   },
   {
     id: uniqueId(),

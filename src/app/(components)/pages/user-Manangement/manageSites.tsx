@@ -1,8 +1,10 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import axiosInstance from "@/app/api/axiosInstance";
-import AddSite from "./addShift";
+import AddShift from "./addShift";
 import { Grid, Card, Typography, Button, Box } from "@mui/material";
+import noData from "../../../../../public/Img/nodata.png";
+import Image from "next/image";
 
 // Define the type for each shift
 interface Shift {
@@ -17,9 +19,13 @@ interface Shift {
 //   { id: 3, name: "Shift 3", timeRange: "03:00 PM - 06:00 PM" },
 // ];
 
-const ShiftCard: React.FC<{ shift: Shift; handleClickOpen: (id: number) => void; cardData: any }> = ({ shift, handleClickOpen, cardData }) => {
-  console.log("cardData11111",cardData)
-  
+const ShiftCard: React.FC<{
+  shift: Shift;
+  handleClickOpen: (id: number) => void;
+  cardData: any;
+}> = ({ shift, handleClickOpen, cardData }) => {
+  console.log("cardData11111", cardData);
+
   return (
     <Card
       variant="outlined"
@@ -31,8 +37,10 @@ const ShiftCard: React.FC<{ shift: Shift; handleClickOpen: (id: number) => void;
       }}
     >
       <Typography variant="body1">{shift.timeRange}</Typography>
-      <Button sx={{ color: "red" }} size="small"
-        onClick={()=>handleClickOpen(shift.id)}
+      <Button
+        sx={{ color: "red" }}
+        size="small"
+        onClick={() => handleClickOpen(shift.id)}
       >
         Edit
       </Button>
@@ -60,7 +68,7 @@ function ManageSites() {
     try {
       const res = await axiosInstance.get("shifts/getAllShifts/");
       if (res?.status === 200 || res?.status === 201) {
-        console.log("get all shift data", res)
+        console.log("get all shift data", res);
         setAllShifts(res?.data?.data?.data);
       }
     } catch (err) {
@@ -70,23 +78,34 @@ function ManageSites() {
     }
   };
   const handleClickOpenUpload = (shiftId: number) => {
-    const selectedShiftData = allShifts.find((shift: any) => shift._id === shiftId); 
+    const selectedShiftData = allShifts.find(
+      (shift: any) => shift._id === shiftId
+    );
     setSelectedShift(selectedShiftData);
     setOpen(true);
   };
-  const shifts: Shift[] = allShifts.map((site:any): Shift => ({
-    id: site._id,
-    name: site.shiftName,
-    timeRange: `${new Date(site.startTime).toLocaleTimeString()} - ${new Date(site.endTime).toLocaleTimeString()}`
-  }));
-console.log("shifts data",shifts)
+  const shifts: Shift[] = allShifts.map(
+    (site: any): Shift => ({
+      id: site._id,
+      name: site.shiftName,
+      timeRange: `${new Date(site.startTime).toLocaleTimeString()} - ${new Date(site.endTime).toLocaleTimeString()}`,
+    })
+  );
+  const handleClickOpenAddShift = () => {
+    setOpen(true);
+  };
   return (
     <>
-      <AddSite open={open} setOpen={setOpen} getDeviceData={getAllSites} selectedShift={selectedShift}  />
+      <AddShift
+        open={open}
+        setOpen={setOpen}
+        getDeviceData={getAllSites}
+        selectedShift={selectedShift}
+      />
       <ManagementGrid
         moduleName="Shifts:"
         button="Add Shift"
-        handleClickOpen={handleClickOpenUpload}
+        handleClickOpen={handleClickOpenAddShift}
       />
       <Grid
         container
@@ -96,16 +115,31 @@ console.log("shifts data",shifts)
         justifyContent="space-between"
         bgcolor={"white"}
       >
-        {shifts.map((shift) => (
-          <Grid item xs={12} sm={4} key={shift.id}>
-            <Box>
-              <Typography variant="h6" gutterBottom>
-                {shift.name}
-              </Typography>
-              <ShiftCard shift={shift} handleClickOpen={handleClickOpenUpload} cardData={shift.id} />
-            </Box>
+        {!loading && shifts.length === 0 ? (
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Image src={noData} alt="no data found " />
           </Grid>
-        ))}
+        ) : (
+          shifts.slice(0, 4).map((shift) => (
+            <Grid item xs={12} sm={4} key={shift.id}>
+              <Box>
+                <Typography variant="h6" gutterBottom>
+                  {shift.name}
+                </Typography>
+                <ShiftCard
+                  shift={shift}
+                  handleClickOpen={handleClickOpenUpload}
+                  cardData={shift.id}
+                />
+              </Box>
+            </Grid>
+          ))
+        )}
       </Grid>
     </>
   );

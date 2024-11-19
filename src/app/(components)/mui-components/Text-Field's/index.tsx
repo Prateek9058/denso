@@ -19,7 +19,7 @@ interface CustomTextFieldProps {
   error?: boolean;
   helperText?: any;
   name?: any;
-  value?: string;
+  value?: any;
   defaultValue?: any;
   select?: any;
   selectData?: any;
@@ -55,10 +55,10 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         name={name}
         label={label}
         error={error}
-        value={value}
+        value={value ?? ''}
         type={field === 'password' ? (showPassword ? "text" : "password") : field}
         select={!!select}
-        defaultValue={defaultValue}
+        defaultValue={defaultValue ?? ''}
         variant="outlined"
         placeholder={placeholder}
         helperText={helperText}
@@ -86,7 +86,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         }}
       >
         {" "}
-        {console.log("slectDat ",selectData)}
+        {console.log("slectDatjj ",selectData)}
         {select && selectData?.length > 0 ? (
           selectData?.map((option: any) => (
             <MenuItem
@@ -94,7 +94,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
               value={option?._id}
               sx={{ fontSize: "12px" }}
             >
-               {option?.label ? option?.label : ''}
+               {option?.label ? option?.label : option?.shiftName}
             </MenuItem>
           ))
         ) : (

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import {
   IconButton,
@@ -9,6 +9,7 @@ import {
   Grid,
 } from "@mui/material";
 import FirstTab from "./SelectTab";
+import SecondTab from "./NotSelectTab";
 import ToastComponent, {
   notifyError,
   notifySuccess,
@@ -27,9 +28,20 @@ interface Props {
   url: string;
   deviceAssign?: boolean;
   role?: any;
+  // setTrolley:React.Dispatch<React.SetStateAction<[]>>;
+  setTrolley: React.Dispatch<React.SetStateAction<string[]>>;
 }
 interface TabData {
   label: string;
+}
+interface FinalSectionDropDownDataProps {
+  createdAt: string;
+  createdBy: string;
+  name: string;
+  type: string;
+  uId: string;
+  updatedAt: string;
+  _id: string;
 }
 const tabs: TabData[] = [{ label: "Not assigned" }, { label: "Assigned" }];
 export default function AssignAssessment({
@@ -39,6 +51,7 @@ export default function AssignAssessment({
   title,
   deviceAssign,
   role,
+  setTrolley,
 }: Props) {
   const { handleSubmit, reset } = useForm();
   const [select, setSelect] = useState<any[]>([]);
@@ -47,41 +60,150 @@ export default function AssignAssessment({
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [itemId, setItemId] = useState<string | undefined>("");
   const [getAllList, setGetAllList] = useState<any>([]);
+  // const [getTabDtata, setGetTabDtata] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [value, setTabValue] = useState<number>(0);
+  const [finalSectionDropDownData, setFinalSectionDropDownData] = useState<FinalSectionDropDownDataProps[]>([]);
+  const [zoneId, setZoneId] = useState<any>("");
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
+  const [selectedSectionId, setSelectedSectionId] = useState<any>("");
+  const [selectedLineId, setSelectedLineId] = useState<any>("");
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
+  const [selectedSection, setSelectedSection] = useState<string>("");
+  const [selectedLine, setSelectedLine] = useState<string>("");
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     console.log("valueeee",newValue)
     setTabValue(newValue);
   };
-  const [zoneId, setZoneId] = useState<any>("");
+  const departments = useMemo(() => 
+    finalSectionDropDownData
+      .filter(item => item.type === "department")
+      .map(item => ({ label: item.name, _id: item._id })),
+    [finalSectionDropDownData]
+  );
+
+  const sections = useMemo(() => 
+    finalSectionDropDownData
+      .filter(item => item.type === "section")
+      .map(item => ({ label: item.name, _id: item._id })),
+    [finalSectionDropDownData]
+  );
+
+  const lines = useMemo(() => 
+    finalSectionDropDownData
+      .filter(item => item.type === "line")
+      .map(item => ({ label: item.name, _id: item._id })),
+    [finalSectionDropDownData]
+  );
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (name == 'department') {
+      setSelectedDepartmentId(value);
+      const selectDepartment = departments.find((department) => department?._id === value);
+      if (selectDepartment) {
+        setSelectedDepartment(selectDepartment?.label);
+      }
+    }else if(name == 'section'){
+      setSelectedSectionId(value);
+      const selectSection = sections.find((section) => section?._id === value);
+      if (selectSection) {
+        setSelectedSection(selectSection?.label);
+      }
+    }else if(name == 'line'){
+      setSelectedLineId(value);
+      const selectLine = lines.find((line) => line?._id === value);
+      if (selectLine) {
+        setSelectedLine(selectLine?.label);
+      }
+    }
     const selectedZone = event.target.value;
+    console.log("eventevent",event.target.name)
     setZoneId(selectedZone);
   };
-  /// api ti get datas  ///
+
   const getData = async () => {
     setLoading(true);
     try {
       let res = await axiosInstance.get(
         `${url}?page=${
           page + 1
-        }&limit=${rowsPerPage}&searchQuery=${searchQuery}&role=${role}`
+        }&limit=${rowsPerPage}&searchQuery=${searchQuery}`
       );
 
       if (res?.status === 200 || res?.status === 201) {
-        console.log(res);
-        setGetAllList(res?.data?.data);
-        // setLoading(false);
+        setGetAllList(res?.data?.data?.data);
       }
     } catch (err) {
-      // setLoading(false);
+      console.error("Error fetching data:", err);
+    }finally {
+      setLoading(false);
+    }
+  };
+  const getTableData = async () => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.get(
+        `trolleys/getAllTrolleys`, 
+        {
+          params: {
+            page: page + 1,
+            limit: rowsPerPage,
+            searchQuery: searchQuery || "", 
+            status: value === 0 ? "false" : "false",
+            departmentId: selectedDepartmentId || "", 
+            sectionId: selectedSectionId || "",
+            lineId: selectedLineId || "",
+          }
+        }
+      );
+      if (res?.status === 200 || res?.status === 201) {
+        setGetAllList(res?.data?.data?.data);
+      }
+    } catch (err) {
+      console.error("Error fetching table data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const getFinalSectionDropdownData = async () => {
+    setLoading(true);
+    try {
+      const [departmentRes, sectionRes, lineRes] = await Promise.all([
+        axiosInstance.get(`organizations/getAllData?type=department`),
+        axiosInstance.get(`organizations/getAllData?type=section`),
+        axiosInstance.get(`organizations/getAllData?type=line`),
+      ]);
+
+      const validResponses = [departmentRes, sectionRes, lineRes].filter(
+        (res) => res?.status === 200 || res?.status === 201
+      );
+
+      if (validResponses.length > 0) {
+        const allData = validResponses.flatMap(
+          (res) => res?.data?.data?.data || []
+        );
+        setFinalSectionDropDownData(allData);
+      } else {
+        console.log("No data available for dropdown.");
+      }
+    } catch (err) {
+      console.error("Error fetching section dropdown data:", err);
+    }
+    finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
     if (open) {
       getData();
+      getFinalSectionDropdownData();
     }
   }, [open, page, rowsPerPage, searchQuery]);
+
+  useEffect(() => {
+      getTableData();
+  }, [value,zoneId, page, rowsPerPage, searchQuery]);
 
   const handleRadioChange = (
     item: any,
@@ -113,7 +235,7 @@ export default function AssignAssessment({
     setSearchQuery("");
     reset();
   };
-
+console.log("getAllList123",getAllList)
   const handleAssessmentSubmit = async () => {
     if (!Boolean(select)) {
       notifyError("Please select at least one item!");
@@ -157,12 +279,19 @@ export default function AssignAssessment({
           setLoading={setLoading}
           role={role}
           zoneId={zoneId}
+          departments={departments}
+          sections={sections}
+          lines={lines}
+          selectedDepartment={selectedDepartment}
+          selectedSection={selectedSection}
+          selectedLine={selectedLine}
+          setTrolley={setTrolley}
         />
       ),
     },
     {
       component: (
-        <FirstTab
+        <SecondTab
           select={select}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
@@ -171,17 +300,21 @@ export default function AssignAssessment({
           getAllList={getAllList}
           setSearchQuery={setSearchQuery}
           searchQuery={searchQuery}
-          handleRadioChange={handleRadioChange}
           loading={loading}
           handleInputChange={handleInputChange}
           setLoading={setLoading}
           role={role}
-          zoneId={zoneId}
+          departments={departments}
+          sections={sections}
+          lines={lines}
+          selectedDepartment={selectedDepartment}
+          selectedSection={selectedSection}
+          selectedLine={selectedLine}
         />
       ),
     },
   ];
-  console.log("valueeee")
+  console.log("zoneId",zoneId)
 
   return (
     <Grid item xs={12} md={12}>

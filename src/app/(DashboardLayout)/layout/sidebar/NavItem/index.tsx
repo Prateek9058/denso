@@ -21,7 +21,6 @@ type NavGroup = {
   href?: any;
   onClick?: React.MouseEvent<HTMLButtonElement, MouseEvent>;
 };
-
 interface ItemType {
   item: NavGroup;
   onClick: (event: React.MouseEvent<HTMLElement>) => void;
@@ -29,16 +28,12 @@ interface ItemType {
   level?: number | any;
   pathDirect: string;
 }
-
 const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
   const Icon = item.icon;
   const IconActive = item?.iconActive;
   const theme = useTheme();
-
   const ListItemStyled = styled(ListItem)(() => ({
     padding: 0,
-
-    // backgroundColor:'lime',
     ".MuiButtonBase-root": {
       whiteSpace: "nowrap",
       marginBottom: "12px",
@@ -47,32 +42,36 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
       backgroundColor: level > 1 ? "transparent !important" : "inherit",
       color: "#464255",
       paddingLeft: "20px",
+      display: "flex", // Ensure the icon and text are in a row
+      alignItems: "center", // Center them vertically
       "&:hover": {
-        backgroundColor: "#ff9999",
+        backgroundColor: "#FF9999",
         color: "#464255",
-        // paddingLeft:15,
-        padding:10,
-
+        padding: 10,
       },
       "&.Mui-selected": {
         color: "#FFFFFF",
         backgroundColor: "#DC0032",
-        // paddingHorizontal:15,
-        padding:10,
-        // margin:10,
+        padding: 10,
         "&:hover": {
           backgroundColor: "#DC0032",
           color: "#FFFFFF",
-          // padding:15,
-        padding:10,
+          padding: 10,
         },
       },
     },
   }));
-  
-
+  const TextStyled = styled(ListItemText)(() => ({
+    display: "inline-block", // Ensure text is inline with icon
+    marginLeft: "10px", // Space between icon and text
+    maxWidth: "calc(100% - 30px)", // Adjust based on icon size and padding
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap", // Prevent wrapping
+    transition: "max-width 0.2s ease",
+  }));
   return (
-    <List component="div" disablePadding key={item?.id}  >
+    <List component="div" disablePadding key={item?.id}>
       <ListItemStyled>
         <ListItemButton
           component={Link}
@@ -81,23 +80,22 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
           selected={pathDirect.startsWith(item?.href)}
           target={item.external ? "_blank" : ""}
           onClick={onClick}
-          sx={[
-            {
-              justifyContent: "initial",
-            },
-          ]}
+          sx={{
+            justifyContent: "initial",
+          }}
         >
           <Image
             src={pathDirect.startsWith(item?.href) ? IconActive : Icon}
             alt="man power track"
+            width={24}
+            height={24}
           />
-          <ListItemText sx={{ px:2.7 }}>
-            <>{item?.title}</>
-          </ListItemText>
+          <TextStyled>
+            {item?.title}
+          </TextStyled>
         </ListItemButton>
       </ListItemStyled>
     </List>
   );
 };
-
 export default NavItem;

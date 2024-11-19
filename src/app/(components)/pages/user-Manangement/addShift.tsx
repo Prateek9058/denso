@@ -51,16 +51,13 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     getValues,
     reset,
   } = useForm();
-  const [startTime, setStartTime] = React.useState<Dayjs | null>(
-    dayjs('')
-  );
-  const [endTime, setEndTime] = React.useState<Dayjs | null>(
-    dayjs('')
-  );
+  const [startTime, setStartTime] = React.useState<Dayjs | null>(dayjs(""));
+  const [endTime, setEndTime] = React.useState<Dayjs | null>(dayjs(""));
   useEffect(() => {
-    setStartTime(dayjs(dayjs(selectedShift?.startTime).format('lll')))
-    setEndTime(dayjs(dayjs(selectedShift?.endTime).format("lll")))
-  }, [selectedShift]);
+    setValue("shiftName", selectedShift?.shiftName);
+    setStartTime(dayjs(dayjs(selectedShift?.startTime).format("lll")));
+    setEndTime(dayjs(dayjs(selectedShift?.endTime).format("lll")));
+  }, [selectedShift, open]);
 
   const handleClose = () => {
     setOpen(false);
@@ -76,6 +73,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const onSubmit = async () => {
     let res;
     const formData = getValues();
+
     const shiftId = selectedShift?._id;
     const body = {
       shiftName: formData?.shiftName,
@@ -85,17 +83,14 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     try {
       if (selectedShift) {
         res = await axiosInstance.patch(
-          `/api/v1/shifts/updateShiftTime/${shiftId}`,
+          `shifts/updateShiftTime/${shiftId}`,
           body
         );
       } else {
-        res = await axiosInstance.post(
-          `/api/v1/shifts/addShift/`,
-          body
-        );
+        res = await axiosInstance.post(`shifts/addShift/`, body);
       }
       if (res?.status === 200 || res?.status === 201) {
-        notifySuccess("Shift added successfully");
+        {selectedShift?notifySuccess("Shift updated successfully"):notifySuccess("Shift added successfully")}
         getDeviceData();
         handleClose();
       }
@@ -129,7 +124,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
               mt={1}
             >
               <Grid item md={12}>
-                <Stack >
+                <Stack>
                   <CustomTextField
                     {...register("shiftName", {
                       required: "Shift Name is required",
@@ -137,12 +132,10 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                     name="shiftName"
                     label="Shift Name"
                     placeholder="Enter Shift Name"
-                    error={!!errors.name}
-                    helperText={errors.name?.message}
+                    error={!!errors.shiftName}
+                    helperText={errors.shiftName?.message}
                     onChange={handleInputChange}
-                    defaultValue={
-                      selectedShift ? selectedShift?.shiftName : ""
-                    }
+                    defaultValue={selectedShift ? selectedShift?.shiftName : ""}
                   />
                 </Stack>
               </Grid>

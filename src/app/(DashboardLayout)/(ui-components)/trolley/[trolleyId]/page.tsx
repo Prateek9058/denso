@@ -56,7 +56,7 @@ interface ErrorResponse {
   error?: string;
 }
 const Page: React.FC = () => {
-  const { trolleyId } = useParams<{ trolleyId: string }>();
+  const { trolleyId } = useParams<{ trolleyId: any }>();
   const router = useRouter();
   const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
@@ -162,7 +162,7 @@ const Page: React.FC = () => {
     const formattedName = name?.toUpperCase().replace(/\s+/g, "-");
     router.push(`/trolley/${trolleyId}/${formattedName}`);
   };
-
+console.log("trolleyDetails",trolleyDetails)
   console.log("trolleyCoordinates",trolleyCoordinates)
   return (
     <Grid sx={{ padding: "12px 15px" }}>
@@ -184,7 +184,7 @@ const Page: React.FC = () => {
         moduleName="Trolley Details"
         subHeading="Manage Trolley details"
         button="Edit Trolley"
-        buttonAgent={"Add Repair Info"}
+        buttonAgent={"Mark trolley for repair"}
         deleteBtn="Delete Trolley"
         handleClickOpen={handleClickOpen}
         handleClickOpenAgent={handleClickOpenAgent}
@@ -339,7 +339,7 @@ const Page: React.FC = () => {
         <Grid item>
           <Typography variant="h4">Location</Typography>
         </Grid>
-        <Grid item>
+        {/* <Grid item>
           {" "}
           <Button
             onClick={() => handleRoute(trolleyDetails?.trolleyUid)}
@@ -352,7 +352,7 @@ const Page: React.FC = () => {
           >
             Animated route
           </Button>
-        </Grid>
+        </Grid> */}
       </Grid>
       {trolleyCoordinates.length> 0 && (<TrolleyTrack userDetails={trolleyId} trolleyCoordinates={trolleyCoordinates} />) }
 

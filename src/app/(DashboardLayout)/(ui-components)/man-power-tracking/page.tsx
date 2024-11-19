@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
-import { Grid , Box, Button } from "@mui/material";
-import AddDevice from "./(addDevice)/addDevice";
+import { Grid, Box, Button } from "@mui/material";
+import AddDevice from "./(addDevice)/addManPower";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -24,7 +24,7 @@ interface TabData {
   label: string;
 }
 const Page: React.FC = () => {
-  const { selectedSite } = useSitesData();
+  // const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -34,28 +34,26 @@ const Page: React.FC = () => {
   const [zone, setZone] = useState<any>([]);
   const [zoneId, setZoneId] = useState<any>("");
   const [value, setTabValue] = useState<number>(0);
-  const tabs: TabData[] = [
-    { label: "Assigned" },
-    { label: "Not assigned" },
-  ];
+  const tabs: TabData[] = [{ label: "Assigned" }, { label: "Not assigned" }];
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
     setSearchQuery("");
     setPage(0);
     setRowsPerPage(10);
   };
-
+console.log("valuekkkk",value)
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedZone = event.target.value;
     setZoneId(selectedZone);
   };
   const getEmployeeData = useCallback(async () => {
-    if (!selectedSite?._id) return;
     setLoading(true);
+
     try {
       const res = await axiosInstance.get(
-        `employees/getAllEmployees/${selectedSite?._id}?page=${page + 1
-        }&limit=${rowsPerPage}&search=${searchQuery}&zone=${zoneId}`
+        `employees/getAllEmployees?page=${
+          page + 1
+        }&limit=${rowsPerPage}&search=${searchQuery}&sortType=-1&status=${value == 0 ? "true" : "false"}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setDeviceData(res?.data?.data);
@@ -67,30 +65,27 @@ const Page: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedSite, page, rowsPerPage, searchQuery, zoneId]);
+  }, [ page, rowsPerPage, searchQuery, zoneId, value]);
   useEffect(() => {
     getEmployeeData();
-  }, [getEmployeeData]);
+  }, [value]);
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const getAllZone = useCallback(async () => {
-    if (!selectedSite?._id) return;
-    try {
-      const res = await axiosInstance.get(
-        `zone/zoneData/${selectedSite?._id}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        const zoneData = Object.values(res?.data?.data[0]?.zones);
-        setZone(zoneData);
-      }
-    } catch (err) {
-    } finally {
-    }
-  }, [selectedSite]);
+  // const getAllZone = useCallback(async () => {
+  //   try {
+  //     const res = await axiosInstance.get(`zone/zoneData/${selectedSite?._id}`);
+  //     if (res?.status === 200 || res?.status === 201) {
+  //       const zoneData = Object.values(res?.data?.data[0]?.zones);
+  //       setZone(zoneData);
+  //     }
+  //   } catch (err) {
+  //   } finally {
+  //   }
+  // }, []);
   useEffect(() => {
-    getAllZone();
-  }, [selectedSite]);
+    // getAllZone();
+  }, []);
   console.log(zoneId);
 
   const TabPanelList = [
@@ -131,17 +126,17 @@ const Page: React.FC = () => {
         open={open}
         setOpen={setOpen}
         getEmployeeData={getEmployeeData}
-        // selectedSite={selectedSite}
+        selectedDevice={deviceData}
       />
 
       <Tabs
-          value={value}
-          handleChange={handleChange}
-          tabs={tabs}
-          TabPanelList={TabPanelList}
-          button={"Add manPower"}
-          handleClickOpen={handleClickOpen}
-        />  
+        value={value}
+        handleChange={handleChange}
+        tabs={tabs}
+        TabPanelList={TabPanelList}
+        button={"Add manPower"}
+        handleClickOpen={handleClickOpen}
+      />
     </Grid>
   );
 };

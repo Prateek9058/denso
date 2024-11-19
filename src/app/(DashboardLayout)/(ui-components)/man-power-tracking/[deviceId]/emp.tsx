@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Grid, Box, Typography } from "@mui/material";
 import { MapContainer, ImageOverlay, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import Site from "../../../../../../public/Img/layoutPsiborg.jpg";
+import Site from "../../../../../../public/Img/Layoutdenso.png";
 import "leaflet/dist/leaflet.css";
 import axiosInstance from "@/app/api/axiosInstance";
 import trolleyIconSrc from "../../../../../../public/Img/trolleyLive.png";
@@ -134,6 +134,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails }) => {
     console.log(y);
     return maxY - y;
   };
+  console.log("employees gggg",employees)
   return (
     <Grid container mt={1} sx={{ position: "relative" }}>
       <Grid item md={12} sx={{ height: "600px", width: "100%" }}>
@@ -181,7 +182,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails }) => {
             </Marker>
           )}
         </MapContainer>
-        <Tabs tabs={tabs} zone={true} value={-1} />
+        {/* <Tabs tabs={tabs} zone={true} value={-1} /> */}
       </Grid>
     </Grid>
   );

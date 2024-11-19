@@ -24,13 +24,11 @@ interface TrolleyRouteProps {
   points: PointWithMarker[];
   setPoints: React.Dispatch<React.SetStateAction<PointWithMarker[]>>;
 }
-
 interface Graph {
   [key: string]: { [key: string]: number };
 }
 
 const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
-  const [activePoints, setActivePoints] = useState<Point[]>([]);
   const coordInfoRef = useRef<HTMLDivElement>(null);
   let markerCounter = 1;
   useEffect(() => {
@@ -42,7 +40,6 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
     const activeMarkers: Point[] = points
       .filter((point) => point.showMarker)
       .map((point) => [point.x, point.y] as Point);
-    setActivePoints(activeMarkers);
   }, [points]);
 
   const getDistance = (p1: Point, p2: Point): number => {
@@ -173,9 +170,6 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
   const handleMarkerClick = (point: PointWithMarker) => {
     setPoints((prevPoints) =>
       prevPoints.filter((p) => p.x !== point.x || p.y !== point.y)
-    );
-    setActivePoints((prev) =>
-      prev.filter((p) => p[0] !== point.x || p[1] !== point.y)
     );
   };
 

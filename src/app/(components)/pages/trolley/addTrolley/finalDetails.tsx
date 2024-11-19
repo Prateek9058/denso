@@ -42,12 +42,14 @@ interface FinalDetailsProps {
   points: PointWithMarker[];
   finalSectionDropDownData: FinalSectionDropDownDataProps[];
   methods: ReturnType<typeof useForm>;
+  selectedDevice?: any;
 }
 
 const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(({
   points,
   finalSectionDropDownData,
   methods,
+  selectedDevice,
 }, ref) => {
   const { formState: { errors }, setValue, clearErrors, control } = methods;
   const bounds:  [[number, number], [number, number]] = useMemo(() => [[0, 0], [100, 220]], []);
