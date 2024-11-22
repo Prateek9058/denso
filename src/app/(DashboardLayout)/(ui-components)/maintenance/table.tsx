@@ -1,12 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip, Chip } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import moment from "moment";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
 import { BsEye } from "react-icons/bs";
+import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 interface TableProps {
   deviceData: any;
@@ -17,6 +18,7 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  getDataFromChildHandler: any;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -27,6 +29,7 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
+  getDataFromChildHandler,
 }) => {
   const columns = [
     "Sno.",
@@ -34,7 +37,7 @@ const Table: React.FC<TableProps> = ({
     "Date",
     "Issue",
     "Av. repair time",
-    "Status]",
+    "Status",
     "View",
   ];
   const [open, setOpenDialog] = React.useState(false);
@@ -65,19 +68,34 @@ const Table: React.FC<TableProps> = ({
   const handleCancel = () => {
     setOpenDialog(false);
   };
+  const renderPowerStatus = (status: string) => (
+    <Chip
+      label={status === "not_repaired" ? "Not Repaired" : "Repaired"}
+      variant="filled"
+      sx={{
+        backgroundColor: status === "not_repaired" ? "#F2F4F7" : "#ECFDF3",
+        color: status === "not_repaired" ? "#364254" : "#037847",
+        fontWeight: 500,
+        minWidth: 110,
+      }}
+    />
+  );
 
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
       sno: index + 1,
-      trolleyUid: item?.trolleyUid ?? "N/A",
-      trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
-      purchaseDate: moment(item?.purchaseDate).format("lll") ?? "N/A",
+      uId: item?.uId ?? "N/A",
       createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
-      zoneName: item?.zone ? `zone ${item?.zone}` : "N/A",
+      trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
+
+      avgRepairTime: item?.avgRepairTime
+        ? `${item?.avgRepairTime} hours`
+        : "0 hours",
+      status: item?.status ? renderPowerStatus(item?.status) : "N/A",
       Action: [
         <Grid container justifyContent="center" key={index}>
           <Grid item>
-            <Link href={`/trolley/${item?._id}`}>
+            <Link href={`/maintenance/${item?._id}`}>
               <Tooltip title="View">
                 <IconButton size="small">
                   <BsEye color="#DC0032" />
@@ -125,6 +143,11 @@ const Table: React.FC<TableProps> = ({
                   placeholder="Search ID / Name"
                   value={debouncedSearchQuery}
                   onChange={handleSearchChange}
+                />
+              </Grid>
+              <Grid ml={2}>
+                <CommonDatePicker
+                  getDataFromChildHandler={getDataFromChildHandler}
                 />
               </Grid>
             </Grid>

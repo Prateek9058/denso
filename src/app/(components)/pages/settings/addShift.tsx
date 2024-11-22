@@ -22,14 +22,14 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-const selectData = ["A", "B"];
+
 interface AddDeviceProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   getDeviceData: () => void;
-  selectedDevice?: any;
-  selectedSite?: any;
+  title?: string;
   selectedShift?: any;
+  setSelectedShift: any;
 }
 interface ErrorResponse {
   message?: string;
@@ -38,9 +38,9 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   open,
   setOpen,
   getDeviceData,
-  selectedDevice,
-  selectedSite,
+  title,
   selectedShift,
+  setSelectedShift,
 }) => {
   const {
     register,
@@ -51,18 +51,23 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     getValues,
     reset,
   } = useForm();
-  const [startTime, setStartTime] = React.useState<Dayjs | null>(dayjs(""));
-  const [endTime, setEndTime] = React.useState<Dayjs | null>(dayjs(""));
-  useEffect(() => {
-    setValue("shiftName", selectedShift?.shiftName);
-    setStartTime(dayjs(dayjs(selectedShift?.startTime).format("lll")));
-    setEndTime(dayjs(dayjs(selectedShift?.endTime).format("lll")));
-  }, [selectedShift, open]);
+  const [startTime, setStartTime] = React.useState<Dayjs | null>(dayjs());
+  const [endTime, setEndTime] = React.useState<Dayjs | null>(dayjs());
 
-  const handleClose = () => {
-    setOpen(false);
-    reset();
-  };
+  useEffect(() => {
+    if (title === "Edit Shift" && open) {
+      setValue("shiftName", selectedShift?.shiftName);
+      setStartTime(
+        dayjs(dayjs(selectedShift?.startTime ?? null).format("lll"))
+      );
+      setEndTime(dayjs(dayjs(selectedShift?.endTime ?? null).format("lll")));
+    } else {
+      console.log(title, "title");
+      setStartTime(dayjs());
+      setEndTime(dayjs());
+    }
+  }, [open, selectedShift]);
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setValue(name, value);
@@ -71,10 +76,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     }
   };
   const onSubmit = async () => {
-    let res;
     const formData = getValues();
-
-    const shiftId = selectedShift?._id;
     const body = {
       shiftName: formData?.shiftName,
       startTime: dayjs(startTime).format("lll"),
@@ -82,35 +84,42 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     };
     try {
       if (selectedShift) {
-        res = await axiosInstance.patch(
-          `shifts/updateShiftTime/${shiftId}`,
+        const { data, status } = await axiosInstance.patch(
+          `shifts/updateShiftTime/${selectedShift?._id}`,
           body
         );
+        if (status === 200 || status === 201) {
+          notifySuccess("Shift Edit successfully");
+          getDeviceData();
+          handleClose();
+        }
       } else {
-        res = await axiosInstance.post(`shifts/addShift/`, body);
+        const { data, status } = await axiosInstance.post(
+          "shifts/addShift",
+          body
+        );
+        if (status === 200 || status === 201) {
+          notifySuccess("Shift Added successfully");
+          getDeviceData();
+          handleClose();
+        }
       }
-      if (res?.status === 200 || res?.status === 201) {
-        {selectedShift?notifySuccess("Shift updated successfully"):notifySuccess("Shift added successfully")}
-        getDeviceData();
-        handleClose();
-      }
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      notifyError(
-        axiosError?.response?.data?.message || "Error creating shift"
-      );
-      console.log(error);
-      // handleClose();
+    } catch (error: any) {
+      notifyError(error?.response?.data?.message);
     }
   };
-
+  const handleClose = () => {
+    setOpen(false);
+    reset();
+    setSelectedShift(null);
+  };
   return (
     <>
       <CommonDialog
         open={open}
         maxWidth={"sm"}
         fullWidth={true}
-        title="Add a New Shift"
+        title={`${title}`}
         message={"Are you sure you want to cancel?"}
         titleConfirm={"Cancel"}
         onClose={handleClose}

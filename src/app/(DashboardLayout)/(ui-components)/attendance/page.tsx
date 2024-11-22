@@ -94,7 +94,7 @@ const Page: React.FC = () => {
         setRowsPerPage={setRowsPerPage}
         page={page}
         setPage={setPage}
-        searchQuery={searchQuery}  
+        searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         loading={loading}
       />

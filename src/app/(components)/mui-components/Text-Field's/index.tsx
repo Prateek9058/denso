@@ -11,7 +11,6 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { TextFieldProps } from "@mui/material";
 
-
 interface CustomTextFieldProps {
   type?: "email" | "text" | "search" | "password";
   label?: string;
@@ -46,7 +45,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const handleTogglePassword = () => {
-    setShowPassword((prev) => !prev); 
+    setShowPassword((prev) => !prev);
   };
   return (
     <Stack>
@@ -55,10 +54,12 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         name={name}
         label={label}
         error={error}
-        value={value ?? ''}
-        type={field === 'password' ? (showPassword ? "text" : "password") : field}
+        value={value}
+        type={
+          field === "password" ? (showPassword ? "text" : "password") : field
+        }
         select={!!select}
-        defaultValue={defaultValue ?? ''}
+        defaultValue={defaultValue}
         variant="outlined"
         placeholder={placeholder}
         helperText={helperText}
@@ -67,26 +68,28 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         InputLabelProps={{ shrink: true }}
         sx={{
           borderRadius: "8px",
-          mb: 3,
+          mb: 2,
         }}
         InputProps={{
-          startAdornment: (
+          startAdornment: (field === "email" || field === "search") && (
             <InputAdornment position="start">
-              {type === "email" && (
-                <MdOutlineMailOutline fontSize="medium" />
-              )}
-              {type === "search" && <FaMagnifyingGlass />}
+              {field === "email" && <MdOutlineMailOutline fontSize="medium" />}
+              {field === "search" && <FaMagnifyingGlass />}
             </InputAdornment>
           ),
-          endAdornment: field === 'password' && (
-            <InputAdornment position="end" onClick={handleTogglePassword} style={{ cursor: "pointer" }}>
-              {showPassword ? <FaEyeSlash /> : <FaEye />} 
+          endAdornment: field === "password" && (
+            <InputAdornment
+              position="end"
+              onClick={handleTogglePassword}
+              style={{ cursor: "pointer" }}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </InputAdornment>
           ),
         }}
       >
         {" "}
-        {console.log("slectDatjj ",selectData)}
+        
         {select && selectData?.length > 0 ? (
           selectData?.map((option: any) => (
             <MenuItem
@@ -94,7 +97,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
               value={option?._id}
               sx={{ fontSize: "12px" }}
             >
-               {option?.label ? option?.label : option?.shiftName}
+              {option?.label ? option?.label : option?.shiftName}
             </MenuItem>
           ))
         ) : (

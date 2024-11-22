@@ -2,47 +2,41 @@
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
-import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
-import AddUser from "@/app/(components)/pages/userManagement/addUser";
-import { useSitesData } from "@/app/(context)/SitesContext";
+import axiosInstance from "@/app/api/axiosInstance";
 
-type Breadcrumb = {
-  label: string;
-  link: string;
-};
-const breadcrumbItems: Breadcrumb[] = [
-  { label: "Dashboard", link: "/" },
-  { label: "User Management", link: "/userManagement" },
-];
 const Page: React.FC = () => {
-  const { selectedSite } = useSitesData();
-  const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = React.useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
   const [deviceData, setDeviceData] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<any>("");
-  const handleClickOpen = () => {
-    setOpen(true);
+
+  const FetchUserDetails = async () => {
+    try {
+      setLoading(true);
+      const { data, status } = await axiosInstance.get(
+        `/users/getAllUsers?page=${page + 1}&limit=${rowsPerPage}&search=${searchQuery}`
+      );
+
+      if (status === 200 || status === 201) {
+        setDeviceData(data?.data);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  React.useEffect(() => {
+    FetchUserDetails();
+  }, [page, rowsPerPage, searchQuery]);
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
-        <AddUser
-          open={open}
-          setOpen={setOpen}
-          selectedDevice={selectedSite}
-        />
-      <ManagementGrid
-        moduleName="User Management"
-        button={"Add User"}
-        handleClickOpen={handleClickOpen}
-        // handleClickOpenUpload={handleClickOpenUpload}
-        breadcrumbItems={breadcrumbItems}
-        // handleInputChange={handleInputChange}
-      />
+
       <Table
+        FetchUserDetails={FetchUserDetails}
         deviceData={deviceData}
         rowsPerPage={rowsPerPage}
         setRowsPerPage={setRowsPerPage}

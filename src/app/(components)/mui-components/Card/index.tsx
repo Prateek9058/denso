@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import Breadcrumbs from "@/app/(components)/mui-components/Breadcrumbs";
 import { Tabs, Tab, Button, Tooltip, IconButton } from "@mui/material";
+import { IoChevronBackOutline } from "react-icons/io5";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
@@ -41,6 +42,8 @@ interface ManagementGridProps {
   zone?: any;
   zoneId?: any;
   handleInputChange?: any;
+  back?: string;
+  handleBack?:any
 }
 const ManagementGrid: React.FC<ManagementGridProps> = ({
   moduleName,
@@ -62,17 +65,30 @@ const ManagementGrid: React.FC<ManagementGridProps> = ({
   zone,
   handleInputChange,
   zoneId,
+  back,
+  handleBack
 }) => {
   return (
     <Grid container justifyContent="space-between" alignItems="center" mt={1}>
-      {breadcrumbItems && <Breadcrumbs breadcrumbItems={breadcrumbItems} />}
+      {/* {breadcrumbItems && <Breadcrumbs breadcrumbItems={breadcrumbItems} />} */}
       <Grid item>
-        <Typography component={"h2"} variant="h2" mb={1}>
+        {/* <Typography component={"h2"} variant="h2" mb={1}>
           {moduleName}
         </Typography>
         <Typography component={"h6"} variant="body2" color="grey">
           {subHeading}
-        </Typography>
+        </Typography> */}
+        {back && (
+          <Button
+            variant="outlined"
+            size="large"
+            color="inherit"
+            onClick={handleBack}
+            startIcon={<IoChevronBackOutline />}
+          >
+            {back}
+          </Button>
+        )}
       </Grid>
       <Grid item>
         <Grid container gap={2}>

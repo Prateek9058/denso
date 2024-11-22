@@ -17,6 +17,7 @@ import Maintence from "../.../../../../.././../public/Img/maintenceT.png";
 import MaintenceAct from "../.../../../../.././../public/Img/maintenaceAct.png";
 import UserManagementIcon from '../.../../../../.././../public/Img/userManagementIcon.png';
 import UserManagementActiveIcon from '../.../../../../.././../public/Img/userManagementActiveIcon.png';
+
 const Menuitems = [
   {
     id: uniqueId(),
@@ -80,7 +81,7 @@ const Menuitems = [
     title: "Setting",
     icon: setting,
     iconActive: settingActive,
-    href: "/user-management",
+    href: "/settings",
   },
 ];
 

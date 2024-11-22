@@ -42,6 +42,7 @@ const Sidebar = ({
             width: sidebarWidth,
             boxSizing: "border-box",
             border: "0",
+         
           },
         }}
       >
@@ -51,16 +52,7 @@ const Sidebar = ({
             overflow: lgUp ? "auto" : "hidden",
           }}
         >
-          <Grid pt={3} container justifyContent={"center"}>
-            <Image
-              height={100}
-              style={{
-                objectFit: "contain",
-              }}
-              alt="logo"
-              src={logo}
-            />
-          </Grid>{" "}
+       
           <Box mt={3}>
             <SidebarItems />
           </Box>

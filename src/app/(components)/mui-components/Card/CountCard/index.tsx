@@ -18,18 +18,25 @@ const StatCard = styled(Card)(({ theme }) => ({
   color: "#000",
   fontWeight: "700",
   padding: "0px",
+  ":hover": {
+    backgroundColor: "#DC0032",
+    color: "#fff",
+  },
 }));
 interface CardProps {
   cardDetails: any;
   progress?: boolean;
 }
 const CountCard: React.FC<CardProps> = ({ cardDetails, progress }) => {
-  console.log("cardDetails",cardDetails)
+  const [isHovered, setIsHovered] = React.useState<any>(null);
   return (
     <Grid container spacing={2}>
       {cardDetails?.map((stat: any, index: any) => (
         <Grid item md={4} mt={2} mb={1} sm={5.8} xs={12} key={index}>
-          <StatCard>
+          <StatCard
+            onMouseEnter={() => setIsHovered(index)}
+            onMouseLeave={() => setIsHovered(null)}
+          >
             <CardContent>
               <Grid
                 container
@@ -39,7 +46,10 @@ const CountCard: React.FC<CardProps> = ({ cardDetails, progress }) => {
                 width={"100%"}
               >
                 <Grid>
-                  <Typography variant="h5" color={"#767676"}>
+                  <Typography
+                    variant="h5"
+                    color={isHovered === index ? "#FFF" : "#767676"}
+                  >
                     {stat?.title}
                   </Typography>
                   <Typography variant="h3">{stat?.value}</Typography>
@@ -72,49 +82,54 @@ const CountCard: React.FC<CardProps> = ({ cardDetails, progress }) => {
                     />
                   </Box>
 
-                  {stat?.title == 'Trolleys' && <Grid container justifyContent="space-between" mt={1}>
-                    <Typography variant="body2" style={{ color: "#DC0032" }}>
-                      <span style={{ color: "#DC0032", fontSize: "18px" }}>
-                        ●
-                      </span>{" "}
-                       Active - {stat?.active ?? 0}
-                    </Typography>
-                    <Typography variant="body2">
-                      <span style={{ color: "#b0bec5", fontSize: "18px" }}>
-                        ●
-                      </span>{" "}
-                      Non-active - {stat?.nonActive ?? 0}
-                    </Typography>
-                  </Grid>}
-                  {stat?.title == 'Assign status' && <Grid container justifyContent="space-between" mt={1}>
-                    <Typography variant="body2" style={{ color: "#DC0032" }}>
-                      <span style={{ color: "#DC0032", fontSize: "18px" }}>
-                        ●
-                      </span>{" "}
-                       Not assigned- {stat?.notAssigned ?? 0}
-                    </Typography>
-                    <Typography variant="body2">
-                      <span style={{ color: "#b0bec5", fontSize: "18px" }}>
-                        ●
-                      </span>{" "}
-                      Assigned - {stat?.assigned ?? 0}
-                    </Typography>
-                  </Grid>}
-                  {stat?.title == 'Under maintenance' && <Grid container justifyContent="space-between" mt={1}>
-                    <Typography variant="body2" style={{ color: "#DC0032" }}>
-                      <span style={{ color: "#DC0032", fontSize: "18px" }}>
-                        ●
-                      </span>{" "}
-                       Repaired - {stat?.repair ?? 0}
-                    </Typography>
-                    <Typography variant="body2">
-                      <span style={{ color: "#b0bec5", fontSize: "18px" }}>
-                        ●
-                      </span>{" "}
-                      Not-repaired - {stat?.notRepaired ?? 0}
-                    </Typography>
-                  </Grid>}
-
+                  {stat?.title == "Trolleys" && (
+                    <Grid container justifyContent="space-between" mt={1}>
+                      <Typography variant="body2" style={{ color: "#DC0032" }}>
+                        <span style={{ color: "#DC0032", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Active - {stat?.active ?? 0}
+                      </Typography>
+                      <Typography variant="body2">
+                        <span style={{ color: "#b0bec5", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Non-active - {stat?.nonActive ?? 0}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {stat?.title == "Assign status" && (
+                    <Grid container justifyContent="space-between" mt={1}>
+                      <Typography variant="body2" style={{ color: "#DC0032" }}>
+                        <span style={{ color: "#DC0032", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Not assigned- {stat?.notAssigned ?? 0}
+                      </Typography>
+                      <Typography variant="body2">
+                        <span style={{ color: "#b0bec5", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Assigned - {stat?.assigned ?? 0}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {stat?.title == "Under maintenance" && (
+                    <Grid container justifyContent="space-between" mt={1}>
+                      <Typography variant="body2" style={{ color: "#DC0032" }}>
+                        <span style={{ color: "#DC0032", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Repaired - {stat?.repair ?? 0}
+                      </Typography>
+                      <Typography variant="body2">
+                        <span style={{ color: "#b0bec5", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Not-repaired - {stat?.notRepaired ?? 0}
+                      </Typography>
+                    </Grid>
+                  )}
                 </Box>
               )}
             </CardContent>

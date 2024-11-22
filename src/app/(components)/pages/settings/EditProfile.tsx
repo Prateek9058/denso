@@ -49,7 +49,6 @@ const EditProfile: React.FC<AddDeviceProps> = ({
   selectedDevice,
   selectedSite,
   selectedShift,
-
 }) => {
   const {
     register,
@@ -60,8 +59,6 @@ const EditProfile: React.FC<AddDeviceProps> = ({
     getValues,
     reset,
   } = useForm();
- 
-
 
   const handleClose = () => {
     setOpen(false);
@@ -75,28 +72,23 @@ const EditProfile: React.FC<AddDeviceProps> = ({
     }
   };
   const onSubmit = async () => {
-    
     const formData = getValues();
     const shiftId = selectedShift?._id;
     const body = {
-    fullName: formData?.name,
-    phoneNumber: formData?.phone,
-    password: formData?.password,
+      fullName: formData?.name,
+      phoneNumber: formData?.phone,
+      password: formData?.password,
     };
     try {
-      
-        const res = await axiosInstance.patch(
-          `auth/updateAdminProfile`,
-          body
-        );
-       
+      const res = await axiosInstance.patch(`auth/updateAdminProfile`, body);
+
       if (res?.status === 200 || res?.status === 201) {
         notifySuccess("Profile updated successfully");
         getDeviceData();
         handleClose();
       }
     } catch (error) {
-      console.log("error data",error)
+      console.log("error data", error);
 
       const axiosError = error as AxiosError<ErrorResponse>;
       // console.log("error data11",axiosError)
@@ -104,12 +96,10 @@ const EditProfile: React.FC<AddDeviceProps> = ({
       notifyError(
         axiosError?.response?.data?.message || "Error creating shift"
       );
-    //   console.log(error);
+      //   console.log(error);
       // handleClose();
     }
   };
-
-console.log('selectedShift',selectedShift)
 
   return (
     <>
@@ -131,8 +121,8 @@ console.log('selectedShift',selectedShift)
               mt={1}
               spacing={3}
             >
-              <Grid item md={6} >
-                <Stack >
+              <Grid item md={6}>
+                <Stack>
                   <CustomTextField
                     {...register("name", {
                       required: "Name is required",
@@ -143,23 +133,21 @@ console.log('selectedShift',selectedShift)
                     error={!!errors.name}
                     helperText={errors.name?.message}
                     onChange={handleInputChange}
-                    defaultValue={
-                      selectedShift ? selectedShift?.fullName : ""
-                    }
+                    defaultValue={selectedShift ? selectedShift?.fullName : ""}
                   />
                 </Stack>
               </Grid>
               <Grid item md={6}>
-                <Stack >
+                <Stack>
                   <CustomTextField
-                      {...register("phone", {
-                        required: "Phone is required",
-                        validate: {
-                          length: (value) =>
-                            value.length === 10 ||
-                            "Phone number must be exactly 10 digits without country code",
-                        },
-                      })}
+                    {...register("phone", {
+                      required: "Phone is required",
+                      validate: {
+                        length: (value) =>
+                          value.length === 10 ||
+                          "Phone number must be exactly 10 digits without country code",
+                      },
+                    })}
                     field="number"
                     name="phone"
                     label="Phone Number"
@@ -174,9 +162,9 @@ console.log('selectedShift',selectedShift)
                 </Stack>
               </Grid>
               <Grid item md={6}>
-              <Stack >
+                <Stack>
                   <CustomTextField
-                   {...register("email")}
+                    {...register("email")}
                     name="email"
                     label="Email Address"
                     placeholder="Enter email address"
@@ -188,28 +176,26 @@ console.log('selectedShift',selectedShift)
                   />
                 </Stack>
               </Grid>
-              <Grid item md={6} >
-              <Stack >
+              <Grid item md={6}>
+                <Stack>
                   <CustomTextField
                     {...register("password", {
                       required: "Password is required",
                     })}
-                    field='password'
+                    field="password"
                     name="password"
                     label="Password"
                     placeholder="Enter Password"
                     error={!!errors.password}
                     helperText={errors.password?.message}
                     onChange={handleInputChange}
-                    defaultValue={
-                      ''
-                    }
+                    defaultValue={""}
                   />
                 </Stack>
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions className="dialog-action-btn"   >
+          <DialogActions className="dialog-action-btn">
             <ConfirmationDialog
               title={"Cancel"}
               handleCloseFirst={handleClose}

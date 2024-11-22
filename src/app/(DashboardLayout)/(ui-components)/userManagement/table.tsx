@@ -1,13 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip, Button } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import moment from "moment";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
+import { IoMdAddCircleOutline } from "react-icons/io";
 import { BsEye } from "react-icons/bs";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
+import AddUser from "@/app/(components)/pages/userManagement/addUser";
+import { useSitesData } from "@/app/(context)/SitesContext";
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -17,6 +20,7 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  FetchUserDetails: any;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -27,17 +31,15 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
+  FetchUserDetails,
 }) => {
-  const columns = [
-    "Sno.",
-    "Trolley ID",
-    "Date",
-    "Issue",
-    "Av. repair time",
-    "Status]",
-    "View",
-  ];
+  const columns = ["Sno.", "username", "Phone Number", "Department", "View"];
   const [open, setOpenDialog] = React.useState(false);
+  const [openUser, setOpenUser] = useState<boolean>(false);
+  const { selectedSite } = useSitesData();
+  const handleClickOpen = () => {
+    setOpenUser(true);
+  };
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
   useEffect(() => {
@@ -69,15 +71,13 @@ const Table: React.FC<TableProps> = ({
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
       sno: index + 1,
-      trolleyUid: item?.trolleyUid ?? "N/A",
-      trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
-      purchaseDate: moment(item?.purchaseDate).format("lll") ?? "N/A",
-      createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
-      zoneName: item?.zone ? `zone ${item?.zone}` : "N/A",
+      fullName: item?.fullName ?? "N/A",
+      phoneNumber: item?.phoneNumber ? item?.phoneNumber : "N/A",
+      departmentId: item?.departmentId ? item?.departmentId?.name : "N/A",
       Action: [
         <Grid container justifyContent="center" key={index}>
           <Grid item>
-            <Link href={`/trolley/${item?._id}`}>
+            <Link href={`/userManagement/${item?._id}`}>
               <Tooltip title="View">
                 <IconButton size="small">
                   <BsEye color="#DC0032" />
@@ -92,6 +92,12 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <>
+      <AddUser
+        open={openUser}
+        setOpen={setOpenUser}
+        selectedDevice={selectedSite}
+        FetchUserDetails={FetchUserDetails}
+      />
       <CommonDialog
         open={open}
         fullWidth={true}
@@ -114,7 +120,7 @@ const Table: React.FC<TableProps> = ({
             <Typography variant="h5">
               {" "}
               Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} Trolleys
+              {deviceData?.totalCount} User
             </Typography>
           </Grid>
           <Grid item>
@@ -126,6 +132,20 @@ const Table: React.FC<TableProps> = ({
                   value={debouncedSearchQuery}
                   onChange={handleSearchChange}
                 />
+              </Grid>
+              <Grid item className="customSearch" ml={2}>
+                <Button
+                  onClick={handleClickOpen}
+                  startIcon={<IoMdAddCircleOutline />}
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    color: "#FFFFFF",
+                    backgroundColor: "#4C4C4C",
+                  }}
+                >
+                  Add User
+                </Button>
               </Grid>
             </Grid>
           </Grid>

@@ -50,7 +50,7 @@ const Page: React.FC = () => {
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );
       if (res?.status === 200 || res?.status === 201) {
-  console.log("deviceData",res)
+        console.log("deviceData", res);
 
         setDeviceData(res?.data?.data);
         console.log(res);
@@ -133,17 +133,19 @@ const Page: React.FC = () => {
         setOpen={setOpen}
         getDeviceData={getDeviceData}
       />
-      <ManagementGrid
-        moduleName="Organization Management"
+      {/* <ManagementGrid
+        moduleName=""
         button={getButtonLabel(value)}
         handleClickOpen={handleClickOpen}
-        breadcrumbItems={breadcrumbItems}
-      />
+        
+      /> */}
       {tabs.length > 0 ? (
         <Tabs
           value={value}
           handleChange={handleChange}
           tabs={tabs}
+          handleClickOpen={handleClickOpen}
+          button={getButtonLabel(value)}
           TabPanelList={TabPanelList}
         />
       ) : (

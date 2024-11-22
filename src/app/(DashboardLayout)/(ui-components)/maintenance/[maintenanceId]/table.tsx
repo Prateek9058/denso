@@ -1,22 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  Typography,
-  IconButton,
-  Tooltip,
-  Chip,
-  Button,
-} from "@mui/material";
+import { Chip, Grid, Typography } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
-import Link from "next/link";
 import moment from "moment";
+import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
-import { saveAs } from "file-saver";
-import Papa from "papaparse";
-import { BsEye } from "react-icons/bs";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 interface TableProps {
   deviceData: any;
@@ -27,7 +16,7 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-  value: any;
+  getDataFromChildHandler: any;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -38,18 +27,23 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
-  value,
+  getDataFromChildHandler,
 }) => {
-  const columns = [
-    "Sno.",
-    "UId",
-    value == 0 ? "Department" : value == 1 ? "Section" : "Line",
-    "Created At",
-    "View",
-  ];
+  const columns = ["Sno.", "Trolley ID", "Date", "Issue", "Status"];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
-
+  const renderPowerStatus = (status: string) => (
+    <Chip
+      label={status === "not_repaired" ? "Not Repaired" : "Repaired"}
+      variant="filled"
+      sx={{
+        backgroundColor: status === "not_repaired" ? "#F2F4F7" : "#ECFDF3",
+        color: status === "not_repaired" ? "#364254" : "#037847",
+        fontWeight: 500,
+        minWidth: 110,
+      }}
+    />
+  );
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -75,58 +69,15 @@ const Table: React.FC<TableProps> = ({
   const handleCancel = () => {
     setOpenDialog(false);
   };
-
-  const getStatus = (str: string) => {
-    if (str?.toUpperCase() === "PRESENT")
-      return { status: "Present", color: "customChip activeGreen" };
-    else return { status: "Absent", color: "customChip activeRed" };
-  };
-  const getStatusInfo = (ele: string, index: number) => {
-    if (ele?.toUpperCase() === "PRESENT") {
-      return [
-        <Chip
-          key={index}
-          sx={{ width: "120px" }}
-          className="customChip activeGreen"
-          label={ele}
-        />,
-      ];
-    } else {
-      return [
-        <Chip
-          key={index}
-          className={getStatus(ele)?.color}
-          sx={{ width: "120px" }}
-          label={getStatus(ele)?.status}
-        />,
-      ];
-    }
-  };
-
   const getFormattedData = (data: any[]) => {
-    console.log("item organidation", data);
-
     return data?.map((item, index) => ({
       sno: index + 1,
-      uId: item?.uId ?? "N/A",
-      name: item?.name ? item?.name : "N/A",
-      createAt: item?.createdAt ? moment(item?.createdAt).format("lll") : "N/A",
-      Action: [
-        <Grid container justifyContent="center" key={index}>
-          <Grid item>
-            <Link href={`/organization/${item?._id}`}>
-              <Tooltip title="View">
-                <IconButton size="small">
-                  <BsEye color="#DC0032" />
-                </IconButton>
-              </Tooltip>
-            </Link>
-          </Grid>
-        </Grid>,
-      ],
+      repairId: item?.uId ?? "N/A",
+      repairDate: moment(item?.createdAt).format("lll"),
+      issue: item?.issue ?? "N/A",
+      repairingStatus: renderPowerStatus(item?.status),
     }));
   };
-
   return (
     <>
       <CommonDialog
@@ -139,7 +90,7 @@ const Table: React.FC<TableProps> = ({
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <Grid container mt={2}>
+      <Grid container mt={3}>
         <Grid
           container
           justifyContent={"space-between"}
@@ -147,22 +98,27 @@ const Table: React.FC<TableProps> = ({
           p={2}
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
-          <Grid item display={"flex"}>
-            <Typography variant="h5">
+          <Grid item>
+            <Typography variant="h3">Repairing History</Typography>
+            <Typography variant="body1">
               {" "}
-              {value == 0 ? "Department" : value == 1 ? "Section" : "Line"}{" "}
-              details | Showing {deviceData ? deviceData?.data?.length : 0} out
-              of {deviceData?.totalCount}{" "}
+              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
+              {deviceData?.totalCount} History
             </Typography>
           </Grid>
           <Grid item>
             <Grid container justifyContent={"space-between"}>
-              <Grid item className="customSearch">
+              {/* <Grid item className="customSearch">
                 <CustomTextField
                   type="search"
                   placeholder="Search ID / Name"
                   value={debouncedSearchQuery}
                   onChange={handleSearchChange}
+                />
+              </Grid> */}
+              <Grid ml={2}>
+                <CommonDatePicker
+                  getDataFromChildHandler={getDataFromChildHandler}
                 />
               </Grid>
             </Grid>
@@ -170,7 +126,7 @@ const Table: React.FC<TableProps> = ({
         </Grid>{" "}
         {loading ? (
           <TableSkeleton
-            rowNumber={new Array(7).fill(0)}
+            rowNumber={new Array(10).fill(0)}
             tableCell={new Array(5).fill("15%")}
             actions={new Array(2).fill(0)}
           />

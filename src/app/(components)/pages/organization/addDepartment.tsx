@@ -44,7 +44,7 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
   const handleClose = () => {
     setOpen(false);
     reset();
-    setUid("")
+    setUid("");
   };
 
   const onSubmit = async () => {
@@ -77,12 +77,10 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
     if (!type) return;
     setLoading(true);
     try {
-      const res = await axiosInstance.get(
-        `organizations/getUid?type=${type}`
-      );
+      const res = await axiosInstance.get(`organizations/getUid?type=${type}`);
       if (res?.status === 200 || res?.status === 201) {
         setUid(res?.data?.data);
-        console.log(res);
+        console.log(res?.data?.data);
       }
     } catch (err) {
     } finally {
@@ -93,7 +91,9 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
     if (open) {
       getUid();
     }
+    setValue("Uid", uid);
   }, [open, type]);
+  console.log("getUid======>", uid);
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setValue(name, value);
@@ -107,7 +107,7 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
         open={open}
         maxWidth={"sm"}
         fullWidth={true}
-        title={`Add a New ${type}`}
+        title={`Add New ${type}`}
         message={"Are you sure you want to cancel?"}
         titleConfirm={"Cancel"}
         onClose={handleClose}
@@ -117,6 +117,7 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
             <Grid container justifyContent={"space-between"}>
               <Grid item md={5.8}>
                 <CustomTextField
+                  {...register("Uid")}
                   name="Uid"
                   label="Uid"
                   placeholder="Enter Uid"
@@ -124,7 +125,7 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
                   helperText={errors.Uid?.message}
                   onChange={handleInputChange}
                   disabled={true}
-                  defaultValue={uid}
+                  defaultValue={uid ? uid : ""}
                 />
               </Grid>
               <Grid item md={5.8}>

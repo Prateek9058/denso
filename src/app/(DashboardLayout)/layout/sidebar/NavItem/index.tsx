@@ -37,37 +37,32 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
     ".MuiButtonBase-root": {
       whiteSpace: "nowrap",
       marginBottom: "12px",
-      padding: "8px 20px",
+      padding: "10px 10px",
       borderRadius: "8px",
       backgroundColor: level > 1 ? "transparent !important" : "inherit",
       color: "#464255",
-      paddingLeft: "20px",
-      display: "flex", // Ensure the icon and text are in a row
-      alignItems: "center", // Center them vertically
       "&:hover": {
         backgroundColor: "#FF9999",
         color: "#464255",
-        padding: 10,
       },
       "&.Mui-selected": {
         color: "#FFFFFF",
         backgroundColor: "#DC0032",
-        padding: 10,
+
         "&:hover": {
           backgroundColor: "#DC0032",
           color: "#FFFFFF",
-          padding: 10,
         },
       },
     },
   }));
   const TextStyled = styled(ListItemText)(() => ({
-    display: "inline-block", // Ensure text is inline with icon
-    marginLeft: "10px", // Space between icon and text
-    maxWidth: "calc(100% - 30px)", // Adjust based on icon size and padding
+    display: "inline-block",
+    marginLeft: "10px",
+    maxWidth: "calc(100% - 30px)",
     overflow: "hidden",
     textOverflow: "ellipsis",
-    whiteSpace: "nowrap", // Prevent wrapping
+    whiteSpace: "nowrap",
     transition: "max-width 0.2s ease",
   }));
   return (
@@ -90,9 +85,7 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
             width={24}
             height={24}
           />
-          <TextStyled>
-            {item?.title}
-          </TextStyled>
+          <TextStyled>{item?.title}</TextStyled>
         </ListItemButton>
       </ListItemStyled>
     </List>

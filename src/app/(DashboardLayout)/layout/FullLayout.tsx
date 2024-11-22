@@ -12,7 +12,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Profile from "./header/Profile";
 import Notification from "./header/Notification";
-import { Grid } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import SidebarItems from "./sidebar/SidebarItems";
 import Image from "next/image";
 import Logo from "../../../../public/Img/logodenzo.png";
@@ -126,45 +126,40 @@ export default function RootLayout({
       <AppBar position="fixed" open={open}>
         <Grid container justifyContent={"space-between"} alignItems={"center"}>
           <Grid item>
-            {" "}
-            <Grid container justifyContent={"space-between"}>
-              <Grid item>
-                {" "}
-                <Toolbar>
-                  <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={handleDrawerOpen}
-                    edge="start"
-                    sx={[open && { display: "none" }]}
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                </Toolbar>
-              </Grid>
-              <Grid item sx={[open && { display: "none" }]}>
-                <Profile />{" "}
-              </Grid>
+            <Grid item>
+              <Toolbar sx={{ position: "absolute", left:10 }}>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={handleDrawerOpen}
+                  edge="start"
+                  sx={open ? { display: "none" ,top:"0px"} : { display: "block",top:"0px" }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Toolbar>
+              {/* <Grid item sx={{ position: "absolute", left: "100px" ,top:"15px"}}> */}
+                <Image
+                  src={Logo}
+                  alt="logo"
+                  style={{
+                    objectFit: "contain",
+                    marginLeft:open?"20px":"90px",marginTop:"15px"
+                  }}
+                />
+              {/* </Grid> */}
             </Grid>
           </Grid>
           <Grid item>
             <Grid container>
               <Notification />
-
-              <Image
-                src={Logo}
-                alt="logo"
-                style={{
-                  objectFit: "contain",
-                }}
-              />
+              <Profile />
             </Grid>
           </Grid>
         </Grid>
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <Profile />
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
@@ -177,9 +172,8 @@ export default function RootLayout({
           <SidebarItems />
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 0}}>
-        <DrawerHeader />
-        {children}
+      <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
+        <DrawerHeader /> {children}
       </Box>
     </Box>
   );

@@ -1,21 +1,15 @@
 "use client";
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
 import { Grid } from "@mui/material";
-import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 import { useSitesData } from "@/app/(context)/SitesContext";
 import salesIcon from "../../../../../public/Img/trolleydash.png";
 import CountCard from "@/app/(components)/mui-components/Card/CountCard";
-type Breadcrumb = {
-  label: string;
-  link: string;
-};
-const breadcrumbItems: Breadcrumb[] = [
-  { label: "Dashboard", link: "/" },
-  { label: "Maintenance Tracking ", link: "/maintenance" },
-];
+import moment from "moment";
+
+type GetDataHandler = (state: any, resultArray: any) => void;
 const Page: React.FC = () => {
   const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
@@ -27,6 +21,15 @@ const Page: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [zone, setZone] = useState<any>([]);
   const [zoneId, setZoneId] = useState<any>("");
+  const [startDate, setStartDate] = React.useState<any>(moment());
+  const [endDate, setEndDate] = React.useState<any>(moment());
+
+  const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
+    const startDate = moment(state?.[0]?.startDate);
+    const endDate = moment(state?.[0]?.endDate);
+    setStartDate(startDate);
+    setEndDate(endDate);
+  };
   const [stats, setStats] = useState<any>([
     {
       title: "Average repair time",
@@ -62,24 +65,38 @@ const Page: React.FC = () => {
       icon: salesIcon,
     },
   ]);
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedZone = event.target.value;
-    setZoneId(selectedZone);
-  };
+
   ///// Api call's /////
-  const getTrolleyData = useCallback(async () => {
-    if (!selectedSite?._id) return;
+  const getTrolleyData = async () => {
     setLoading(true);
+
     try {
       const res = await axiosInstance.get(
-        `trolleys/getAllTrolleys/${selectedSite._id}?page=${
+        `trolleyRepairing/getAllTrolleyRepairings?page=${
           page + 1
-        }&limit=${rowsPerPage}&search=${searchQuery}&zone=${zoneId}`
+        }&limit=${rowsPerPage}&search=${searchQuery}&sortType=1&startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setDeviceData(res?.data?.data);
         setLoading(false);
-        console.log(res);
+        // Update stats based on the fetched data
+        setStats((prevStats: any) =>
+          prevStats.map((stat: any) => {
+            if (stat.title === "Average repair time") {
+              return { ...stat, value: res?.data?.data?.avgRepairTime || 0 };
+            }
+            if (stat.title === "Repaired trolleys") {
+              return { ...stat, value: res?.data?.data?.reapirTrollyes || 0 };
+            }
+            if (stat.title === "Not repaired trolleys") {
+              return {
+                ...stat,
+                value: res?.data?.data?.notReapirTrollyes || 0,
+              };
+            }
+            return stat;
+          })
+        );
       }
     } catch (err) {
       setLoading(false);
@@ -87,44 +104,22 @@ const Page: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedSite, page, rowsPerPage, searchQuery, zoneId]);
+  };
   useEffect(() => {
     getTrolleyData();
-  }, [getTrolleyData]);
+  }, [startDate, endDate, searchQuery, page, rowsPerPage]);
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClickOpenUpload = () => {
     setOpenUpload(true);
   };
-  const getAllZone = useCallback(async () => {
-    if (!selectedSite?._id) return;
-    try {
-      const res = await axiosInstance.get(
-        `zone/zoneData/${selectedSite?._id}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        const zoneData = Object.values(res?.data?.data[0]?.zones);
-        setZone(zoneData);
-      }
-    } catch (err) {
-    } finally {
-    }
-  }, [selectedSite]);
-  useEffect(() => {
-    getAllZone();
-  }, [selectedSite]);
+
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
       <CountCard cardDetails={stats} progress={true} />
-      <ManagementGrid
-        moduleName="Maintenance trolleys"
-        handleClickOpen={handleClickOpen}
-        handleClickOpenUpload={handleClickOpenUpload}
-        breadcrumbItems={breadcrumbItems}
-        handleInputChange={handleInputChange}
-      />
+
       <Table
         deviceData={deviceData}
         rowsPerPage={rowsPerPage}
@@ -134,6 +129,7 @@ const Page: React.FC = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         loading={loading}
+        getDataFromChildHandler={getDataFromChildHandler}
       />
     </Grid>
   );

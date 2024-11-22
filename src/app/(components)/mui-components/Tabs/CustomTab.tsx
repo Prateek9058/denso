@@ -5,7 +5,6 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { CgAddR } from "react-icons/cg";
 
-
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -43,8 +42,8 @@ interface CommonTabsProps {
   TabPanelList: any;
   tabs: TabData[];
   authRole?: string;
-  button?: any
-  handleClickOpen?: any
+  button?: any;
+  handleClickOpen?: any;
 }
 
 const CustomTab: React.FC<CommonTabsProps> = ({
@@ -57,15 +56,11 @@ const CustomTab: React.FC<CommonTabsProps> = ({
   handleClickOpen,
   // handleInputChange,
   // breadcrumbItems
-
-
 }) => {
   return (
     <>
       <Grid container justifyContent="left" alignItems="center">
-        <Grid container justifyContent={"space-between"}>
-
-
+        <Grid container justifyContent={"space-between"} mt={2} alignItems={"center"}>
           <Tabs
             value={value}
             className="TabStyleAddDevice"
@@ -87,25 +82,29 @@ const CustomTab: React.FC<CommonTabsProps> = ({
             ))}
           </Tabs>
           {button && (
-            <Button variant={"contained"}
+            <Button
+              variant={"contained"}
               onClick={handleClickOpen}
               startIcon={<CgAddR />}
               // variant="outlined"
               size="large"
               sx={{
-                mt:1,
+                mt: 1,
                 color: "#FFFFFF",
                 backgroundColor: "#4C4C4C",
-              // '& .MuiButton-root':{
-              //   ":hover":{
-              //     backgroundColor: "#4C4C4C",
-              //   }
-              // }
-              ":hover": {
-                backgroundColor: "#4C4C4C", // Set a new color if needed for hover effect
-              }
+                // '& .MuiButton-root':{
+                //   ":hover":{
+                //     backgroundColor: "#4C4C4C",
+                //   }
+                // }
+                ":hover": {
+                  backgroundColor: "#4C4C4C", // Set a new color if needed for hover effect
+                },
               }}
-            >{button}</Button>)}
+            >
+              {button}
+            </Button>
+          )}
         </Grid>
       </Grid>
       {TabPanelList?.map((panel: any, index: number) => (

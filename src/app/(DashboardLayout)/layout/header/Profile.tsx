@@ -37,7 +37,7 @@ export default function AccountMenu() {
   React.useEffect(()=>{
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("api/v1/auth/getAdminData");
+        const response = await axiosInstance.get("/auth/getAdminData");
         if(response){
           setData(response?.data?.data)
         }

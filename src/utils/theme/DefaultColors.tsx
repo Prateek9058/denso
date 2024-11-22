@@ -142,6 +142,10 @@ const baselightTheme = createTheme({
           boxShadow: "none",
           borderRadius: "7px",
         },
+        contained: {
+          color: "#FFFFFF",
+          backgroundColor: "#4C4C4C",
+        },
       },
     },
     MuiFab: {
@@ -178,9 +182,10 @@ const baselightTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: "7px",
+          borderRadius: "8px",
           padding: "0",
           boxShadow: "0px 7px 30px 0px rgba(90, 114, 123, 0.11)",
+          border: "1px solid #e5e5e5",
         },
       },
     },

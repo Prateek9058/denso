@@ -43,8 +43,7 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({
       container
       direction="row"
       justifyContent="start"
-  
-  
+      border={"1px solid red"}
     >
       <Breadcrumbs separator="›" aria-label="breadcrumb">
         {breadcrumbItems.map((item, index) => (

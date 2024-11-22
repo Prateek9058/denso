@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import {
   DialogActions,
@@ -8,10 +8,6 @@ import {
   Stepper,
   Step,
   StepLabel,
-  Box,
-  Typography,
-  LinearProgress,
-  Avatar,
 } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
@@ -29,16 +25,32 @@ interface AddUserProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedDevice?: any;
+  FetchUserDetails: any;
 }
 interface ErrorResponse {
   message?: string;
 }
 
-const AddUser: React.FC<AddUserProps> = ({ open, setOpen, selectedDevice }) => {
+const AddUser: React.FC<AddUserProps> = ({
+  open,
+  setOpen,
+  selectedDevice,
+  FetchUserDetails,
+}) => {
   const [activeStep, setActiveStep] = useState(0);
+  const [select, setSelect] = useState<null | string>(null);
+  const [itemId, setItemId] = useState<string | undefined>("");
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
   const methods = useForm<any>();
 
+  const handleRadioChange = (
+    item: any,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSelect((prev: any) => (prev?._id === item._id ? null : item));
+    setItemId(item._id);
+  };
   const {
     setValue,
     handleSubmit,
@@ -52,80 +64,12 @@ const AddUser: React.FC<AddUserProps> = ({ open, setOpen, selectedDevice }) => {
 
   const steps = ["Add User", "Department", "Permission"];
 
-  const [selectDropDownData, setSelectDropDownData] = useState<any>(null);
-  console.log("selectedDevice55", selectedDevice);
-
-  //   useEffect(() => {
-  //     if (selectedDevice) {
-
-  //       setValue("trolleyId", selectedDevice?.uId);
-  //       setValue("macId", selectedDevice?.macId);
-  //       setValue("name", selectedDevice?.name);
-  //       setValue("trolleyColor", selectedDevice?.trolleyColor);
-  //       setValue("pathPointers", selectedDevice?.pathPointers);
-  //       setValue("routeProcess", selectedDevice?.routeProcess);
-  //       setValue("departmentId", selectedDevice?.departmentId);
-
-  //     } else {
-  //       reset();
-  //     }
-
-  //   }, [open, selectedDevice]);
-
-  //   const getTrolleyCategoriesData = async () => {
-  //     try {
-  //       const res = await axiosInstance.get(
-  //         "trolleyCategory/getAllTrolleyCategories"
-  //       );
-  //       if (res?.status === 200 || res?.status === 201) {
-  //         const dropdownData = res?.data?.data?.data.map((value: any) => ({
-  //           _id: value?._id,
-  //           label: value?.name,
-  //           value: value?.color,
-  //         }));
-  //         setSelectDropDownData(dropdownData);
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching trolley categories:", err);
-  //     }
-  //   };
-
-  //   const getFinalSectionDropdownData = async () => {
-  //     try {
-  //       const [departmentRes, sectionRes, lineRes] = await Promise.all([
-  //         axiosInstance.get(`organizations/getAllData?type=department`),
-  //         axiosInstance.get(`organizations/getAllData?type=section`),
-  //         axiosInstance.get(`organizations/getAllData?type=line`),
-  //       ]);
-
-  //       const validResponses = [departmentRes, sectionRes, lineRes].filter(
-  //         (res) => res?.status === 200 || res?.status === 201
-  //       );
-
-  //       if (validResponses.length > 0) {
-  //         const allData = validResponses.flatMap(
-  //           (res) => res?.data?.data?.data || []
-  //         );
-  //         setFinalSectionDropDownData(allData);
-  //       } else {
-  //         console.log("No data available for dropdown.");
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching section dropdown data:", err);
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     if (open) {
-  //       getTrolleyCategoriesData();
-  //       getFinalSectionDropdownData();
-  //     }
-  //   }, [open]);
-
   const handleClose = () => {
     setOpen(false);
     setActiveStep(0);
     reset();
+    setSelect(null);
+    setSelectedPermissions([])
   };
   const trolleyBoxLabel = () => {
     if (activeStep == 0) {
@@ -137,93 +81,58 @@ const AddUser: React.FC<AddUserProps> = ({ open, setOpen, selectedDevice }) => {
     }
   };
 
-  // if (selectedDevice && (!selectedCategory || selectedCategory.length === 0)) {
-  //   console.log("aaya")
-
-  //     setValue("trolleyCategoryId", selectedDevice?.trolleyCategoryId?._id);
-  //   }
-  //   else{
-  //   setValue("trolleyCategoryId", selectedCategory);
-
-  //   }
+  const handleCheckboxChange = (permission: string) => {
+    setSelectedPermissions((prev) =>
+      prev.includes(permission)
+        ? prev?.filter((item) => item !== permission)
+        : [...prev, permission]
+    );
+  };
   const onSubmit = async () => {
-    // console.log("selectedCategory2",selectedCategory)
-    // if (selectedDevice && (!selectedCategory || selectedCategory.length === 0)) {
-    //   console.log("aaya")
-
-    //     setValue("trolleyCategoryId", selectedDevice?.trolleyCategoryId?._id);
-    //   }
-    //   else{
-    //   setValue("trolleyCategoryId", selectedCategory);
-
-    //   }
+    if (activeStep === 1) {
+      if (!Boolean(select)) {
+        notifyError("please select atleast one item !");
+        return;
+      } else {
+        handleNext();
+      }
+    } else {
+      handleNext();
+    }
     const values = getValues();
-    // setValue("trolleyCategoryId", selectedCategory);
-    // setValue("trolleyColor", color);
-    // setValue("pathPointers", points);
-    // setValue("routeProcess", rows);
 
-    handleNext();
-
-    const formData = getValues();
-    console.log("valuuuuuu", formData);
-    const body = {
-      uId: formData?.trolleyId,
-      macId: formData?.macId,
-      name: formData?.name,
-      trolleyCategoryId: formData?.trolleyCategoryId,
-      trolleyColor: formData?.trolleyColor,
-      pathPointers: formData?.pathPointers,
-      routeProcess: formData?.routeProcess,
-      departmentId: formData?.department,
-      sectionId: formData?.section,
-      lineId: formData?.line,
-      distance: formData?.totalDistance
-        ? {
-            distanceValue: formData.totalDistance,
-            unit: "meters",
-          }
-        : undefined,
-      totalTime: formData?.totalTime
-        ? {
-            time: formData.totalTime,
-            unit: "seconds",
-          }
-        : undefined,
-      repetedCycles: formData?.repetedCycles,
+    const payload = {
+      uId: values?.uId,
+      firstName: values?.firstName,
+      secondName: values?.secondName,
+      email: values?.email,
+      phoneNumber: values?.phone,
+      countryCode: "91",
+      departmentId: itemId,
+      permissions: selectedPermissions,
     };
-    console.log("bodyyyyy", body);
 
     try {
-      let res;
-      if (selectedDevice) {
-        res = await axiosInstance.patch(
-          `api/v1/trolleys/updateTrolley/${selectedDevice?._id}`,
-          body
+      if (activeStep >= 2) {
+        const { data, status } = await axiosInstance.post(
+          "/users/createUser",
+          payload
         );
-      } else if (formData?.repetedCycles) {
-        res = await axiosInstance.post(`trolleys/createTrolley`, body);
-      }
-      if (res?.status === 200 || res?.status === 201) {
-        console.log(res);
-        notifySuccess(
-          `Trolley ${selectedDevice ? "Edit" : "created"} successfully`
-        );
-        handleClose();
-        reset();
+        if (status === 201 || status === 200) {
+          notifySuccess("user added successfully");
+          FetchUserDetails();
+          handleClose();
+        }
       }
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
-      notifyError(
-        axiosError?.response?.data?.message || "Error creating trolley"
-      );
+      notifyError(axiosError?.response?.data?.message || "Error creating user");
       console.log(error);
     }
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    console.log("name add", value);
 
     setValue(name, value);
     if (errors[name]) {
@@ -240,14 +149,13 @@ const AddUser: React.FC<AddUserProps> = ({ open, setOpen, selectedDevice }) => {
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
   };
-  console.log("selectDropDownData", selectDropDownData);
+
   return (
     <>
       <CommonDialog
         open={open}
         maxWidth={"lg"}
         fullWidth={true}
-        // title={`${selectedDevice ? "Edit" : "Add"} Trolley `}
         title={`${trolleyBoxLabel()}`}
         message={"Are you sure you want to cancel?"}
         titleConfirm={"Cancel"}
@@ -316,6 +224,28 @@ const AddUser: React.FC<AddUserProps> = ({ open, setOpen, selectedDevice }) => {
                   </Grid>
                   <Grid item md={5.8}>
                     <Controller
+                      name="uId"
+                      control={control}
+                      rules={{
+                        required: "uId is required",
+                      }}
+                      render={({ field }) => (
+                        <CustomTextField
+                          {...field}
+                          label="UID"
+                          placeholder="Enter uId, eg:USER0003"
+                          error={!!errors.uId}
+                          helperText={errors.uId?.message}
+                          onChange={handleInputChange}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.uId : ""
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={5.8}>
+                    <Controller
                       name="phone"
                       control={control}
                       rules={{
@@ -329,7 +259,7 @@ const AddUser: React.FC<AddUserProps> = ({ open, setOpen, selectedDevice }) => {
                       render={({ field }) => (
                         <CustomTextField
                           {...field}
-                          field='number'
+                          field="number"
                           label="Phone number"
                           placeholder="Enter Phone number"
                           error={!!errors.phone}
@@ -372,13 +302,20 @@ const AddUser: React.FC<AddUserProps> = ({ open, setOpen, selectedDevice }) => {
                 </Grid>
               )}
               {activeStep === 1 && (
-                <Grid container justifyContent={"space-between"}>
-                  <UserDepartment />
+                <Grid container>
+                  <UserDepartment
+                    select={select}
+                    setSelect={setSelect}
+                    handleRadioChange={handleRadioChange}
+                  />
                 </Grid>
               )}
               {activeStep === 2 && (
                 <Grid container justifyContent={"space-between"}>
-                  <UserPermission />
+                  <UserPermission
+                    selectedPermissions={selectedPermissions}
+                    handleCheckboxChange={handleCheckboxChange}
+                  />
                 </Grid>
               )}
             </DialogContent>

@@ -1,9 +1,12 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { Grid } from "@mui/material";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
-const AddDevice = dynamic(() => import('@/app/(components)/pages/trolley/addTrolley/addTrolley'), { ssr: false });
+const AddDevice = dynamic(
+  () => import("@/app/(components)/pages/trolley/addTrolley/addTrolley"),
+  { ssr: false }
+);
 // import AddDevice from "@/app/(components)/pages/trolley/addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
@@ -39,8 +42,18 @@ const useClientSide = () => {
 
   return isClient;
 };
+const columns1 = [
+  "Trolley ID",
+  "Trolley name",
+  "MAC ID",
+  "Running Time",
+  "Ideal Time",
+  "Assign status",
+  "Action",
+];
+const columns2 = ["Trolley ID", "Trolley name", "Trolly color", "Date"];
 const Page: React.FC = () => {
-  const isClient = useClientSide();  
+  const isClient = useClientSide();
   const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
   const [openCat, setOpenCat] = useState<boolean>(false);
@@ -57,7 +70,7 @@ const Page: React.FC = () => {
     {
       title: "Trolleys",
       value: 0,
-      active: deviceData? deviceData?.activeTrollees:"0",
+      active: deviceData ? deviceData?.activeTrollees : "0",
       assigned: "0",
       in: "0",
       nonActive: "0",
@@ -88,9 +101,7 @@ const Page: React.FC = () => {
       icon: salesIcon,
     },
   ]);
- 
-console.log("deviceData",deviceData)
-  
+
   useEffect(() => {
     getTrolleyData();
   }, [page, rowsPerPage, searchQuery, value]);
@@ -115,14 +126,12 @@ console.log("deviceData",deviceData)
         : "trolleyCategory/getAllTrolleyCategories";
     try {
       const res = await axiosInstance.get(
-        `${Url}?page=${
-          page + 1
-        }&limit=${rowsPerPage}&search=${searchQuery}`
+        `${Url}?page=${page + 1}&limit=${rowsPerPage}&search=${searchQuery}`
       );
       if (res?.status === 200 || res?.status === 201) {
         setDeviceData(res?.data?.data);
         setLoading(false);
-        console.log('Api responseee',res?.data?.data);
+        console.log("Api responseee", res?.data?.data);
       }
     } catch (err) {
       setLoading(false);
@@ -146,6 +155,7 @@ console.log("deviceData",deviceData)
     {
       component: (
         <Table
+          columns={columns1}
           deviceData={deviceData}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
@@ -161,6 +171,7 @@ console.log("deviceData",deviceData)
     {
       component: (
         <Table
+          columns={columns2}
           deviceData={deviceData}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}

@@ -17,8 +17,10 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-  value:any;
+  value: any;
+  columns:any
 }
+
 const Table: React.FC<TableProps> = ({
   deviceData,
   rowsPerPage,
@@ -29,26 +31,13 @@ const Table: React.FC<TableProps> = ({
   setSearchQuery,
   loading,
   value,
+  columns
 }) => {
-  const columns1 = [
-    "Trolley ID",
-    "Trolley name",
-    "MAC ID",
-    "Running Time" ,
-     "Ideal Time",
-    "Assign status" ,
-    "Action" ,
-  ];
-  const columns2 = [
-    "Trolley ID",
-    "Trolley name",
-    'Trolly color',
-    'Date',
-  ];
-  
+
+
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
-console.log("deviceData123456",deviceData)
+  console.log("deviceData123456", deviceData);
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -75,43 +64,44 @@ console.log("deviceData123456",deviceData)
     setOpenDialog(false);
   };
   const getFormattedData = (data: any[]) => {
-    console.log("data main table ",data)
-
     return data?.map((item, index) => ({
       // sno: index + 1,
       trolleyUid: item?.uId ?? "N/A",
       name: item?.name ?? "N/A",
       trolleyMacId: item?.macId ?? "N/A",
       runningTime: item?.runningTime ?? "N/A",
-      idealTime:item?.idealTime ?? "N/A",
-      assignStatus: item?.assignStatus ?? 'false',
-      Action: value == 0 ? [
-        <Grid container justifyContent="center" key={index}>
-          <Grid item>
-            <Link href={`/trolley/${item?._id}`}>
-              <Tooltip title="View">
-                <IconButton size="small">
-                  <BsEye color="#DC0032" />
-                </IconButton>
-              </Tooltip>
-            </Link>
-          </Grid>
-        </Grid>,
-      ] : null,
+      idealTime: item?.idealTime ?? "N/A",
+      assignStatus: item?.assignStatus ?? "false",
+      Action:
+        value == 0
+          ? [
+              <Grid container justifyContent="center" key={index}>
+                <Grid item>
+                  <Link href={`/trolley/${item?._id}`}>
+                    <Tooltip title="View">
+                      <IconButton size="small">
+                        <BsEye color="#DC0032" />
+                      </IconButton>
+                    </Tooltip>
+                  </Link>
+                </Grid>
+              </Grid>,
+            ]
+          : null,
     }));
   };
 
   const getFormattedDataTable2 = (data: any[]) => {
-    console.log("table2 response data", data)
+    console.log("table2 response data", data);
     return data?.map((item, index) => ({
       // sno: index + 1,
       trolleyUid: item?.uId ?? "N/A",
       trolleyName: item?.name ?? "N/A",
-      color:item?.color ?? "N/A",
+      color: item?.color ?? "N/A",
       createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
     }));
   };
-  
+
   return (
     <>
       <CommonDialog
@@ -135,8 +125,10 @@ console.log("deviceData123456",deviceData)
           <Grid item>
             <Typography variant="h5">
               {" "}
-              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} Trolleys
+              Showing {deviceData
+                ? deviceData?.data?.trolleyData?.length
+                : 0}{" "}
+              out of {deviceData?.data?.totalCount} Trolleys
             </Typography>
           </Grid>
           <Grid item>
@@ -152,35 +144,16 @@ console.log("deviceData123456",deviceData)
             </Grid>
           </Grid>
         </Grid>{" "}
-        {loading ? (
-          <TableSkeleton
-            rowNumber={new Array(10).fill(0)}
-            tableCell={new Array(5).fill("15%")}
-            actions={new Array(2).fill(0)}
-          />
-        ) : value == 0 ? (
-          <CustomTable
-            page={page}
-            rows={getFormattedData(deviceData?.data)}
-            count={deviceData?.totalCount}
-            columns={columns1}
-            setPage={setPage}
-            rowsPerPage={rowsPerPage}
-            setRowsPerPage={setRowsPerPage}
-          />
-        ) 
-        :  (
-          <CustomTable
-            page={page}
-            rows={getFormattedDataTable2(deviceData?.data)}
-            count={deviceData?.totalCount}
-            columns={columns2}
-            setPage={setPage}
-            rowsPerPage={rowsPerPage}
-            setRowsPerPage={setRowsPerPage}
-          />
-        )
-        }
+        <CustomTable
+          page={page}
+          loading={loading}
+          rows={getFormattedDataTable2(deviceData?.data)}
+          count={deviceData?.totalCount}
+          columns={columns}
+          setPage={setPage}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
+        />
       </Grid>
     </>
   );
