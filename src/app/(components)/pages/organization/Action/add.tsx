@@ -30,7 +30,6 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
   getFetchAllDetails,
 }) => {
   const { section, line } = useParams<{ section: string; line: string }>();
-  console.log("Check department", section);
   const {
     register,
     handleSubmit,

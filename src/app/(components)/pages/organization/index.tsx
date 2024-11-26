@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, IconButton, Tooltip, Chip } from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
@@ -40,7 +40,6 @@ const Table: React.FC<TableProps> = ({
   const columns = ["Sno.", "UId", type, "Created At", "View"];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
-  7;
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -118,9 +117,9 @@ const Table: React.FC<TableProps> = ({
           p={2}
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
-          <Grid item display={"flex"}>
+          <Grid item>
+            <Typography variant="h5">{formattedType} Management</Typography>
             <Typography variant="body1">
-              <Typography variant="h5">{formattedType} Management</Typography>
               Showing {data ? data?.data?.length : 0} out of {data?.totalCount}{" "}
             </Typography>
           </Grid>

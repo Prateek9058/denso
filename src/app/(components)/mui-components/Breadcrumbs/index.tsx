@@ -22,7 +22,6 @@ interface CustomBreadcrumbsProps {
 const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({
   breadcrumbItems,
 }) => {
-  console.log("check breadcrumbItems", breadcrumbItems);
   const pathname = usePathname();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));

@@ -1,12 +1,10 @@
 import React from "react";
 // mui imports
 import {
-  ListItemIcon,
   ListItem,
   List,
   styled,
   ListItemText,
-  useTheme,
   ListItemButton,
 } from "@mui/material";
 import Link from "next/link";
@@ -31,7 +29,6 @@ interface ItemType {
 const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
   const Icon = item.icon;
   const IconActive = item?.iconActive;
-  const theme = useTheme();
   const ListItemStyled = styled(ListItem)(() => ({
     padding: 0,
     ".MuiButtonBase-root": {

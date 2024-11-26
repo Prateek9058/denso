@@ -177,7 +177,7 @@ export default function RootLayout({
           <SidebarItems />
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
+      <Box component="main" sx={{ mt: 4, flexGrow: 1, p: 0 }}>
         <Container maxWidth="xl">
           <DrawerHeader /> {children}
         </Container>

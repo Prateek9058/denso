@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Grid, Typography, Button } from "@mui/material";
+import React, { useState } from "react";
+import { Grid, Typography } from "@mui/material";
 import MultiBarChart from "@/app/(components)/mui-components/CustomGraph/MultiBarChart";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
-const manPowerWaitingTime = () => {
+const WaitingTime = () => {
   const [date, setDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
   const getDataFromChildHandler = (date: any, dataArr: any) => {
@@ -43,7 +43,14 @@ const manPowerWaitingTime = () => {
   ];
   return (
     <Grid mt={2} item md={6} sm={12} xs={12} sx={{ height: "100%" }}>
-      <Grid sx={{ backgroundColor: "white", borderRadius: "10px",minHeight:'470px' }} p={2}>
+      <Grid
+        sx={{
+          backgroundColor: "white",
+          borderRadius: "10px",
+          minHeight: "470px",
+        }}
+        p={2}
+      >
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h5">
@@ -61,7 +68,6 @@ const manPowerWaitingTime = () => {
         </Grid>
       </Grid>
     </Grid>
-    // </Grid>
   );
 };
-export default manPowerWaitingTime;
+export default WaitingTime;

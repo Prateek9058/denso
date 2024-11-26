@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Grid } from "@mui/material";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 import NotificationsList from "./layoutNoti";
 import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";
+import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+
 interface TabData {
   label: string;
 }
@@ -32,20 +33,16 @@ const Page: React.FC = () => {
     },
   ];
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <>
       <ToastComponent />
-      <ManagementGrid
-        moduleName="Alerts"
-        subHeading="Manage alerts"
-        breadcrumbItems={breadcrumbItems}
-      />
+      <Breadcrumb breadcrumbItems={breadcrumbItems} />
       <Tabs
         value={value}
         handleChange={handleChange}
         tabs={tabs}
         TabPanelList={TabPanelList}
       />
-    </Grid>
+    </>
   );
 };
 
