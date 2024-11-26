@@ -116,7 +116,7 @@ const Page: React.FC = () => {
   };
 
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <Grid>
       <ToastComponent />
       <CountCard cardDetails={stats} progress={true} />
 

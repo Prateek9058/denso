@@ -41,7 +41,7 @@ const Page: React.FC = () => {
     setPage(0);
     setRowsPerPage(10);
   };
-console.log("valuekkkk",value)
+  console.log("valuekkkk", value);
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedZone = event.target.value;
     setZoneId(selectedZone);
@@ -65,27 +65,14 @@ console.log("valuekkkk",value)
     } finally {
       setLoading(false);
     }
-  }, [ page, rowsPerPage, searchQuery, zoneId, value]);
+  }, [page, rowsPerPage, searchQuery, zoneId, value]);
   useEffect(() => {
     getEmployeeData();
   }, [value]);
   const handleClickOpen = () => {
     setOpen(true);
   };
-  // const getAllZone = useCallback(async () => {
-  //   try {
-  //     const res = await axiosInstance.get(`zone/zoneData/${selectedSite?._id}`);
-  //     if (res?.status === 200 || res?.status === 201) {
-  //       const zoneData = Object.values(res?.data?.data[0]?.zones);
-  //       setZone(zoneData);
-  //     }
-  //   } catch (err) {
-  //   } finally {
-  //   }
-  // }, []);
-  useEffect(() => {
-    // getAllZone();
-  }, []);
+
   console.log(zoneId);
 
   const TabPanelList = [
@@ -120,7 +107,7 @@ console.log("valuekkkk",value)
   ];
 
   return (
-    <Grid sx={{ padding: 5 }}>
+    <Grid>
       <ToastComponent />
       <AddDevice
         open={open}

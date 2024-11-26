@@ -1,25 +1,19 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  Typography,
-  IconButton,
-  Tooltip,
-  Chip,
-  Button,
-} from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip, Chip } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import moment from "moment";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
-import { saveAs } from "file-saver";
-import Papa from "papaparse";
 import { BsEye } from "react-icons/bs";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
+import EditAction from "@/app/(components)/pages/organization/Action/edit";
+import DeleteAction from "@/app/(components)/pages/organization/Action/delete";
+
 interface TableProps {
-  deviceData: any;
+  link: string;
+  data: any;
   rowsPerPage: number;
   setRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
   page: number;
@@ -27,10 +21,12 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-  value: any;
+  type: any;
+  getFetchAllDetails: any;
 }
 const Table: React.FC<TableProps> = ({
-  deviceData,
+  link,
+  data,
   rowsPerPage,
   setRowsPerPage,
   page,
@@ -38,17 +34,13 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
-  value,
+  type,
+  getFetchAllDetails,
 }) => {
-  const columns = [
-    "Sno.",
-    "UId",
-    value == 0 ? "Department" : value == 1 ? "Section" : "Line",
-    "Created At",
-    "View",
-  ];
+  const columns = ["Sno.", "UId", type, "Created At", "View"];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+  7;
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -64,10 +56,6 @@ const Table: React.FC<TableProps> = ({
     setDebouncedSearchQuery(event.target.value);
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
   const handleConfirm = () => {
     handleCancel();
   };
@@ -76,45 +64,16 @@ const Table: React.FC<TableProps> = ({
     setOpenDialog(false);
   };
 
-  const getStatus = (str: string) => {
-    if (str?.toUpperCase() === "PRESENT")
-      return { status: "Present", color: "customChip activeGreen" };
-    else return { status: "Absent", color: "customChip activeRed" };
-  };
-  const getStatusInfo = (ele: string, index: number) => {
-    if (ele?.toUpperCase() === "PRESENT") {
-      return [
-        <Chip
-          key={index}
-          sx={{ width: "120px" }}
-          className="customChip activeGreen"
-          label={ele}
-        />,
-      ];
-    } else {
-      return [
-        <Chip
-          key={index}
-          className={getStatus(ele)?.color}
-          sx={{ width: "120px" }}
-          label={getStatus(ele)?.status}
-        />,
-      ];
-    }
-  };
-
   const getFormattedData = (data: any[]) => {
-    console.log("item organidation", data);
-
     return data?.map((item, index) => ({
       sno: index + 1,
       uId: item?.uId ?? "N/A",
       name: item?.name ? item?.name : "N/A",
       createAt: item?.createdAt ? moment(item?.createdAt).format("lll") : "N/A",
       Action: [
-        <Grid container justifyContent="center" key={index}>
+        <Grid container justifyContent="space-between" key={index}>
           <Grid item>
-            <Link href={`/organization/${item?._id}`}>
+            <Link href={`/${link}${item?._id}`}>
               <Tooltip title="View">
                 <IconButton size="small">
                   <BsEye color="#DC0032" />
@@ -122,10 +81,22 @@ const Table: React.FC<TableProps> = ({
               </Tooltip>
             </Link>
           </Grid>
+          <EditAction
+            item={item}
+            type={type}
+            getFetchAllDetails={getFetchAllDetails}
+          />
+          <DeleteAction
+            id={item?._id}
+            type={type}
+            getFetchAllDetails={getFetchAllDetails}
+          />
         </Grid>,
       ],
     }));
   };
+  const formattedType =
+    type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
 
   return (
     <>
@@ -139,7 +110,7 @@ const Table: React.FC<TableProps> = ({
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <Grid container mt={2}>
+      <Grid container>
         <Grid
           container
           justifyContent={"space-between"}
@@ -148,11 +119,9 @@ const Table: React.FC<TableProps> = ({
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
           <Grid item display={"flex"}>
-            <Typography variant="h5">
-              {" "}
-              {value == 0 ? "Department" : value == 1 ? "Section" : "Line"}{" "}
-              details | Showing {deviceData ? deviceData?.data?.length : 0} out
-              of {deviceData?.totalCount}{" "}
+            <Typography variant="body1">
+              <Typography variant="h5">{formattedType} Management</Typography>
+              Showing {data ? data?.data?.length : 0} out of {data?.totalCount}{" "}
             </Typography>
           </Grid>
           <Grid item>
@@ -177,8 +146,8 @@ const Table: React.FC<TableProps> = ({
         ) : (
           <CustomTable
             page={page}
-            rows={getFormattedData(deviceData?.data)}
-            count={deviceData?.totalCount}
+            rows={getFormattedData(data?.data)}
+            count={data?.totalCount}
             columns={columns}
             setPage={setPage}
             rowsPerPage={rowsPerPage}

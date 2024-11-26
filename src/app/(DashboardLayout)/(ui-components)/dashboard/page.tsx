@@ -154,7 +154,7 @@ const Page = () => {
     getOverAllCount();
   }, [selectedSite]);
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <Grid>
       <Grid container spacing={2}>
         {stats?.map((stat) => (
           <Grid item md={3} mt={2} sm={5.8} xs={12} key={stat?.id}>

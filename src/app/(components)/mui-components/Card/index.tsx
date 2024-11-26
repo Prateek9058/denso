@@ -43,7 +43,7 @@ interface ManagementGridProps {
   zoneId?: any;
   handleInputChange?: any;
   back?: string;
-  handleBack?:any
+  handleBack?: any;
 }
 const ManagementGrid: React.FC<ManagementGridProps> = ({
   moduleName,
@@ -66,7 +66,7 @@ const ManagementGrid: React.FC<ManagementGridProps> = ({
   handleInputChange,
   zoneId,
   back,
-  handleBack
+  handleBack,
 }) => {
   return (
     <Grid container justifyContent="space-between" alignItems="center" mt={1}>
