@@ -215,7 +215,7 @@ const Page: React.FC = () => {
     },
   ];
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <Grid>
       <ToastComponent />
       {value == 0 ? (
         <AddDevice

@@ -11,25 +11,26 @@ import {
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
 import { AxiosError } from "axios";
+import { useParams } from "next/navigation";
 
-const selectData = ["A", "B"];
 interface AddDeviceProps {
+  type: string;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  getDeviceData: () => void;
-  selectedDevice?: any;
-  type?: any;
+  getFetchAllDetails: () => void;
 }
 interface ErrorResponse {
   message?: string;
 }
+
 const AddDepartment: React.FC<AddDeviceProps> = ({
+  type,
   open,
   setOpen,
-  getDeviceData,
-  selectedDevice,
-  type,
+  getFetchAllDetails,
 }) => {
+  const { section, line } = useParams<{ section: string; line: string }>();
+  console.log("Check department", section);
   const {
     register,
     handleSubmit,
@@ -41,6 +42,7 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
   } = useForm();
   const [loading, setLoading] = useState<boolean>(false);
   const [uid, setUid] = useState<any>("");
+
   const handleClose = () => {
     setOpen(false);
     reset();
@@ -48,52 +50,76 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
   };
 
   const onSubmit = async () => {
-    if (!type) return;
     const formData = getValues();
-    const body = {
+    const body: any = {
       name: formData?.name,
       uId: uid,
-      type: type,
     };
+
+    let apiPath = "";
+    const params = new URLSearchParams();
+
+    if (type === "department") {
+      apiPath = "department/addDepartment";
+    } else if (type === "section") {
+      apiPath = "section/addSection";
+      params.append("departmentId", section);
+    } else if (type === "line") {
+      apiPath = "line/addLine";
+      params.append("departmentId", section);
+      params.append("sectionId", line);
+    }
     try {
-      const res = await axiosInstance.post(`organizations/add`, body);
+      const url = `${apiPath}?${params.toString()}`;
+      const res = await axiosInstance.post(url, body);
       if (res?.status === 200 || res?.status === 201) {
         notifySuccess(
           `${type.charAt(0).toUpperCase() + type.slice(1)} added successfully`
         );
-        getDeviceData();
+        getFetchAllDetails();
         handleClose();
       }
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
       notifyError(
-        axiosError?.response?.data?.message || "Error creating shift"
+        axiosError?.response?.data?.message || `Error creating ${type}`
       );
       console.log(error);
-      // handleClose();
     }
   };
+
   const getUid = useCallback(async () => {
-    if (!type) return;
     setLoading(true);
     try {
-      const res = await axiosInstance.get(`organizations/getUid?type=${type}`);
+      let apiPath = "";
+      if (type === "department") {
+        apiPath = "department/getUid";
+      } else if (type === "section") {
+        apiPath = "section/getUid";
+      } else if (type === "line") {
+        apiPath = "line/getUid";
+      } else {
+        return;
+      }
+      const res = await axiosInstance.get(apiPath);
       if (res?.status === 200 || res?.status === 201) {
         setUid(res?.data?.data);
         console.log(res?.data?.data);
       }
     } catch (err) {
+      console.log("Error fetching UID:", err);
     } finally {
       setLoading(false);
     }
   }, [type]);
+
   useEffect(() => {
     if (open) {
       getUid();
     }
     setValue("Uid", uid);
-  }, [open, type]);
-  console.log("getUid======>", uid);
+  }, [open, uid]);
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setValue(name, value);
@@ -101,13 +127,17 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
       clearErrors(name);
     }
   };
+
   return (
     <>
+      <Button variant="contained" onClick={() => setOpen(true)}>
+        Add {type}
+      </Button>
       <CommonDialog
         open={open}
         maxWidth={"sm"}
         fullWidth={true}
-        title={`Add New ${type}`}
+        title={`Add New Department`}
         message={"Are you sure you want to cancel?"}
         titleConfirm={"Cancel"}
         onClose={handleClose}
@@ -139,7 +169,6 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
                   error={!!errors.name}
                   helperText={errors.name?.message}
                   onChange={handleInputChange}
-                  defaultValue={selectedDevice ? selectedDevice?.fullName : ""}
                 />
               </Grid>
             </Grid>

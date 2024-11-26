@@ -15,8 +15,8 @@ import Organization from "../.../../../../.././../public/Img/gg_organisation.png
 import OrganizationAct from "../.../../../../.././../public/Img/gg_organisationActive.png";
 import Maintence from "../.../../../../.././../public/Img/maintenceT.png";
 import MaintenceAct from "../.../../../../.././../public/Img/maintenaceAct.png";
-import UserManagementIcon from '../.../../../../.././../public/Img/userManagementIcon.png';
-import UserManagementActiveIcon from '../.../../../../.././../public/Img/userManagementActiveIcon.png';
+import UserManagementIcon from "../.../../../../.././../public/Img/userManagementIcon.png";
+import UserManagementActiveIcon from "../.../../../../.././../public/Img/userManagementActiveIcon.png";
 
 const Menuitems = [
   {
@@ -63,10 +63,10 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Organization",
+    title: "Department",
     icon: Organization,
     iconActive: OrganizationAct,
-    href: "/organization",
+    href: "/department",
   },
   {
     id: uniqueId(),

@@ -22,6 +22,7 @@ interface CustomBreadcrumbsProps {
 const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({
   breadcrumbItems,
 }) => {
+  console.log("check breadcrumbItems", breadcrumbItems);
   const pathname = usePathname();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
@@ -32,18 +33,14 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({
 
   return (
     <Grid
+      container
       sx={{
         pr: "12px",
         pt: "12px",
-        position: "fixed",
-        top: "20px",
-        zIndex: "99",
-        width: "auto",
+        pb: "20px",
       }}
-      container
       direction="row"
       justifyContent="start"
-      border={"1px solid red"}
     >
       <Breadcrumbs separator="›" aria-label="breadcrumb">
         {breadcrumbItems.map((item, index) => (

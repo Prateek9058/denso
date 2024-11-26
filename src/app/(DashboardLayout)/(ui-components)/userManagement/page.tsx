@@ -32,9 +32,8 @@ const Page: React.FC = () => {
     FetchUserDetails();
   }, [page, rowsPerPage, searchQuery]);
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <Grid>
       <ToastComponent />
-
       <Table
         FetchUserDetails={FetchUserDetails}
         deviceData={deviceData}

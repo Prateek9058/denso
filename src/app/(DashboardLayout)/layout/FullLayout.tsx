@@ -127,26 +127,31 @@ export default function RootLayout({
         <Grid container justifyContent={"space-between"} alignItems={"center"}>
           <Grid item>
             <Grid item>
-              <Toolbar sx={{ position: "absolute", left:10 }}>
+              <Toolbar sx={{ position: "absolute", left: 10 }}>
                 <IconButton
                   color="inherit"
                   aria-label="open drawer"
                   onClick={handleDrawerOpen}
                   edge="start"
-                  sx={open ? { display: "none" ,top:"0px"} : { display: "block",top:"0px" }}
+                  sx={
+                    open
+                      ? { display: "none", top: "0px" }
+                      : { display: "block", top: "0px" }
+                  }
                 >
                   <MenuIcon />
                 </IconButton>
               </Toolbar>
               {/* <Grid item sx={{ position: "absolute", left: "100px" ,top:"15px"}}> */}
-                <Image
-                  src={Logo}
-                  alt="logo"
-                  style={{
-                    objectFit: "contain",
-                    marginLeft:open?"20px":"90px",marginTop:"15px"
-                  }}
-                />
+              <Image
+                src={Logo}
+                alt="logo"
+                style={{
+                  objectFit: "contain",
+                  marginLeft: open ? "20px" : "90px",
+                  marginTop: "15px",
+                }}
+              />
               {/* </Grid> */}
             </Grid>
           </Grid>
@@ -173,7 +178,9 @@ export default function RootLayout({
         </Box>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
-        <DrawerHeader /> {children}
+        <Container maxWidth="xl">
+          <DrawerHeader /> {children}
+        </Container>
       </Box>
     </Box>
   );

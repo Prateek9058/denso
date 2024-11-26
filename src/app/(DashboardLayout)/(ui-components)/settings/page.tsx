@@ -9,7 +9,7 @@ interface TabData {
 const tabs: TabData[] = [{ label: "Profile" }, { label: "User management" }];
 const Page: React.FC = () => {
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <Grid>
       <ToastComponent />
       <Profile />
     </Grid>
