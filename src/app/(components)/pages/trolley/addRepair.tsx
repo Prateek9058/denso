@@ -53,46 +53,38 @@ const AddRepair: React.FC<AddDeviceProps> = ({
   }, []);
   const dropDownData = [
     {
-        "_id": "671645b6740b31a416f231c1",
-        "label": "test",
+      _id: "671645b6740b31a416f231c1",
+      label: "test",
     },
     {
-        "_id": "67177d3bb5491ed7dad99c75",
-        "label": "test",
+      _id: "67177d3bb5491ed7dad99c75",
+      label: "test",
     },
     {
-        "_id": "671f552da5ec829121b895de",
-        "label": "1stK",
+      _id: "671f552da5ec829121b895de",
+      label: "1stK",
     },
     {
-        "_id": "672870361e4a8366fba338e7",
-        "label": "TEST5",
+      _id: "672870361e4a8366fba338e7",
+      label: "TEST5",
     },
     {
-        "_id": "672892d91e4a8366fba33a1f",
-        "label": "rohit",
+      _id: "672892d91e4a8366fba33a1f",
+      label: "rohit",
     },
     {
-        "_id": "67358445ee949f08984414e1",
-        "label": "test",
-    }
-]
-console.log('selectedDevice55o',selectedDevice?._id)
+      _id: "67358445ee949f08984414e1",
+      label: "test",
+    },
+  ];
+  console.log("selectedDevice55o", selectedDevice?._id);
 
   const onSubmit = async () => {
-
-    console.log('selectedDevice55o',selectedDevice?._id)
+    console.log("selectedDevice55o", selectedDevice?._id);
     if (!selectedDevice?._id) return;
     try {
-      // const formData = getValues();
-      // const body = {
-      //   issue: formData?.issue,
-      //   // status: formData?.status,
-      //   // repairingStatus: true,
-      //   // repairDate: dayjs(formData?.repairDate).format("YYYY-MM-DD"),
-      // };
       const res = await axiosInstance.post(
-        `trolleyRepairing/addTrolleyRepairing/${selectedDevice?._id}`,
+        `trolleyRepairing/addTrolleyRepairing/${selectedDevice?._id}`
         // body
       );
       if (res?.status === 200 || res?.status === 201) {

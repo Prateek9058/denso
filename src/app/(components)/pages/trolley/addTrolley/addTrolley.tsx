@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import {
   DialogActions,
@@ -9,11 +9,13 @@ import {
   Step,
   StepLabel,
   Box,
-  Typography,
-  LinearProgress,
   Avatar,
+  FormControl,
+  FormHelperText,
+  MenuItem,
+  Select,
+  InputLabel,
 } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
 import {
@@ -21,13 +23,9 @@ import {
   notifySuccess,
 } from "@/app/(components)/mui-components/Snackbar";
 import TrolleyIcon from "../../../../../../public/Img/clarity_avatar-trolley.png";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
 import { AxiosError } from "axios";
-import dayjs from "dayjs";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { useDropzone } from "react-dropzone";
 import TrolleyRoute from "./trolleyRoute";
 import Image from "next/image";
@@ -39,7 +37,6 @@ interface AddDeviceProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   getTrolleyData: () => void;
   selectedDevice?: any;
-  selectedSite?: any;
 }
 interface ErrorResponse {
   message?: string;
@@ -76,13 +73,9 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   setOpen,
   getTrolleyData,
   selectedDevice,
-  selectedSite,
 }) => {
-  console.log("Check selectedDevice------------------------------",selectedDevice)
   const [activeStep, setActiveStep] = useState(0);
-  const [userData, setUserData] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [progress, setProgress] = useState<number>(0);
   const [points, setPoints] = useState<PointWithMarker[]>([]);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [finalSectionDropDownData, setFinalSectionDropDownData] = useState<
@@ -101,6 +94,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     formState: { errors },
     control,
   } = methods;
+  const values = getValues();
   const [rows, setRows] = useState<ProcessFormRow[]>([
     {
       process: "",
@@ -126,19 +120,14 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const [selectDropDownData, setSelectDropDownData] = useState<any>(null);
 
   useEffect(() => {
-    if (selectedDevice && open) {
-      const categoryId = selectedDevice?.trolleyCategoryId?._id;
-
-      if (categoryId?.length > 0) {
-        setValue("trolleyCategoryId", categoryId);
-      }
-
+    if (selectedDevice) {
+      setValue("trolleyCategoryId", selectedDevice?.trolleyCategoryId?._id);
       setValue("trolleyId", selectedDevice?.uId);
       setValue("macId", selectedDevice?.macId);
       setValue("name", selectedDevice?.name);
       setValue("trolleyColor", selectedDevice?.trolleyColor);
       setValue("routeProcess", selectedDevice?.routeProcess);
-      setValue("pathPointers",selectedDevice?.pathPointers);
+      setValue("pathPointers", selectedDevice?.pathPointers);
       setPoints(selectedDevice?.pathPointers);
       setValue("routeProcess", selectedDevice?.routeProcess);
       setValue("departmentId", selectedDevice?.departmentId);
@@ -147,12 +136,10 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       setValue("distance", selectedDevice?.distance);
       setValue("totalTime", selectedDevice?.totalTime);
       setValue("repetedCycles", selectedDevice?.repetedCycles);
-      setRows(selectedDevice?.routeProcess)
+      setRows(selectedDevice?.routeProcess);
     } else {
       reset();
     }
-
-    // console.log('selectedDevice1',selectedDevice?.trolleyCategoryId?._id)
   }, [open, selectedDevice]);
 
   useEffect(() => {
@@ -168,52 +155,66 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         "trolleyCategory/getAllTrolleyCategories"
       );
       if (res?.status === 200 || res?.status === 201) {
-        console.log("responsess",res)
-        const dropdownData = res?.data?.data?.data.map((value: any) => ({
-          _id: value?._id,
-          label: value?.name,
-          color: value?.color,
-        })) || [];
+        const dropdownData =
+          res?.data?.data?.data.map((value: any) => ({
+            _id: value?._id,
+            label: value?.name,
+            color: value?.color,
+          })) || [];
         setSelectDropDownData(dropdownData);
       }
     } catch (err) {
       console.error("Error fetching trolley categories:", err);
-       setSelectDropDownData([]);
+      setSelectDropDownData([]);
     }
   };
 
-  const getFinalSectionDropdownData = async () => {
+  // console.log("activeStep", activeStep);
+  // const getFinalSectionDropdownData = async () => {
+  //   try {
+  //     const [departmentRes, sectionRes, lineRes] = await Promise.all([
+  //       axiosInstance.get(`department/getAllDepartments?page=&limit&search`),
+  //       axiosInstance.get(`section/getAllSections`),
+  //       axiosInstance.get(`line/getAllLines`),
+  //     ]);
+
+  //     const validResponses = [departmentRes, sectionRes, lineRes].filter(
+  //       (res) => res?.status === 200 || res?.status === 201
+  //     );
+
+  //     if (validResponses.length > 0) {
+  //       const allData = validResponses.flatMap(
+  //         (res) => res?.data?.data?.data || []
+  //       );
+  //       setFinalSectionDropDownData(allData);
+  //     } else {
+  //       console.log("No data available for dropdown.");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching section dropdown data:", err);
+  //   }
+  // };
+  const handleFinalDetails = async () => {
     try {
-      const [departmentRes, sectionRes, lineRes] = await Promise.all([
-        axiosInstance.get(`organizations/getAllData?type=department`),
-        axiosInstance.get(`organizations/getAllData?type=section`),
-        axiosInstance.get(`organizations/getAllData?type=line`),
-      ]);
-
-      const validResponses = [departmentRes, sectionRes, lineRes].filter(
-        (res) => res?.status === 200 || res?.status === 201
+      const { data, status } = await axiosInstance(
+        "department/getAllDepartments?page=&limit&search"
       );
-
-      if (validResponses.length > 0) {
-        const allData = validResponses.flatMap(
-          (res) => res?.data?.data?.data || []
-        );
-        setFinalSectionDropDownData(allData);
-      } else {
-        console.log("No data available for dropdown.");
+      if (status === 200 || status === 201) {
+        setFinalSectionDropDownData(data?.data?.data);
       }
-    } catch (err) {
-      console.error("Error fetching section dropdown data:", err);
+    } catch (error: any) {
+      console.log(error);
     }
   };
   const selectedCategory = watch("trolleyCategoryId");
   const color =
-    selectDropDownData?.find((item: any) => item?._id === selectedCategory)
-      ?.value || "";
+    selectDropDownData?.find(
+      (item: any) => item._id === values?.trolleyCategoryId
+    )?.color || "";
   useEffect(() => {
     if (open) {
       getTrolleyCategoriesData();
-      getFinalSectionDropdownData();
+      handleFinalDetails();
     }
   }, [open, selectedDevice]);
 
@@ -237,20 +238,16 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       return "Final detalis";
     }
   };
-  console.log("filePreview", file);
   const onDrop = (acceptedFiles: File[]) => {
-    // setFile(acceptedFiles[0]);
     const selectedFile = acceptedFiles[0];
     setFile(selectedFile);
     setFilePreview(URL.createObjectURL(selectedFile));
-    // setProgress(0);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxSize: 10485760,
   });
-
 
   const onSubmit = async () => {
     setValue("trolleyCategoryId", selectedCategory);
@@ -261,7 +258,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     handleNext();
 
     const formData = getValues();
-    console.log("valuuuuuu", formData);
     const body = {
       uId: formData?.trolleyId,
       macId: formData?.macId,
@@ -287,20 +283,19 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         : undefined,
       repetedCycles: formData?.repetedCycles,
     };
-    console.log("bodyyyyy", body);
 
     try {
       let res;
-      if (selectedDevice && formData?.repetedCycles) {
+      if (selectedDevice && formData?.repetedCycles && activeStep > 2) {
         res = await axiosInstance.patch(
-          `api/v1/trolleys/updateTrolley/${selectedDevice?._id}`,
+          `trolleys/updateTrolley/${selectedDevice?._id}`,
           body
         );
-      } else if (formData?.repetedCycles) {
+      }
+      if (!selectedDevice && activeStep > 2) {
         res = await axiosInstance.post(`trolleys/createTrolley`, body);
       }
       if (res?.status === 200 || res?.status === 201) {
-        console.log(res);
         notifySuccess(
           `Trolley ${selectedDevice ? "Edit" : "created"} successfully`
         );
@@ -319,7 +314,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    console.log("name add", value);
 
     setValue(name, value);
     if (errors[name]) {
@@ -328,7 +322,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   };
   const handleNext = () => {
     const values = getValues();
-    console.log("values1", values);
     if (activeStep === 1) {
       if (points.length === 0 || points.length === 1) {
         notifyError("Please mark a trolley route");
@@ -366,7 +359,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
   };
-console.log("selectDropDownData",selectDropDownData)
   return (
     <>
       <CommonDialog
@@ -490,7 +482,6 @@ console.log("selectDropDownData",selectDropDownData)
                           defaultValue={
                             selectedDevice ? selectedDevice?.uId : ""
                           }
-                          disabled={selectedDevice ? true : false}
                         />
                       )}
                     />
@@ -502,7 +493,7 @@ console.log("selectDropDownData",selectDropDownData)
                       rules={{
                         required: "Trolley Mac ID is required",
                         pattern: {
-                          value: /^[a-zA-Z0-9]{8}$/,
+                          value: /^[a-zA-Z0-9]{12}$/,
                           message:
                             "Trolley Mac ID must be exactly 8 alphanumeric characters",
                         },
@@ -518,47 +509,61 @@ console.log("selectDropDownData",selectDropDownData)
                           defaultValue={
                             selectedDevice ? selectedDevice?.macId : ""
                           }
-                          disabled={selectedDevice ? true : false}
                         />
                       )}
                     />
                   </Grid>
                   <Grid item md={5.8}>
-                    <Controller
-                      name="trolleyCategoryId"
-                      control={control}
-                      rules={{
-                        required: "Trolley type is required",
-                      }}
-                      render={({ field }) => (
-                        <CustomTextField
-                          {...field}
-                          select
-                          selectData={selectDropDownData}
-                          label="Trolley type"
-                          placeholder="Select trolley type"
-                          error={!!errors.trolleyCategoryId}
-                          helperText={errors.trolleyCategoryId?.message}
-                          onChange={handleInputChange}
-                          defaultValue={
-                            selectedDevice
-                              ? ''
-                              : ''
-                          }
-                        />
-                      )}
-                    />
+                    <FormControl
+                      fullWidth
+                      error={!!errors?.trolleyCategoryId}
+                      sx={{ mt: 1 }}
+                    >
+                      <InputLabel shrink>Trolley type </InputLabel>
+                      <Controller
+                        name="trolleyCategoryId"
+                        control={control}
+                        rules={{
+                          required: " At least one device must be selected",
+                        }}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            placeholder="Select Trolley type"
+                            label={"Trolley type"}
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            displayEmpty
+                            defaultValue={
+                              selectedDevice
+                                ? selectedDevice?.trolleyCategoryId?.name
+                                : ""
+                            }
+                          >
+                            {selectDropDownData &&
+                              selectDropDownData?.map(
+                                (item: any, index: number) => (
+                                  <MenuItem key={index} value={item?._id}>
+                                    {item?.label}
+                                  </MenuItem>
+                                )
+                              )}
+                          </Select>
+                        )}
+                      />
+                      <FormHelperText>
+                        {(errors as any) && errors?.trolleyCategoryId?.message}
+                      </FormHelperText>
+                    </FormControl>
                   </Grid>
                   <Grid item md={5.8}>
                     <CustomTextField
                       name="trolleyColor"
                       label="Trolley color"
                       value={
-                        color
-                          ? color
-                          : selectedDevice
-                            ? selectedDevice?.trolleyColor
-                            : color
+                        selectDropDownData?.find(
+                          (item: any) => item._id === values?.trolleyCategoryId
+                        )?.color
                       }
                       disabled
                     />
@@ -570,9 +575,9 @@ console.log("selectDropDownData",selectDropDownData)
                   <TrolleyRoute points={points} setPoints={setPoints} />
                 </Grid>
               )}
-              {activeStep === 2 && (
+              {activeStep === 2 && open && (
                 <Grid container justifyContent={"space-between"}>
-                  <SelectRoute rows={rows} setRows={setRows}  />
+                  <SelectRoute rows={rows} setRows={setRows} />
                 </Grid>
               )}
               {activeStep === 3 && (

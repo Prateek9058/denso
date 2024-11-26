@@ -50,11 +50,12 @@ interface PointWithMarker {
   x: number;
   y: number;
   showMarker: boolean;
-  _id:string;
+  _id: string;
 }
 interface ErrorResponse {
   error?: string;
 }
+type GetDataHandler = (state: any, resultArray: any) => void;
 const Page: React.FC = () => {
   const { trolleyId } = useParams<{ trolleyId: any }>();
   const router = useRouter();
@@ -70,8 +71,19 @@ const Page: React.FC = () => {
   const [date, setDate] = useState<any>(null);
   const [graphData, setGraphData] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
-  const [trolleyCoordinates, setTrolleyCoordinates] = useState<PointWithMarker[]>([]);
-  
+  const [startDate, setStartDate] = React.useState<any>(moment());
+  const [endDate, setEndDate] = React.useState<any>(moment());
+
+  const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
+    const startDate = moment(state?.[0]?.startDate);
+    const endDate = moment(state?.[0]?.endDate);
+    setStartDate(startDate);
+    setEndDate(endDate);
+  };
+  const [trolleyCoordinates, setTrolleyCoordinates] = useState<
+    PointWithMarker[]
+  >([]);
+
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
     { label: "Trolley Tracking ", link: "/trolley" },
@@ -82,24 +94,18 @@ const Page: React.FC = () => {
       link: "",
     },
   ];
-  console.log("trolleyIdssss",trolleyDetails)
-  const getDataFromChildHandler = (date: any, dataArr: any) => {
-    setDate(date);
-    setAnalyticsDate(dataArr);
-  };
+
   /// api call's ///
   const getTrolleyDetails = async () => {
-    console.log("getSingleTrolleyRepairingDatakkk")
     setLoading(true);
     try {
       let res = await axiosInstance.get(
         `trolleys/getSingleTrollye/${trolleyId}`
       );
       if (res?.status === 200 || res?.status === 201) {
-  console.log("trolleyIdssss response",res?.data?.data)
-
         setTrolleyDetails(res?.data?.data);
         setLoading(false);
+        getTrolleyRepairData();
       }
     } catch (err) {
       setLoading(false);
@@ -129,8 +135,9 @@ const Page: React.FC = () => {
       const res = await axiosInstance.get(
         `trolleyRepairing/getSingleTrolleyRepairingData/${trolleyId}?page=${
           page + 1
-        }&limit=${rowsPerPage}&search=${searchQuery}`
+        }&limit=${rowsPerPage}&search=${searchQuery}&startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`
       );
+
       if (res?.status === 200 || 201) {
         setDeviceData(res?.data?.data);
         setLoading(false);
@@ -141,7 +148,7 @@ const Page: React.FC = () => {
   };
   useEffect(() => {
     getTrolleyRepairData();
-  }, [page, rowsPerPage, searchQuery, trolleyId]);
+  }, [page, rowsPerPage, searchQuery, trolleyId, startDate, endDate]);
   /// delete user ///
   const deleteTrolley = async () => {
     try {
@@ -162,33 +169,33 @@ const Page: React.FC = () => {
     const formattedName = name?.toUpperCase().replace(/\s+/g, "-");
     router.push(`/trolley/${trolleyId}/${formattedName}`);
   };
-console.log("trolleyDetails",trolleyDetails)
-  console.log("trolleyCoordinates",trolleyCoordinates)
+
   return (
     <Grid sx={{ padding: "12px 15px" }}>
       <ToastComponent />
-      <AddDevice
-        open={open}
-        setOpen={setOpen}
-        getTrolleyData={getTrolleyDetails}
-        selectedDevice={trolleyDetails}
-        selectedSite={selectedSite}
-      />
-      <AddRepair
-        open={openRepair}
-        setOpen={setOoenRepair}
-        getTrolleyData={getTrolleyDetails}
-        selectedDevice={trolleyDetails}
-      />
+      {open && (
+        <AddDevice
+          open={open}
+          setOpen={setOpen}
+          getTrolleyData={getTrolleyDetails}
+          selectedDevice={trolleyDetails}
+        />
+      )}
+      {openRepair && (
+        <AddRepair
+          open={openRepair}
+          setOpen={setOoenRepair}
+          getTrolleyData={getTrolleyDetails}
+          selectedDevice={trolleyDetails}
+        />
+      )}
       <ManagementGrid
         moduleName="Trolley Details"
-        subHeading="Manage Trolley details"
         button="Edit Trolley"
         buttonAgent={"Mark trolley for repair"}
         deleteBtn="Delete Trolley"
         handleClickOpen={handleClickOpen}
         handleClickOpenAgent={handleClickOpenAgent}
-        breadcrumbItems={breadcrumbItems}
         deleteFunction={deleteTrolley}
         edit={true}
       />
@@ -231,9 +238,7 @@ console.log("trolleyDetails",trolleyDetails)
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={
-                    trolleyDetails ? trolleyDetails?.uId : ""
-                  }
+                  defaultValue={trolleyDetails ? trolleyDetails?.uId : ""}
                 />
               </Grid>
               <Grid item md={5.8} xs={12}>
@@ -259,9 +264,7 @@ console.log("trolleyDetails",trolleyDetails)
                 </Typography>
                 <CustomTextField
                   disabled
-                  defaultValue={
-                    trolleyDetails ? trolleyDetails?.macId : ""
-                  }
+                  defaultValue={trolleyDetails ? trolleyDetails?.macId : ""}
                 />
               </Grid>
               <Grid item md={5.8} xs={12}>
@@ -354,11 +357,17 @@ console.log("trolleyDetails",trolleyDetails)
           </Button>
         </Grid> */}
       </Grid>
-      {trolleyCoordinates.length> 0 && (<TrolleyTrack userDetails={trolleyId} trolleyCoordinates={trolleyCoordinates} />) }
+      {trolleyCoordinates.length > 0 && (
+        <TrolleyTrack
+          userDetails={trolleyId}
+          trolleyCoordinates={trolleyCoordinates}
+        />
+      )}
 
       <Table
         deviceData={deviceData}
         rowsPerPage={rowsPerPage}
+        getDataFromChildHandler={getDataFromChildHandler}
         setRowsPerPage={setRowsPerPage}
         page={page}
         setPage={setPage}

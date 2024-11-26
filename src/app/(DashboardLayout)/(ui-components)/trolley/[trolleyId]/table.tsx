@@ -4,6 +4,7 @@ import { Grid, Typography } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import moment from "moment";
+import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 interface TableProps {
@@ -15,6 +16,7 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  getDataFromChildHandler: any;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -25,6 +27,7 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
+  getDataFromChildHandler,
 }) => {
   const columns = ["Sno.", "Issue", "Repair Date", "Status"];
   const [open, setOpenDialog] = React.useState(false);
@@ -99,6 +102,11 @@ const Table: React.FC<TableProps> = ({
                   placeholder="Search ID / Name"
                   value={debouncedSearchQuery}
                   onChange={handleSearchChange}
+                />
+              </Grid>
+              <Grid ml={2}>
+                <CommonDatePicker
+                  getDataFromChildHandler={getDataFromChildHandler}
                 />
               </Grid>
             </Grid>

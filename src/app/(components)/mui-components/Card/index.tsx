@@ -43,7 +43,7 @@ interface ManagementGridProps {
   zoneId?: any;
   handleInputChange?: any;
   back?: string;
-  handleBack?:any
+  handleBack?: any;
 }
 const ManagementGrid: React.FC<ManagementGridProps> = ({
   moduleName,
@@ -66,16 +66,16 @@ const ManagementGrid: React.FC<ManagementGridProps> = ({
   handleInputChange,
   zoneId,
   back,
-  handleBack
+  handleBack,
 }) => {
   return (
     <Grid container justifyContent="space-between" alignItems="center" mt={1}>
       {/* {breadcrumbItems && <Breadcrumbs breadcrumbItems={breadcrumbItems} />} */}
       <Grid item>
-        {/* <Typography component={"h2"} variant="h2" mb={1}>
+        <Typography component={"h5"} variant="h4" mb={1}>
           {moduleName}
         </Typography>
-        <Typography component={"h6"} variant="body2" color="grey">
+        {/* <Typography component={"h6"} variant="body2" color="grey">
           {subHeading}
         </Typography> */}
         {back && (

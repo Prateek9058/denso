@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip, Chip } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import moment from "moment";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
+import { FaMapLocation } from "react-icons/fa6";
 import { BsEye } from "react-icons/bs";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 interface TableProps {
@@ -18,7 +19,7 @@ interface TableProps {
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   value: any;
-  columns:any
+  columns: any;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -31,10 +32,8 @@ const Table: React.FC<TableProps> = ({
   setSearchQuery,
   loading,
   value,
-  columns
+  columns,
 }) => {
-
-
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   console.log("deviceData123456", deviceData);
@@ -63,6 +62,18 @@ const Table: React.FC<TableProps> = ({
   const handleCancel = () => {
     setOpenDialog(false);
   };
+  const renderPowerStatus = (status: any) => (
+    <Chip
+      label={status}
+      variant="filled"
+      sx={{
+        
+        color: "#000",
+        fontWeight: 500,
+        minWidth: 50,
+      }}
+    />
+  );
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
       // sno: index + 1,
@@ -71,12 +82,21 @@ const Table: React.FC<TableProps> = ({
       trolleyMacId: item?.macId ?? "N/A",
       runningTime: item?.runningTime ?? "N/A",
       idealTime: item?.idealTime ?? "N/A",
-      assignStatus: item?.assignStatus ?? "false",
+      assignStatus: renderPowerStatus(item?.assingedTo?.length) ?? "",
       Action:
         value == 0
           ? [
               <Grid container justifyContent="center" key={index}>
-                <Grid item>
+                <Grid item xs={3}>
+                  <Link href={`/trolley/${item?._id}`}>
+                    <Tooltip title="Animated routes">
+                      <IconButton size="small">
+                        <FaMapLocation color="#DC0032" />
+                      </IconButton>
+                    </Tooltip>
+                  </Link>
+                </Grid>
+                <Grid item xs={3}>
                   <Link href={`/trolley/${item?._id}`}>
                     <Tooltip title="View">
                       <IconButton size="small">
@@ -125,10 +145,8 @@ const Table: React.FC<TableProps> = ({
           <Grid item>
             <Typography variant="h5">
               {" "}
-              Showing {deviceData
-                ? deviceData?.data?.trolleyData?.length
-                : 0}{" "}
-              out of {deviceData?.data?.totalCount} Trolleys
+              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
+              {deviceData?.totalCount} Trolleys
             </Typography>
           </Grid>
           <Grid item>
@@ -147,7 +165,11 @@ const Table: React.FC<TableProps> = ({
         <CustomTable
           page={page}
           loading={loading}
-          rows={getFormattedDataTable2(deviceData?.data)}
+          rows={
+            value === 0
+              ? getFormattedData(deviceData?.data)
+              : getFormattedDataTable2(deviceData?.data)
+          }
           count={deviceData?.totalCount}
           columns={columns}
           setPage={setPage}

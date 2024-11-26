@@ -11,8 +11,8 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import allowedCoordinates from "./allowedCoordinates"
- 
+import allowedCoordinates from "./allowedCoordinates";
+
 type Point = [number, number];
 
 interface PointWithMarker {

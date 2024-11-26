@@ -7,7 +7,6 @@ const AddDevice = dynamic(
   () => import("@/app/(components)/pages/trolley/addTrolley/addTrolley"),
   { ssr: false }
 );
-// import AddDevice from "@/app/(components)/pages/trolley/addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -48,7 +47,7 @@ const columns1 = [
   "MAC ID",
   "Running Time",
   "Ideal Time",
-  "Assign status",
+  "Assign Count",
   "Action",
 ];
 const columns2 = ["Trolley ID", "Trolley name", "Trolly color", "Date"];
@@ -62,15 +61,15 @@ const Page: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
   const [deviceData, setDeviceData] = useState<any>([]);
+  const [categoryData, setCategoryData] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<any>("");
-  const [zone, setZone] = useState<any>([]);
   const [zoneId, setZoneId] = useState<any>("");
   const [value, setTabValue] = useState<number>(0);
   const [stats, setStats] = useState<any>([
     {
       title: "Trolleys",
       value: 0,
-      active: deviceData ? deviceData?.activeTrollees : "0",
+      active: 0,
       assigned: "0",
       in: "0",
       nonActive: "0",
@@ -84,7 +83,7 @@ const Page: React.FC = () => {
       active: "0",
       assigned: "0",
       in: "0",
-      nonActive: "0",
+      nonActive: 0,
       notAssigned: "0",
       out: "0",
       icon: salesIcon,
@@ -120,6 +119,7 @@ const Page: React.FC = () => {
   ///// Api call's /////
   const getTrolleyData = async () => {
     setLoading(true);
+
     const Url =
       value == 0
         ? "trolleys/getAllTrolleys"
@@ -129,9 +129,38 @@ const Page: React.FC = () => {
         `${Url}?page=${page + 1}&limit=${rowsPerPage}&search=${searchQuery}`
       );
       if (res?.status === 200 || res?.status === 201) {
-        setDeviceData(res?.data?.data);
+        if (value === 0) {
+          setCategoryData(res?.data?.data);
+          setStats((prevStats: any) =>
+            prevStats.map((stat: any) => {
+              if (stat.title === "Trolleys") {
+                return {
+                  ...stat,
+                  nonActive: res?.data?.data?.notActiveTrollees || 0,
+                  active: res?.data?.data?.activeTrollees || 0,
+                };
+              }
+              if (stat.title === "Assign status") {
+                return {
+                  ...stat,
+                  notAssigned: res?.data?.data?.notAssingendTrolley || 0,
+                  assigned: res?.data?.data?.assingedTrolley || 0,
+                };
+              }
+              if (stat.title === "Under maintenance") {
+                return {
+                  ...stat,
+                  out: res?.data?.data?.notAssingendTrolley || 0,
+                  in: res?.data?.data?.totalMaintananceTrolleys || 0,
+                };
+              }
+              return stat;
+            })
+          );
+        } else {
+          setDeviceData(res?.data?.data);
+        }
         setLoading(false);
-        console.log("Api responseee", res?.data?.data);
       }
     } catch (err) {
       setLoading(false);
@@ -156,7 +185,7 @@ const Page: React.FC = () => {
       component: (
         <Table
           columns={columns1}
-          deviceData={deviceData}
+          deviceData={categoryData}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
           page={page}
@@ -193,7 +222,6 @@ const Page: React.FC = () => {
           open={open}
           setOpen={setOpen}
           getTrolleyData={getTrolleyData}
-          selectedSite={selectedSite}
         />
       ) : (
         <AddCategory
@@ -211,7 +239,6 @@ const Page: React.FC = () => {
       <ManagementGrid
         moduleName={value == 0 ? "Trolley List" : "Trolley Category"}
         button={value == 0 ? "Add Trolley" : "Add Category"}
-        // buttonUpload={"Bulk Upload"}
         handleClickOpen={value == 0 ? handleClickOpen : handleClickOpenCat}
         handleClickOpenUpload={handleClickOpenUpload}
         breadcrumbItems={breadcrumbItems}

@@ -77,15 +77,28 @@ const CountCard: React.FC<CardProps> = ({ cardDetails, progress }) => {
                         height: 8,
                         borderRadius: 5,
                         backgroundColor: "#CCCCCC",
-                        color: "#DC0032",
+                        "& .MuiLinearProgress-bar": {
+                          backgroundColor:
+                            isHovered === index ? "#fff" : "#DC0032",
+                        },
                       }}
                     />
                   </Box>
 
                   {stat?.title == "Trolleys" && (
                     <Grid container justifyContent="space-between" mt={1}>
-                      <Typography variant="body2" style={{ color: "#DC0032" }}>
-                        <span style={{ color: "#DC0032", fontSize: "18px" }}>
+                      <Typography
+                        variant="body2"
+                        style={{
+                          color: isHovered === index ? "#fff" : "#DC0032",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: isHovered === index ? "#fff" : "#DC0032",
+                            fontSize: "18px",
+                          }}
+                        >
                           ●
                         </span>{" "}
                         Active - {stat?.active ?? 0}
@@ -100,7 +113,12 @@ const CountCard: React.FC<CardProps> = ({ cardDetails, progress }) => {
                   )}
                   {stat?.title == "Assign status" && (
                     <Grid container justifyContent="space-between" mt={1}>
-                      <Typography variant="body2" style={{ color: "#DC0032" }}>
+                      <Typography
+                        variant="body2"
+                        style={{
+                          color: isHovered === index ? "#fff" : "#DC0032",
+                        }}
+                      >
                         <span style={{ color: "#DC0032", fontSize: "18px" }}>
                           ●
                         </span>{" "}
@@ -116,7 +134,12 @@ const CountCard: React.FC<CardProps> = ({ cardDetails, progress }) => {
                   )}
                   {stat?.title == "Under maintenance" && (
                     <Grid container justifyContent="space-between" mt={1}>
-                      <Typography variant="body2" style={{ color: "#DC0032" }}>
+                      <Typography
+                        variant="body2"
+                        style={{
+                          color: isHovered === index ? "#fff" : "#DC0032",
+                        }}
+                      >
                         <span style={{ color: "#DC0032", fontSize: "18px" }}>
                           ●
                         </span>{" "}

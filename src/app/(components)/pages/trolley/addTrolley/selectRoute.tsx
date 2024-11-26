@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Grid,
   Box,
@@ -17,10 +17,10 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 import "leaflet/dist/leaflet.css";
-import dayjs, { Dayjs } from "dayjs";
+import moment from "moment";
 
 interface ProcessFormRow {
   process: string;
@@ -37,31 +37,62 @@ interface ProcessFormRow {
 }
 
 interface empProps {
-  rows:ProcessFormRow[]
-  setRows:React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
+  rows: ProcessFormRow[];
+  setRows: React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
 }
 
 const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
-
-  const handleAddRow = () => {
-    setRows([...rows, {
-      process: "",
-      activityName: "",
-      jobRole: "",
-      jobNature: "",
-      startTime: "",
-      endTime: "",
-      totalTime: {
-        time: 0,
-        unit: "min"
-      },
-      remarks: ""
-    }]);
+  const [start, setStartTime] = React.useState<any>(null);
+  const [end, setEndTime] = React.useState<any>(null);
+  const CurrDate = new Date();
+  const formatTimeForTextField = (time: any) => {
+    if (!time) return "";
+    const date = new Date(time);
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
   };
-  const currentDate = new Date();
+  const handleAddRow = () => {
+    setRows([
+      ...rows,
+      {
+        process: "",
+        activityName: "",
+        jobRole: "",
+        jobNature: "",
+        startTime: start,
+        endTime: end,
+        totalTime: {
+          time: 0,
+          unit: "min",
+        },
+        remarks: "",
+      },
+    ]);
+  };
   const handleRemoveRow = (index: number) => {
     const newRows = rows.filter((_, idx) => idx !== index);
     setRows(newRows);
+  };
+  const formatTimeToISO = (time: any, title: string) => {
+    if (title === "startTime") {
+      setStartTime(time);
+    }
+    if (title === "endTime") {
+      setEndTime(time);
+    }
+    const date = new Date(CurrDate);
+    const [hours, minutes] = time?.split(":")?.map(Number);
+    date.setHours(hours, minutes, 0, 0);
+    return date.toISOString();
+  };
+  const formatTimeToISO1 = (time: any) => {
+    setStartTime(time);
+
+    const date = new Date(CurrDate);
+    const [hours, minutes] = time?.split(":")?.map(Number);
+    date.setHours(hours, minutes, 0, 0);
+    return date.toISOString();
   };
 
   const handleChange = (
@@ -87,31 +118,33 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     }
     setRows(newRows);
   };
-  
-console.log('row data',rows)
+
   return (
     <Grid
       item
       xs={12}
       md={12}
-      sx={{ height: "550px", width: "200%", position: "relative", bgcolor: 'white', p: 2 }}
+      sx={{
+        height: "550px",
+        width: "200%",
+        position: "relative",
+        bgcolor: "white",
+        p: 2,
+      }}
     >
-      <Box sx={{ display: 'flex', gap: 2, mb: 4, justifyContent: 'flex-end' }}>
-        <Button 
-          variant="contained" 
+      <Box sx={{ display: "flex", gap: 2, mb: 4, justifyContent: "flex-end" }}>
+        <Button
+          variant="contained"
           startIcon={<FileDownloadIcon />}
-          onClick={() => window.location.href='/sample.csv'}
+          onClick={() => (window.location.href = "/sample.csv")}
         >
           Download sample csv
         </Button>
-        <Button 
-          variant="outlined" 
-          startIcon={<FileUploadIcon />}
-        >
+        <Button variant="outlined" startIcon={<FileUploadIcon />}>
           Upload standard
         </Button>
       </Box>
-      
+
       <Table sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
@@ -131,25 +164,35 @@ console.log('row data',rows)
             <TableRow key={index}>
               <TableCell>
                 <TextField
+                  label="process"
                   value={row.process}
-                  onChange={(e) => handleChange(index, 'process', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "process", e.target.value)
+                  }
                   size="small"
                   fullWidth
                 />
               </TableCell>
               <TableCell>
                 <TextField
+                  label="activityName"
                   value={row.activityName}
-                  onChange={(e) => handleChange(index, 'activityName', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "activityName", e.target.value)
+                  }
                   size="small"
                   fullWidth
                 />
               </TableCell>
               <TableCell>
                 <FormControl size="small" fullWidth>
+                  <InputLabel>jobRole</InputLabel>
                   <Select
                     value={row.jobRole}
-                    onChange={(e) => handleChange(index, 'jobRole', e.target.value)}
+                    label="jobRole"
+                    onChange={(e) =>
+                      handleChange(index, "jobRole", e.target.value)
+                    }
                   >
                     <MenuItem value="Permanent">Permanent</MenuItem>
                     <MenuItem value="Contractual">Contractual</MenuItem>
@@ -159,8 +202,11 @@ console.log('row data',rows)
               </TableCell>
               <TableCell>
                 <TextField
+                  label={"jobNature"}
                   value={row.jobNature}
-                  onChange={(e) => handleChange(index, 'jobNature', e.target.value)}
+                  onChange={(e) =>
+                    handleChange(index, "jobNature", e.target.value)
+                  }
                   size="small"
                   fullWidth
                 />
@@ -168,10 +214,14 @@ console.log('row data',rows)
               <TableCell>
                 <TextField
                   type="time"
-                  value={row.startTime ? row.startTime.slice(11, 16) : ""}
+                  label="StartTime"
+                  value={formatTimeForTextField(row?.startTime)}
                   onChange={(e) => {
-                    const updatedDate = new Date(currentDate.toDateString() + " " + e.target.value);
-                    handleChange(index, 'startTime', updatedDate.toISOString());
+                    handleChange(
+                      index,
+                      "startTime",
+                      formatTimeToISO(e.target.value, "startTime")
+                    );
                   }}
                   size="small"
                   fullWidth
@@ -180,10 +230,14 @@ console.log('row data',rows)
               <TableCell>
                 <TextField
                   type="time"
-                  value={row.endTime ? row.endTime.slice(11, 16) : ""}
+                  label="endTime"
+                  value={formatTimeForTextField(row?.endTime)}
                   onChange={(e) => {
-                    const updatedDate = new Date(currentDate.toDateString() + " " + e.target.value);
-                    handleChange(index, 'endTime', updatedDate.toISOString());
+                    handleChange(
+                      index,
+                      "endTime",
+                      formatTimeToISO(e.target.value, "endtime")
+                    );
                   }}
                   size="small"
                   fullWidth
@@ -192,19 +246,31 @@ console.log('row data',rows)
               <TableCell>
                 <TextField
                   value={row.totalTime.time}
-                  onChange={(e) => handleChange(index, "totalTime", Number(e.target.value), "time")}
+                  label={"totalTime"}
+                  onChange={(e) =>
+                    handleChange(
+                      index,
+                      "totalTime",
+                      Number(e.target.value),
+                      "time"
+                    )
+                  }
                   size="small"
                   type="number"
                   fullWidth
                   placeholder="Min"
                   inputProps={{ min: 0 }}
-                  />
+                />
               </TableCell>
               <TableCell>
                 <FormControl size="small" fullWidth>
+                  <InputLabel>Remarks</InputLabel>
                   <Select
                     value={row.remarks}
-                    onChange={(e) => handleChange(index, 'remarks', e.target.value)}
+                    label="Remarks"
+                    onChange={(e) =>
+                      handleChange(index, "remarks", e.target.value)
+                    }
                   >
                     <MenuItem value="Positive">Positive</MenuItem>
                     <MenuItem value="Neutral">Neutral</MenuItem>
@@ -213,9 +279,9 @@ console.log('row data',rows)
                 </FormControl>
               </TableCell>
               <TableCell>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton 
-                    color="error" 
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <IconButton
+                    color="error"
                     onClick={() => handleRemoveRow(index)}
                     disabled={rows.length === 1}
                     size="small"
@@ -223,8 +289,8 @@ console.log('row data',rows)
                     <RemoveIcon />
                   </IconButton>
                   {index === rows.length - 1 && (
-                    <IconButton 
-                      color="primary" 
+                    <IconButton
+                      color="primary"
                       onClick={handleAddRow}
                       size="small"
                     >

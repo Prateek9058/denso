@@ -89,7 +89,6 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         }}
       >
         {" "}
-        
         {select && selectData?.length > 0 ? (
           selectData?.map((option: any) => (
             <MenuItem
@@ -97,7 +96,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
               value={option?._id}
               sx={{ fontSize: "12px" }}
             >
-              {option?.label ? option?.label : option?.shiftName}
+              {option?.label ? option?.label : ""}
             </MenuItem>
           ))
         ) : (
