@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Button } from "@mui/material";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -15,47 +15,16 @@ import ToastComponent, {
 import moment from "moment";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
+import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+import { IoMdAddCircleOutline } from "react-icons/io";
 
-const viewCount = [
-  {
-    _id: "2020",
-    views: "230",
-  },
-  {
-    _id: "2021",
-    views: "190",
-  },
-  {
-    _id: "2022",
-    views: "140",
-  },
-  {
-    _id: "2023",
-    views: "200",
-  },
-  {
-    _id: "2024",
-    views: "250",
-  },
-];
 type Breadcrumb = {
   label: string;
   link: string;
 };
-interface PointWithMarker {
-  x: number;
-  y: number;
-  showMarker: boolean;
-  _id: string;
-}
-interface ErrorResponse {
-  error?: string;
-}
 type GetDataHandler = (state: any, resultArray: any) => void;
 const Page = ({ params }: { params: { maintenanceId: string } }) => {
-  const { trolleyId } = useParams<{ trolleyId: any }>();
   const router = useRouter();
-  const [open, setOpen] = useState<boolean>(false);
   const [openRepair, setOoenRepair] = useState<boolean>(false);
   const [page, setPage] = React.useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -65,7 +34,11 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [startDate, setStartDate] = React.useState<any>(moment());
   const [endDate, setEndDate] = React.useState<any>(moment());
-
+  const breadcrumbItems: Breadcrumb[] = [
+    { label: "Dashboard", link: "/" },
+    { label: "Maintenance ", link: "/maintenance" },
+    { label: trolleyDetails?.name, link: "" },
+  ];
   const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
     const startDate = moment(state?.[0]?.startDate);
     const endDate = moment(state?.[0]?.endDate);
@@ -73,7 +46,6 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
     setEndDate(endDate);
   };
 
-  /// api call's ///
   const getTrolleyDetails = async () => {
     try {
       setLoading(true);
@@ -125,7 +97,9 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
       const { data, status } = await axiosInstance.post(
         `trolleyRepairing/updateTrolleyToRepair/${params?.maintenanceId}`
       );
+      console.log("data", data);
       if (status === 200 || status === 201) {
+        getTrolleyDetails();
         notifySuccess("Trolley marked as repaired successfully");
         handleCancel();
       }
@@ -134,7 +108,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
     }
   };
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <>
       <ToastComponent />
       <CommonDialog
         open={openRepair}
@@ -146,14 +120,23 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <ManagementGrid
-        buttonAgent={
-          trolleyDetails?.isRepairing ? "Mark trolley as repaired" : ""
-        }
-        handleClickOpenAgent={handleClickOpenAgent}
-        back="Back"
-        handleBack={handleBack}
-      />
+      <Grid container justifyContent={"space-between"}>
+        <Grid item>
+          <Breadcrumb breadcrumbItems={breadcrumbItems} />
+        </Grid>
+        <Grid item>
+          {trolleyDetails?.isRepairing ? (
+            <Button
+              onClick={handleClickOpenAgent}
+              startIcon={<IoMdAddCircleOutline />}
+            >
+              Resolved Issue
+            </Button>
+          ) : (
+            ""
+          )}
+        </Grid>
+      </Grid>
 
       {loading ? (
         <DetailsListingSkeleton listingHead={new Array(15).fill(0)} />
@@ -301,7 +284,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
         loading={loading}
         getDataFromChildHandler={getDataFromChildHandler}
       />
-    </Grid>
+    </>
   );
 };
 

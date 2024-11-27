@@ -135,7 +135,7 @@ const Page: React.FC = () => {
       notifyError("Error deleting employee");
     }
   };
-
+  console.log("check trolleyDetails", trolleyDetails);
   return (
     <>
       <ToastComponent />
@@ -158,7 +158,9 @@ const Page: React.FC = () => {
       <ManagementGrid
         moduleName="Trolley Details"
         button="Edit Trolley"
-        buttonAgent={"Mark trolley for repair"}
+        buttonAgent={
+          trolleyDetails?.isRepairing ? "" : "Mark trolley as repaired"
+        }
         deleteBtn="Delete Trolley"
         handleClickOpen={handleClickOpen}
         handleClickOpenAgent={handleClickOpenAgent}

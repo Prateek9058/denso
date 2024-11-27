@@ -33,7 +33,7 @@ const Page = ({ params }: { params: { section: string } }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `line/getAllLines?page=${
+        `line/sectionBaseLine/${params?.section}?page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );
