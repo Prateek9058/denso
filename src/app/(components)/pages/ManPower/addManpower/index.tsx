@@ -95,6 +95,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
     setOpen(false);
     getEmployeeData();
     reset();
+    setTrolley(null)
   };
   const onDrop = (acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles[0];

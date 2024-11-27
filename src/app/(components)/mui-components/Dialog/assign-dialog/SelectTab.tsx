@@ -123,15 +123,14 @@ export default function AssignAssessmentTabSelected({
   const getAllAssignAssessments: any = getAllList;
 
   const toggleTrolley = (id: string) => {
-    setTrolley((prev) => {
-      const updatedTrolley = prev.includes(id)
-        ? prev.filter((item) => item !== id)
-        : [...prev, id];
-
-      return updatedTrolley;
+    setTrolley((prev = []) => {
+      if (prev.includes(id)) {
+        return prev.filter((item) => item !== id);
+      } else {
+        return [...prev, id];
+      }
     });
   };
-  console.log(select);
   return (
     <div>
       <form>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import { Grid, Checkbox, TextField, Card, Typography } from "@mui/material";
 type assignProps = {
   selectedPermissions: any;
@@ -39,10 +39,14 @@ const UserPermission = ({
     <>
       <Typography variant="h6"> Select Access Permission</Typography>
       <Grid container spacing={2} mt={1.5}>
-        {RolesData?.map((item, index) => (
+        {RolesData?.map((item: any, index) => (
           <Grid item xs={4} key={index} display={"flex"}>
             <Checkbox
-              checked={selectedPermissions.includes(item.permission)}
+              checked={selectedPermissions?.some((perm: any) =>
+                Object.keys(item.permission).every(
+                  (key) => perm[key] === item.permission[key]
+                )
+              )}
               onChange={() => handleCheckboxChange(item.permission)}
             />
             <Card sx={{ width: "100%", p: 2, border: "1px solid #e5e5e5" }}>

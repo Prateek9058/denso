@@ -24,6 +24,7 @@ import Step3 from "./Step3";
 interface AddUserProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setUserDetails: React.Dispatch<React.SetStateAction<any>>;
   selectedDevice?: any;
   FetchUserDetails: any;
 }
@@ -35,13 +36,18 @@ const AddUser: React.FC<AddUserProps> = ({
   open,
   setOpen,
   FetchUserDetails,
+  selectedDevice,
+  setUserDetails,
 }) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [uid, setUid] = useState<any>("");
-  const [select, setSelect] = useState<null | string>(null);
-  const [itemId, setItemId] = useState<string | undefined>("");
-  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  const [uid, setUid] = useState<any>(
+    selectedDevice ? selectedDevice?.uId : ""
+  );
+  const [select, setSelect] = useState<null | any>();
+  const [itemId, setItemId] = useState<string | null>(null);
+  const [selectedPermissions, setSelectedPermissions] = useState<any>(null);
   const methods = useForm<any>();
+
   const handleRadioChange = (
     item: any,
     event: React.ChangeEvent<HTMLInputElement>
@@ -49,6 +55,12 @@ const AddUser: React.FC<AddUserProps> = ({
     setSelect((prev: any) => (prev?._id === item._id ? null : item));
     setItemId(item._id);
   };
+
+  useEffect(() => {
+    if (selectedDevice?.departmentId?._id) {
+      setSelect({ _id: selectedDevice.departmentId._id });
+    }
+  }, [selectedDevice]);
   const {
     setValue,
     handleSubmit,
@@ -58,8 +70,23 @@ const AddUser: React.FC<AddUserProps> = ({
     formState: { errors },
     control,
   } = methods;
-
+  useEffect(() => {
+    setSelectedPermissions(selectedDevice?.permissions);
+  }, [selectedDevice]);
   const steps = ["Add User", "Department", "Permission"];
+
+  useEffect(() => {
+    if (selectedDevice) {
+      setValue("uId", selectedDevice?.uId);
+      if (selectedDevice?.fullName) {
+        const [first, second] = selectedDevice.fullName.split(" ", 2);
+        setValue("firstName", first);
+        setValue("secondName", second || "");
+      }
+      setValue("email", selectedDevice?.email);
+      setValue("phone", selectedDevice?.phoneNumber);
+    }
+  }, [selectedDevice, open]);
 
   const handleClose = () => {
     setOpen(false);
@@ -67,6 +94,7 @@ const AddUser: React.FC<AddUserProps> = ({
     reset();
     setSelect(null);
     setSelectedPermissions([]);
+    setUserDetails(null);
   };
   const trolleyBoxLabel = () => {
     if (activeStep == 0) {
@@ -78,12 +106,19 @@ const AddUser: React.FC<AddUserProps> = ({
     }
   };
 
-  const handleCheckboxChange = (permission: string) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(permission)
-        ? prev?.filter((item) => item !== permission)
-        : [...prev, permission]
-    );
+  const handleCheckboxChange = (permission: { [key: string]: boolean }) => {
+    setSelectedPermissions((prev = []) => {
+      const existingPermissionIndex = prev?.findIndex((item: any) =>
+        Object.keys(permission)?.every((key) => item[key] === permission[key])
+      );
+      if (existingPermissionIndex !== -1) {
+        const updatedPermissions = [...prev];
+        updatedPermissions.splice(existingPermissionIndex, 1);
+        return updatedPermissions;
+      } else {
+        return [...prev, permission];
+      }
+    });
   };
 
   const getUid = useCallback(async () => {
@@ -98,7 +133,7 @@ const AddUser: React.FC<AddUserProps> = ({
     }
   }, []);
   useEffect(() => {
-    if (open) {
+    if (!selectedDevice && open) {
       getUid();
     }
     setValue("uId", uid);
@@ -123,20 +158,32 @@ const AddUser: React.FC<AddUserProps> = ({
       email: values?.email,
       phoneNumber: values?.phone,
       countryCode: "91",
-      departmentId: itemId,
+      departmentId: itemId ? itemId : selectedDevice?.departmentId._id,
       permissions: selectedPermissions,
     };
 
     try {
       if (activeStep >= 2) {
-        const { data, status } = await axiosInstance.post(
-          "/users/createUser",
-          payload
-        );
-        if (status === 201 || status === 200) {
-          notifySuccess("user added successfully");
-          FetchUserDetails();
-          handleClose();
+        if (selectedDevice) {
+          const { data, status } = await axiosInstance.patch(
+            `/users/updateUser/${selectedDevice?._id}`,
+            payload
+          );
+          if (status === 201 || status === 200) {
+            notifySuccess("user added successfully");
+            FetchUserDetails();
+            handleClose();
+          }
+        } else {
+          const { data, status } = await axiosInstance.post(
+            "/users/createUser",
+            payload
+          );
+          if (status === 201 || status === 200) {
+            notifySuccess("user added successfully");
+            FetchUserDetails();
+            handleClose();
+          }
         }
       }
     } catch (error) {
@@ -208,7 +255,9 @@ const AddUser: React.FC<AddUserProps> = ({
                           error={!!errors.uId}
                           helperText={errors.uId?.message}
                           onChange={handleInputChange}
-                          defaultValue={uid ? uid : ""}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.uId : ""
+                          }
                           disabled
                         />
                       )}
@@ -234,6 +283,10 @@ const AddUser: React.FC<AddUserProps> = ({
                           error={!!errors.email}
                           helperText={errors.email?.message}
                           onChange={handleInputChange}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.email : ""
+                          }
+                          disabled={selectedDevice}
                         />
                       )}
                     />
@@ -253,6 +306,9 @@ const AddUser: React.FC<AddUserProps> = ({
                           error={!!errors.firstName}
                           helperText={errors.firstName?.message}
                           onChange={handleInputChange}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.firstName : ""
+                          }
                         />
                       )}
                     />
@@ -277,6 +333,9 @@ const AddUser: React.FC<AddUserProps> = ({
                             error={!!errors.phone}
                             helperText={errors.phone?.message}
                             onChange={handleInputChange}
+                            defaultValue={
+                              selectedDevice ? selectedDevice?.phoneNumber : ""
+                            }
                           />
                         )}
                       />
@@ -297,6 +356,9 @@ const AddUser: React.FC<AddUserProps> = ({
                           error={!!errors.secondName}
                           helperText={errors.secondName?.message}
                           onChange={handleInputChange}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.secondName : ""
+                          }
                         />
                       )}
                     />

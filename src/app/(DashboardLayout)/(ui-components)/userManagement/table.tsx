@@ -11,6 +11,8 @@ import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 import AddUser from "@/app/(components)/pages/userManagement/addUser";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
 import DeleteAction from "@/app/(components)/pages/userManagement/deleteUser";
+import { MdEdit } from "react-icons/md";
+
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -44,9 +46,16 @@ const Table: React.FC<TableProps> = ({
   const columns = ["Sno.", "username", "Phone Number", "Department", "View"];
   const [open, setOpenDialog] = React.useState(false);
   const [openUser, setOpenUser] = useState<boolean>(false);
+  const [userDetails, setUserDetails] = React.useState<any>(null);
+
   const handleClickOpen = () => {
     setOpenUser(true);
   };
+  const handleClickOpenEdit = (data: any) => {
+    setOpenUser(true);
+    setUserDetails(data);
+  };
+
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
   useEffect(() => {
@@ -91,6 +100,13 @@ const Table: React.FC<TableProps> = ({
               </IconButton>
             </Tooltip>
           </Link>
+
+          <Tooltip title="Edit">
+            <IconButton size="small" onClick={() => handleClickOpenEdit(item)}>
+              <MdEdit color="#DC0032" />
+            </IconButton>
+          </Tooltip>
+
           <DeleteAction id={item?._id} getFetchAllDetails={FetchUserDetails} />
         </Grid>,
       ],
@@ -99,12 +115,15 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <>
-      <AddUser
-        open={openUser}
-        setOpen={setOpenUser}
-        selectedDevice={""}
-        FetchUserDetails={FetchUserDetails}
-      />
+      {openUser && (
+        <AddUser
+          open={openUser}
+          setOpen={setOpenUser}
+          selectedDevice={userDetails}
+          FetchUserDetails={FetchUserDetails}
+          setUserDetails={setUserDetails}
+        />
+      )}
       <CommonDialog
         open={open}
         fullWidth={true}

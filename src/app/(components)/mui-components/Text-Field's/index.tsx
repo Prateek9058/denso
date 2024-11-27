@@ -25,6 +25,7 @@ interface CustomTextFieldProps {
   disabled?: boolean;
   field?: any;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  size?:any
 }
 
 const CustomTextField: React.FC<CustomTextFieldProps> = ({
@@ -41,6 +42,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
   selectData,
   disabled,
   field,
+  size,
   ...restProps
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +63,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         select={!!select}
         defaultValue={defaultValue}
         variant="outlined"
+        size={size}
         placeholder={placeholder}
         helperText={helperText}
         onChange={onChange}
@@ -88,7 +91,6 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
           ),
         }}
       >
-        {" "}
         {select && selectData?.length > 0 ? (
           selectData?.map((option: any) => (
             <MenuItem

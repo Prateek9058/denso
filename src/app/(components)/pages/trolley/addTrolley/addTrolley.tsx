@@ -78,6 +78,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   const [file, setFile] = useState<File | null>(null);
   const [points, setPoints] = useState<PointWithMarker[]>([]);
   const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [selectIDs, setSelectedIds] = useState<any>(null);
+  const [lineIds, setLineIds] = useState<any>(null);
   const [finalSectionDropDownData, setFinalSectionDropDownData] = useState<
     FinalSectionDropDownDataProps[]
   >([]);
@@ -242,8 +244,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       pathPointers: formData?.pathPointers,
       routeProcess: formData?.routeProcess,
       departmentId: formData?.department,
-      sectionId: formData?.section,
-      lineId: formData?.line,
+      sectionId: selectIDs,
+      lineId: lineIds,
       distance: formData?.totalDistance
         ? {
             distanceValue: formData.totalDistance,
@@ -359,7 +361,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
             </Stepper>
 
             <DialogContent>
-              {activeStep === 3 && (
+              {activeStep === 1 && (
                 <Grid container justifyContent={"space-between"}>
                   <Grid item md={12}>
                     <Box
@@ -468,7 +470,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                         pattern: {
                           value: /^[a-zA-Z0-9]{12}$/,
                           message:
-                            "Trolley Mac ID must be exactly 8 alphanumeric characters",
+                            "Trolley Mac ID must be exactly 12 alphanumeric characters",
                         },
                       }}
                       render={({ field }) => (
@@ -560,6 +562,10 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                     finalSectionDropDownData={finalSectionDropDownData}
                     methods={methods}
                     selectedDevice={selectedDevice}
+                    setSelectedIds={setSelectedIds}
+                    selectIDs={selectIDs}
+                    lineIds={lineIds}
+                    setLineIds={setLineIds}
                   />
                 </Grid>
               )}

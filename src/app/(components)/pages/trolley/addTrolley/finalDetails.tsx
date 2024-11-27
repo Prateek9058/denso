@@ -56,22 +56,39 @@ interface FinalDetailsProps {
   finalSectionDropDownData: FinalSectionDropDownDataProps[];
   methods: ReturnType<typeof useForm>;
   selectedDevice?: any;
+  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
+  selectIDs?: any;
+  lineIds?: any;
+  setLineIds: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
-  ({ points, finalSectionDropDownData, methods, selectedDevice }, ref) => {
+  (
+    {
+      points,
+      finalSectionDropDownData,
+      methods,
+      selectedDevice,
+      selectIDs,
+      setSelectedIds,
+      setLineIds,
+      lineIds,
+    },
+    ref
+  ) => {
     const {
       formState: { errors },
       setValue,
       clearErrors,
       control,
-      getValues,
       watch,
     } = methods;
 
     const [site, setSite] = useState<any>(null);
     const [Line, setLine] = useState<any>(null);
-    // const [id, setId] = useState<any>(departmentId);
+    const [selectedSections, setSelectedSections] = React.useState<any[]>([]);
+    const [selectedLines, setSelectedLines] = React.useState<any[]>([]);
+
     const bounds: [[number, number], [number, number]] = useMemo(
       () => [
         [0, 0],
@@ -108,11 +125,22 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
       });
     };
 
-    const sectionId = watch("section");
     const departmentId = watch("department");
+
+    const handleChangeAutocompleteSIte = (event: any, value: any[]) => {
+      const selectedIds = value.map((item) => item._id);
+      setSelectedSections(value);
+      setSelectedIds(selectedIds);
+    };
+    const handleChangeAutocompleteLine = (event: any, value: any[]) => {
+      const selectedIds = value.map((item) => item._id);
+      setSelectedLines(value);
+      setLineIds(selectedIds);
+    };
+
     const handleSection = async () => {
       try {
-        const { data, status } = await axiosInstance(
+        const { data, status } = await axiosInstance.get(
           `/section/departmentBaseSections/${departmentId}`
         );
         if (status === 200 || status === 201) {
@@ -124,11 +152,12 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
     };
     const handleLine = async () => {
       try {
-        const { data, status } = await axiosInstance(
-          `/line/sectionBaseLine/${sectionId}`
+        const { data, status } = await axiosInstance.post(
+          `/line/getAllLines/`,
+          { lines: selectIDs }
         );
         if (status === 200 || status === 201) {
-          setLine(data?.data);
+          setLine(data?.data?.data);
         }
       } catch (error: any) {
         console.log(error);
@@ -136,20 +165,19 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
     };
     useEffect(() => {
       handleSection();
-
+      setSelectedSections([]);
+      setSelectedLines([]);
+    }, [departmentId]);
+    useEffect(() => {
       handleLine();
-    }, [departmentId, sectionId]);
+      setSelectedLines([]);
+    }, [selectIDs]);
 
     return (
       <Grid container justifyContent="space-between">
         <Grid item xs={12}>
           <DialogContent>
-            <Grid
-              container
-              justifyContent="space-between"
-              spacing={2}
-              sx={{ mt: 2 }}
-            >
+            <Grid container justifyContent="space-between" spacing={2}>
               <Grid item md={5.8}>
                 <FormControl
                   fullWidth
@@ -184,71 +212,26 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                     {(errors as any)?.department?.message}
                   </FormHelperText>
                 </FormControl>
-                <Autocomplete />
               </Grid>
               <Grid item md={5.8}>
-                <FormControl fullWidth error={!!errors?.section} sx={{ mt: 1 }}>
-                  <InputLabel>Section </InputLabel>
-                  <Controller
-                    name="section"
-                    control={control}
-                    defaultValue={selectedDevice?.sectionId?._id || ""}
-                    rules={{
-                      required: " At least one section must be selected",
-                    }}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        placeholder="section"
-                        label={"Section"}
-                        // disabled={!departmentId}
-                        value={field.value || ""}
-                      >
-                        {site &&
-                          site?.map((item: any, index: number) => (
-                            <MenuItem key={index} value={item?._id}>
-                              {item?.name}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    )}
-                  />
-                  <FormHelperText>
-                    {(errors as any) && errors?.section?.message}
-                  </FormHelperText>
-                </FormControl>
+                <Autocomplete
+                  id="Section"
+                  options={site?.length > 0 ? site : []}
+                  disabled={departmentId ? false : true}
+                  label="Select Section"
+                  handleChange={handleChangeAutocompleteSIte}
+                  value={selectedSections}
+                />
               </Grid>
               <Grid item md={5.8}>
-                <FormControl fullWidth error={!!errors?.line} sx={{ mt: 1 }}>
-                  <InputLabel>Line </InputLabel>
-                  <Controller
-                    name="line"
-                    control={control}
-                    rules={{
-                      required: " At least one line must be selected",
-                    }}
-                    defaultValue={selectedDevice?.lineId?._id || ""}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        placeholder="line"
-                        label={"Line"}
-                        value={field.value || ""}
-                        // disabled={!sectionId}
-                      >
-                        {Line &&
-                          Line?.map((item: any, index: number) => (
-                            <MenuItem key={index} value={item?._id}>
-                              {item?.name}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    )}
-                  />
-                  <FormHelperText>
-                    {(errors as any) && errors?.line?.message}
-                  </FormHelperText>
-                </FormControl>
+                <Autocomplete
+                  id="Line"
+                  options={Line?.length > 0 ? Line : []}
+                  disabled={departmentId ? false : true}
+                  label="Select line"
+                  handleChange={handleChangeAutocompleteLine}
+                  value={selectedLines}
+                />
               </Grid>
               <Grid item md={2.7}>
                 <Controller
