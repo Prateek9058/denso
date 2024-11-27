@@ -98,11 +98,11 @@ const AddUser: React.FC<AddUserProps> = ({
     }
   }, []);
   useEffect(() => {
-    getUid();
-    if (uid && open) {
-      setValue("Uid", uid);
+    if (open) {
+      getUid();
     }
-  }, [open]);
+    setValue("uId", uid);
+  }, [open, uid]);
   const onSubmit = async () => {
     if (activeStep === 1) {
       if (!Boolean(select)) {
@@ -190,7 +190,7 @@ const AddUser: React.FC<AddUserProps> = ({
               ))}
             </Stepper>
 
-            <DialogContent sx={{ minHeight: "300px" }}>
+            <DialogContent sx={{ minHeight: "55vh" }}>
               {activeStep === 0 && (
                 <Grid container spacing={2} rowSpacing={3}>
                   <Grid item md={6}>
@@ -215,7 +215,6 @@ const AddUser: React.FC<AddUserProps> = ({
                     />
                   </Grid>
                   <Grid item md={6}>
-                    {" "}
                     <Controller
                       name="email"
                       control={control}
@@ -259,51 +258,49 @@ const AddUser: React.FC<AddUserProps> = ({
                     />
                     <Grid item mt={3}>
                       <Controller
-                        name="secondName"
+                        name="phone"
                         control={control}
                         rules={{
-                          required: "User second name is required",
+                          required: "User phone number is required",
+                          validate: {
+                            length: (value) =>
+                              value.length === 10 ||
+                              "Phone number must be exactly 10 digits without country code",
+                          },
                         }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
-                            label="Second name"
-                            placeholder="Enter Second Name"
-                            error={!!errors.secondName}
-                            helperText={errors.secondName?.message}
+                            field="number"
+                            label="Phone number"
+                            placeholder="Enter Phone number"
+                            error={!!errors.phone}
+                            helperText={errors.phone?.message}
                             onChange={handleInputChange}
                           />
                         )}
                       />
-                    </Grid>{" "}
+                    </Grid>
                   </Grid>
-
                   <Grid item md={6}>
                     <Controller
-                      name="phone"
+                      name="secondName"
                       control={control}
                       rules={{
-                        required: "User phone number is required",
-                        validate: {
-                          length: (value) =>
-                            value.length === 10 ||
-                            "Phone number must be exactly 10 digits without country code",
-                        },
+                        required: "User second name is required",
                       }}
                       render={({ field }) => (
                         <CustomTextField
                           {...field}
-                          field="number"
-                          label="Phone number"
-                          placeholder="Enter Phone number"
-                          error={!!errors.phone}
-                          helperText={errors.phone?.message}
+                          label="Second name"
+                          placeholder="Enter Second Name"
+                          error={!!errors.secondName}
+                          helperText={errors.secondName?.message}
                           onChange={handleInputChange}
                         />
                       )}
                     />
                   </Grid>
-                  <Grid item md={6}></Grid>
                 </Grid>
               )}
               {activeStep === 1 && (
