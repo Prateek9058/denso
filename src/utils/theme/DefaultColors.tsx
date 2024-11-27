@@ -169,6 +169,15 @@ const baselightTheme = createTheme({
         },
       },
     },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          position: "sticky",
+          top: 0,
+          zIndex: 1,
+        },
+      },
+    },
     MuiCardHeader: {
       styleOverrides: {
         root: {

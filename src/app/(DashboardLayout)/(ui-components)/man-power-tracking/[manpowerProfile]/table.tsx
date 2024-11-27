@@ -130,11 +130,11 @@ const Table: React.FC<TableProps> = ({ deviceId, empJoinedDate }) => {
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
           <Grid item>
-            <Typography variant="h3">Attendance</Typography>
+            <Typography variant="h3">Route report</Typography>
             <Typography variant="body1">
               {" "}
               Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} Attendance
+              {deviceData?.totalCount} routes
             </Typography>
           </Grid>
           <Grid item>

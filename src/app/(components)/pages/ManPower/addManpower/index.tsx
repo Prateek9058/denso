@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useEffect, useState, useCallback, useMemo } from "react";
+import React, { ChangeEvent, useEffect, useState, useCallback } from "react";
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import {
   DialogActions,
@@ -9,10 +9,13 @@ import {
   Stepper,
   Step,
   StepLabel,
-  LinearProgress,
   Box,
-  Typography,
   Avatar,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  FormHelperText,
 } from "@mui/material";
 import AssignDialog from "@/app/(components)/mui-components/Dialog/assign-dialog";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
@@ -25,11 +28,9 @@ import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog
 import AvtarIcon from "../../../../../../public/Img/clarityAvatarLine.png";
 import axiosInstance from "@/app/api/axiosInstance";
 import { AxiosError } from "axios";
-import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 import { useDropzone } from "react-dropzone";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import Image from "next/image";
 
 interface AddDeviceProps {
@@ -48,26 +49,19 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   getEmployeeData,
   selectedDevice,
 }) => {
-  const [selectedSite, setSelectedSite] = useState<any>(null);
   const [selectData, setSelectData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeStep, setActiveStep] = useState(0);
   const [file, setFile] = useState<File | null>(null);
   // const [progress, setProgress] = useState<number>(0);
   const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [selectCategoryDropDownData, setSelectCategoryDropDownData] = useState<any>(null);
-  const [rowsPerPage, setRowsPerPage] = useState<any>(10);
-  const [searchQuery, setSearchQuery] = useState<any>("");
-  const [dropDownData, setDropDownData] = useState<any>([]);
-  const [page, setPage] = useState<number>(0);
+
   const [trolley, setTrolley] = useState<any>([]);
   const employmentTypes = [
     { _id: "Permanent", label: "Permanent" },
     { _id: "Temporary", label: "Temporary" },
     { _id: "Contractual", label: "Contractual" },
   ];
-
-
 
   const steps = ["Add Manpower", "Assign Trolley"];
 
@@ -91,9 +85,10 @@ const AddManPower: React.FC<AddDeviceProps> = ({
       setValue("macId", selectedDevice?.macId);
       setValue("email", selectedDevice?.email);
       setValue("jobRole", selectedDevice?.jobRole);
-      setValue("shift", selectedDevice?.shift);
+      setValue("shift", selectedDevice?.shift?._id);
+      setValue("shiftRange", selectedDevice?.shiftDateRange?.value);
       setValue("age", selectedDevice?.age);
-      setValue("countryCode", selectedDevice?.countryCode);
+      setValue("category", selectedDevice?.category);
     } else {
       reset();
     }
@@ -133,39 +128,31 @@ const AddManPower: React.FC<AddDeviceProps> = ({
 
   const getAllShifts = useCallback(async () => {
     // if (!selectedSite?._id) return;
-    setLoading(true);
+
     try {
-      const res = await axiosInstance.get(`shifts/getAllShifts/`);
+      const res = await axiosInstance.get(`shifts/getAllShifts`);
       if (res?.status === 200 || res?.status === 201) {
         setSelectData(res?.data?.data?.data);
       }
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) {}
   }, []);
 
-
-
-
   useEffect(() => {
-    if (open) {
+    if (open && activeStep === 0) {
       getAllShifts();
     }
   }, [open]);
 
-  console.log("Errors",errors)
-
   const onSubmit = async () => {
+    if (activeStep === 1) {
+      if (trolley.length === 0) {
+        notifyError("please select at least one trolley!");
+      }
+    }
     const formData = getValues();
     handleNext();
-    
-
-
     try {
       const formData = getValues();
-      console.log(formData, "formmmmmmm data");
-
       const body = {
         uId: formData?.manpowerId,
         name: formData?.name,
@@ -175,27 +162,22 @@ const AddManPower: React.FC<AddDeviceProps> = ({
         jobRole: formData?.jobRole,
         age: formData?.age,
         category: formData?.category,
-        salary:formData?.salary,
+        salary: formData?.salary,
         shiftId: formData?.shift,
-        shiftRange:{
-          value:formData?.shiftRange,
-          "unit":"days"
+        shiftDateRange: {
+          value: formData?.shiftRange,
+          unit: "days",
         },
-        trolley:trolley
+        trolley: trolley,
       };
-      console.log("employee body", body);
-
       let res;
-      if (selectedDevice && selectedDevice?.trolley) {
+      if (selectedDevice && activeStep === 1) {
         res = await axiosInstance.patch(
-          `api/v1/employees/updateEmployee/${selectedDevice?._id}`,
+          `employees/updateEmployee/${selectedDevice?._id}`,
           body
         );
-      } else if(trolley.length > 0) {
-        res = await axiosInstance.post(
-          `employees/addEmployee`,
-          body
-        );
+      } else if (trolley.length > 0) {
+        res = await axiosInstance.post(`employees/addEmployee`, body);
       }
       if (res?.status === 200 || res?.status === 201) {
         console.log(res);
@@ -214,7 +196,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
       // handleClose();
     }
   };
-console.log("selectDataddddddman",selectedDevice)
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setValue(name, value);
@@ -224,10 +205,10 @@ console.log("selectDataddddddman",selectedDevice)
   };
   const handleNext = () => {
     if (activeStep === 1) {
-      if (trolley.length === 0 ) {
-        notifyError("Please select a trolley");
-        return;
-      }
+      // if (trolley.length === 0) {
+      //   notifyError("Please select a trolley");
+      //   return;
+      // }
     }
     if (activeStep < steps.length - 1) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -238,8 +219,6 @@ console.log("selectDataddddddman",selectedDevice)
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
   };
-
-  console.log("trolleykkkkk", trolley);
 
   return (
     <>
@@ -503,50 +482,72 @@ console.log("selectDataddddddman",selectedDevice)
                       />
                     </Grid>
                     <Grid item md={5.8}>
-                      <Controller
-                        name="category"
-                        control={control}
-                        rules={{
-                          required: "Shift is required",
-                        }}
-                        render={({ field }) => (
-                          <CustomTextField
-                            {...field}
-                            select="select"
-                            selectData={employmentTypes}
-                            name="category"
-                            label="Category"
-                            placeholder="Enter category"
-                            error={!!errors.category}
-                            helperText={errors.category?.message}
-                            onChange={handleInputChange}
-                            defaultValue={selectedDevice ? "" : ""}
-                          />
-                        )}
-                      />
+                      <FormControl fullWidth error={!!errors?.category}>
+                        <InputLabel>Category </InputLabel>
+                        <Controller
+                          name="category"
+                          control={control}
+                          rules={{
+                            required: "category is required",
+                          }}
+                          render={({ field }) => (
+                            <Select
+                              {...field}
+                              label="Category"
+                              placeholder="Enter category"
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              defaultValue={
+                                selectedDevice ? selectedDevice?.category : ""
+                              }
+                            >
+                              {employmentTypes &&
+                                employmentTypes?.map(
+                                  (item: any, index: number) => (
+                                    <MenuItem key={index} value={item?._id}>
+                                      {item?.label}
+                                    </MenuItem>
+                                  )
+                                )}
+                            </Select>
+                          )}
+                        />
+                        <FormHelperText>
+                          {(errors as any) && errors?.category?.message}
+                        </FormHelperText>
+                      </FormControl>
                     </Grid>
                     <Grid item md={5.8}>
-                      <Controller
-                        name="shift"
-                        control={control}
-                        rules={{
-                          required: "Shift is required",
-                        }}
-                        render={({ field }) => (
-                          <CustomTextField
-                            {...field}
-                            select="select"
-                            selectData={selectData}
-                            name="shift"
-                            label="Assign Shift"
-                            placeholder="Enter shift"
-                            error={!!errors.shift}
-                            helperText={errors.shift?.message}
-                            onChange={handleInputChange}
-                            defaultValue={selectedDevice ? "" : ""}
-                          />
-                        )}
-                      />
+                      <FormControl fullWidth error={!!errors?.shift}>
+                        <InputLabel>Shift </InputLabel>
+                        <Controller
+                          name="shift"
+                          control={control}
+                          rules={{
+                            required: "shift is required",
+                          }}
+                          render={({ field }) => (
+                            <Select
+                              {...field}
+                              label="shift"
+                              placeholder="Enter shift"
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              defaultValue={selectedDevice?.shift?._id || ""}
+                            >
+                              {selectData &&
+                                selectData?.map((item: any, index: number) => (
+                                  <MenuItem key={index} value={item?._id}>
+                                    {item?.shiftName}
+                                  </MenuItem>
+                                ))}
+                            </Select>
+                          )}
+                        />
+                        <FormHelperText>
+                          {(errors as any) && errors?.shift?.message}
+                        </FormHelperText>
+                      </FormControl>
                     </Grid>
                     <Grid item md={5.8}>
                       <Controller
@@ -569,7 +570,11 @@ console.log("selectDataddddddman",selectedDevice)
                             error={!!errors.shiftRange}
                             helperText={errors.shiftRange?.message}
                             onChange={handleInputChange}
-                            defaultValue={selectedDevice ? "" : ""}
+                            defaultValue={
+                              selectedDevice
+                                ? selectedDevice?.shiftDateRange?.value
+                                : ""
+                            }
                           />
                         )}
                       />
@@ -583,6 +588,7 @@ console.log("selectDataddddddman",selectedDevice)
                       url="trolleys/getAllTrolleys"
                       setOpen={setOpen}
                       title="Assign User"
+                      trolley={trolley}
                       setTrolley={setTrolley}
                     />
                   </Grid>
@@ -599,8 +605,6 @@ console.log("selectDataddddddman",selectedDevice)
                     <Button
                       variant="contained"
                       type="submit"
-
-                      // onClick={handleNext}
                       sx={{ width: "150px" }}
                     >
                       Next
@@ -618,7 +622,6 @@ console.log("selectDataddddddman",selectedDevice)
                     <Button
                       variant="contained"
                       type="submit"
-                      // onClick={handleNext}
                       sx={{ width: "150px" }}
                     >
                       Submit

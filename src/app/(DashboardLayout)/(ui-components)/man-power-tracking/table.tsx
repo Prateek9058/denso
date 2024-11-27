@@ -11,14 +11,10 @@ import {
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
-import moment from "moment";
+import { TbTrolley } from "react-icons/tb";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
-import { saveAs } from "file-saver";
-import Papa from "papaparse";
 import { BsEye } from "react-icons/bs";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
-import { CategoryScale } from "chart.js";
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -111,12 +107,12 @@ const Table: React.FC<TableProps> = ({
       fullName: item?.fullName ? item?.fullName : "N/A",
       jobRole: item?.jobRole ?? "N/A",
       assignTrolley: item?.trolleyCount ?? "N/A",
-      avgWaitingTime: item?.avgWaitingTime?? "N/A",
+      avgWaitingTime: item?.avgWaitingTime ?? "N/A",
       category: item?.category ?? "N/A",
-      shiftName: item?.shiftName ?? "N/A",
+      shiftName: item?.shift?.shiftName ?? "N/A",
       Action: [
         <Grid container justifyContent="center" key={index}>
-          <Grid item>
+          <Grid item xs={4}>
             <Link href={`/man-power-tracking/${item?._id}`}>
               <Tooltip title="View">
                 <IconButton size="small">
@@ -125,11 +121,20 @@ const Table: React.FC<TableProps> = ({
               </Tooltip>
             </Link>
           </Grid>
+          <Grid item xs={4}>
+            <Link href={`/man-power-tracking/${item?._id}`}>
+              <Tooltip title="View">
+                <IconButton size="small">
+                  <TbTrolley color="#DC0032" />
+                </IconButton>
+              </Tooltip>
+            </Link>
+          </Grid>
         </Grid>,
       ],
     }));
   };
-console.log("deviceData table",deviceData)
+  console.log("deviceData table", deviceData);
   return (
     <>
       <CommonDialog

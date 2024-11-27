@@ -169,31 +169,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     }
   };
 
-  // console.log("activeStep", activeStep);
-  // const getFinalSectionDropdownData = async () => {
-  //   try {
-  //     const [departmentRes, sectionRes, lineRes] = await Promise.all([
-  //       axiosInstance.get(`department/getAllDepartments?page=&limit&search`),
-  //       axiosInstance.get(`section/getAllSections`),
-  //       axiosInstance.get(`line/getAllLines`),
-  //     ]);
-
-  //     const validResponses = [departmentRes, sectionRes, lineRes].filter(
-  //       (res) => res?.status === 200 || res?.status === 201
-  //     );
-
-  //     if (validResponses.length > 0) {
-  //       const allData = validResponses.flatMap(
-  //         (res) => res?.data?.data?.data || []
-  //       );
-  //       setFinalSectionDropDownData(allData);
-  //     } else {
-  //       console.log("No data available for dropdown.");
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching section dropdown data:", err);
-  //   }
-  // };
   const handleFinalDetails = async () => {
     try {
       const { data, status } = await axiosInstance(
@@ -365,7 +340,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         open={open}
         maxWidth={"lg"}
         fullWidth={true}
-        // title={`${selectedDevice ? "Edit" : "Add"} Trolley `}
         title={`${trolleyBoxLabel()}`}
         message={"Are you sure you want to cancel?"}
         titleConfirm={"Cancel"}
