@@ -33,7 +33,7 @@ const Page = ({ params }: { params: { section: string } }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `line/getAllLines?page=${
+        `line/sectionBaseLine/${params?.section}?page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );
@@ -53,7 +53,7 @@ const Page = ({ params }: { params: { section: string } }) => {
   return (
     <>
       <ToastComponent />
-      <Grid mt={4} container justifyContent={"space-between"}>
+      <Grid container justifyContent={"space-between"}>
         <Grid item>
           <Breadcrumb breadcrumbItems={breadcrumbItems} />
         </Grid>

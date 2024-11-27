@@ -1,84 +1,63 @@
 "use client";
-import {
-  Button,
-  Card,
-  Checkbox,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React, { ChangeEvent, useEffect } from "react";
+import { Button, Checkbox, Grid, Typography } from "@mui/material";
+import React, { useEffect } from "react";
+import dayjs from "dayjs";
 import { MdDeleteSweep } from "react-icons/md";
-import { IoChevronBackOutline } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/app/api/axiosInstance";
-import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
-import { useForm } from "react-hook-form";
 import ToastComponent, {
   notifyError,
   notifySuccess,
 } from "@/app/(components)/mui-components/Snackbar";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
-
-type cardProps = {
+import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+type Breadcrumb = {
   label: string;
+  link: string;
+};
+type cardProps = {
   value: string;
 };
 
 const RolesData: cardProps[] = [
-  { label: "Username", value: "Manpower tracking" },
-  { label: "Email Address", value: "Trolley tracking" },
-  { label: "Phone Number", value: "Attandence details" },
-  { label: "Department", value: "User Management" },
+  { value: "Manpower tracking" },
+  { value: "Trolley tracking" },
+  { value: "Trolley  Maintenance" },
+  { value: "User Management" },
+  { value: "Department" },
+  { value: "Alerts" },
+  { value: "Setting" },
 ];
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const Page = ({ params }: { params: { userManagementProfile: string } }) => {
   const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    clearErrors,
-    getValues,
-  } = useForm();
   const [userData, setUserData] = React.useState<any>(null);
   const [open, setOpenDialog] = React.useState(false);
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [isEditable, setIsEditable] = React.useState(false);
-  React.useEffect(() => {
-    if (userData) {
-      setValue("name", userData?.fullName || "");
-      setValue("email", userData?.email || "");
-      setValue("phoneNumber", userData?.phoneNumber || "");
-      setValue("uId", userData?.uId || "");
-    }
-  }, [userData, setValue]);
+
+  const breadcrumbItems: Breadcrumb[] = [
+    { label: "Dashboard", link: "/" },
+    { label: "User Management ", link: "/userManagement" },
+    {
+      label: userData?.fullName ?? "--",
+      link: "",
+    },
+  ];
+  console.log("Check userData", userData);
+
   const getUser = async () => {
-    setLoading(true);
     const { data, status } = await axiosInstance.get(
       `/users/getSingleUser/${params.userManagementProfile}`
     );
     if (status === 200 || status === 201) {
       setUserData(data?.data);
-      setLoading(false);
     }
   };
-  const handleBack = () => {
-    router.push("/userManagement");
-  };
+
   useEffect(() => {
     getUser();
-    handlePermissions();
   }, []);
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setValue(name, value);
-    if (errors[name]) {
-      clearErrors(name);
-    }
-  };
+
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
@@ -91,42 +70,7 @@ const Page = ({ params }: { params: { userManagementProfile: string } }) => {
   const handleCancel = () => {
     setOpenDialog(false);
   };
-  const onSubmit = async () => {
-    const values = getValues();
-    console.log("values", values);
 
-    const payload = {
-      firstName: values?.name.trim().split(" ")[0],
-      secondName: values?.name.trim().split(" ")[1],
-      email: values?.email,
-      uId: values?.uId,
-      phoneNumber: values?.phoneNumber,
-      countryCode: "91",
-      departmentId: userData?.departmentId?._id,
-    };
-    try {
-      const { data, status } = await axiosInstance.patch(
-        `users/updateUser/${params.userManagementProfile}`,
-        payload
-      );
-      if (status === 201 || status === 200) {
-        notifySuccess("user details updated successfully");
-        setIsEditable(false);
-      }
-    } catch (error) {
-      notifyError((error as any)?.response?.data?.message);
-    }
-  };
-  const handleEditClick = () => {
-    setIsEditable(true);
-  };
-  const handleButtonClick = () => {
-    if (isEditable) {
-      handleSubmit(onSubmit)();
-    } else {
-      handleEditClick();
-    }
-  };
   const handleDelete = async () => {
     try {
       const { data, status } = await axiosInstance.delete(
@@ -140,17 +84,12 @@ const Page = ({ params }: { params: { userManagementProfile: string } }) => {
       notifyError((error as any)?.response?.data?.message);
     }
   };
-  const handlePermissions = async () => {
-    try {
-      const { data, status } = await axiosInstance.get(
-        `/permissions/getUserPermissions/${params.userManagementProfile}`
-      );
-    } catch (error) {
-      notifyError((error as any)?.response?.data?.message);
-    }
-  };
+  const formattedDate = dayjs(userData?.createdAt).format(
+    "YYYY-MM-DD HH:mm:ss"
+  );
+
   return (
-    <form>
+    <>
       <ToastComponent />
       <CommonDialog
         open={open}
@@ -162,143 +101,99 @@ const Page = ({ params }: { params: { userManagementProfile: string } }) => {
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <Grid container sx={{ padding: "12px 15px" }} rowGap={2}>
-        <Grid
-          container
-          mt={2}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-        >
-          <Grid item>
-            <Button
-              variant="outlined"
-              size="large"
-              color="inherit"
-              onClick={handleBack}
-              startIcon={<IoChevronBackOutline />}
-            >
-              Back
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="outlined"
-              size="large"
-              startIcon={<MdModeEdit />}
-              color="inherit"
-              onClick={handleButtonClick}
-            >
-              {isEditable ? "Save Changes" : "Edit"}
-            </Button>
-            <Button
-              size="large"
-              sx={{ ml: 2 }}
-              variant="contained"
-              onClick={handleOpenDialog}
-              startIcon={<MdDeleteSweep />}
-            >
-              Delete Profile
-            </Button>
-          </Grid>
+      <Grid container justifyContent={"space-between"} alignItems={"center"}>
+        <Grid item>
+          <Breadcrumb breadcrumbItems={breadcrumbItems} />
         </Grid>
-        <Grid container>
-          <Card sx={{ width: "100%", p: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <Typography variant="h6" mb={2}>
-                  Username
-                </Typography>
-                <CustomTextField
-                  {...register("name", {
-                    required: "Name is required",
-                  })}
-                  name="name"
-                  placeholder="Enter name"
-                  error={!!errors.name}
-                  disabled={!isEditable}
-                  helperText={errors.name?.message}
-                  onChange={handleInputChange}
-                  defaultValue={userData ? userData?.fullName : ""}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="h6" mb={2}>
-                  Email
-                </Typography>
-                <CustomTextField
-                  {...register("email", {
-                    required: "email is required",
-                  })}
-                  name="email"
-                  placeholder="Enter email"
-                  disabled={!isEditable}
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                  onChange={handleInputChange}
-                  defaultValue={userData ? userData?.email : ""}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="h6" mb={2}>
-                  Phone Number
-                </Typography>
-                <CustomTextField
-                  {...register("phoneNumber", {
-                    required: "PhoneNumber is required",
-                  })}
-                  name="phoneNumber"
-                  placeholder="Enter PhoneNumber"
-                  disabled={!isEditable}
-                  error={!!errors.phoneNumber}
-                  helperText={errors.phoneNumber?.message}
-                  onChange={handleInputChange}
-                  defaultValue={userData ? userData?.phoneNumber : ""}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="h6" mb={2}>
-                  UID
-                </Typography>
-                <CustomTextField
-                  {...register("uId", {
-                    required: "uId is required",
-                  })}
-                  name="uId"
-                  placeholder="Enter uId"
-                  disabled={!isEditable}
-                  error={!!errors.uId}
-                  helperText={errors.uId?.message}
-                  onChange={handleInputChange}
-                  defaultValue={userData ? userData?.uId : ""}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="h6" mb={2}>
-                  Department
-                </Typography>
-                <CustomTextField
-                  disabled
-                  defaultValue={userData?.departmentId?.name}
-                />
-              </Grid>
-            </Grid>
-          </Card>
-        </Grid>
-        <Grid container>
-          <Card sx={{ width: "100%", p: 3 }}>
-            <Typography variant="h5">Roles</Typography>
-            <Grid container spacing={2} mt={1.5}>
-              {RolesData?.map((item, index) => (
-                <Grid item xs={4} key={index} display={"flex"}>
-                  <Checkbox {...label} defaultChecked />
-                  <TextField disabled defaultValue={item?.value} fullWidth />
-                </Grid>
-              ))}
-            </Grid>
-          </Card>
+        <Grid item>
+          <Button
+            variant="outlined"
+            size="large"
+            startIcon={<MdModeEdit />}
+            color="inherit"
+          >
+            Edit
+          </Button>
+          <Button
+            size="large"
+            sx={{ ml: 2 }}
+            variant="contained"
+            onClick={handleOpenDialog}
+            startIcon={<MdDeleteSweep />}
+          >
+            Delete Profile
+          </Button>
         </Grid>
       </Grid>
-    </form>
+      <Grid container mt={4} justifyContent={"space-between"}>
+        <Grid
+          xs={5.9}
+          item
+          sx={{
+            border: "1px solid red",
+            padding: "20px",
+            borderRadius: "10px",
+            backgroundColor: "#fff",
+          }}
+        >
+          <Typography variant="h5">User Details</Typography>
+          <Grid container mt={4} justifyContent={"space-between"}>
+            <Typography variant="h6">UID</Typography>
+            <Typography variant="h6" color={"primary"}>
+              {userData?.uId}
+            </Typography>
+          </Grid>
+          <Grid container mt={4} justifyContent={"space-between"}>
+            <Typography variant="h6">UserName</Typography>
+            <Typography variant="h6" color={"primary"}>
+              {userData?.fullName}
+            </Typography>
+          </Grid>
+          <Grid container mt={4} justifyContent={"space-between"}>
+            <Typography variant="h6">Department</Typography>
+            <Typography variant="h6" color={"primary"}>
+              {userData?.departmentId?.name}
+            </Typography>
+          </Grid>
+          <Grid container mt={4} justifyContent={"space-between"}>
+            <Typography variant="h6">Email</Typography>
+            <Typography variant="h6" color={"primary"}>
+              {userData?.email}
+            </Typography>
+          </Grid>
+          <Grid container mt={4} justifyContent={"space-between"}>
+            <Typography variant="h6">Phone Number </Typography>
+            <Typography variant="h6" color={"primary"}>
+              {userData?.phoneNumber}
+            </Typography>
+          </Grid>
+          <Grid container mt={4} justifyContent={"space-between"}>
+            <Typography variant="h6">CreatedAt </Typography>
+            <Typography variant="h6" color={"primary"}>
+              {formattedDate}
+            </Typography>
+          </Grid>
+        </Grid>
+        <Grid
+          xs={5.9}
+          item
+          sx={{
+            border: "1px solid red",
+            padding: "20px",
+            borderRadius: "10px",
+            backgroundColor: "#fff",
+          }}
+        >
+          <Typography variant="h5">Access Permission</Typography>
+          {userData?.permissions?.map((item: any, index: number) => (
+            <Grid container mt={2} key={index} alignItems={"center"}>
+              <Checkbox {...label} defaultChecked disabled />
+              <Typography variant="body1">{Object.keys(item)[0]}</Typography>
+            </Grid>
+          ))}
+        </Grid>
+      </Grid>
+    </>
   );
 };
 

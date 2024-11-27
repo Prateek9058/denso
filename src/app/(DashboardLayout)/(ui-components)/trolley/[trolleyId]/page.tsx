@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { Grid, Typography, Button } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import AddDevice from "@/app/(components)/pages/trolley/addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
@@ -18,29 +18,8 @@ import moment from "moment";
 import TrolleyTrack from "./trolleyTrack";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
 import AddRepair from "@/app/(components)/pages/trolley/addRepair";
+import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
 
-const viewCount = [
-  {
-    _id: "2020",
-    views: "230",
-  },
-  {
-    _id: "2021",
-    views: "190",
-  },
-  {
-    _id: "2022",
-    views: "140",
-  },
-  {
-    _id: "2023",
-    views: "200",
-  },
-  {
-    _id: "2024",
-    views: "250",
-  },
-];
 type Breadcrumb = {
   label: string;
   link: string;
@@ -66,9 +45,6 @@ const Page: React.FC = () => {
   const [deviceData, setDeviceData] = useState<any>([]);
   const [trolleyDetails, setTrolleyDetails] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<any>("");
-  const [date, setDate] = useState<any>(null);
-  const [graphData, setGraphData] = useState<any>(null);
-  const [analyticsDate, setAnalyticsDate] = useState<any>(null);
   const [startDate, setStartDate] = React.useState<any>(moment());
   const [endDate, setEndDate] = React.useState<any>(moment());
 
@@ -86,14 +62,11 @@ const Page: React.FC = () => {
     { label: "Dashboard", link: "/" },
     { label: "Trolley Tracking ", link: "/trolley" },
     {
-      label: trolleyDetails?.trolleyUid
-        ? trolleyDetails?.trolleyUid
-        : trolleyId,
+      label: trolleyDetails?.name ?? "--",
       link: "",
     },
   ];
 
-  /// api call's ///
   const getTrolleyDetails = async () => {
     setLoading(true);
     try {
@@ -147,7 +120,6 @@ const Page: React.FC = () => {
   useEffect(() => {
     getTrolleyRepairData();
   }, [page, rowsPerPage, searchQuery, trolleyId, startDate, endDate]);
-  /// delete user ///
   const deleteTrolley = async () => {
     try {
       const res = await axiosInstance.delete(
@@ -163,13 +135,9 @@ const Page: React.FC = () => {
       notifyError("Error deleting employee");
     }
   };
-  const handleRoute = (name: any) => {
-    const formattedName = name?.toUpperCase().replace(/\s+/g, "-");
-    router.push(`/trolley/${trolleyId}/${formattedName}`);
-  };
-
+  console.log("check trolleyDetails", trolleyDetails);
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <>
       <ToastComponent />
       {open && (
         <AddDevice
@@ -190,12 +158,15 @@ const Page: React.FC = () => {
       <ManagementGrid
         moduleName="Trolley Details"
         button="Edit Trolley"
-        buttonAgent={"Mark trolley for repair"}
+        buttonAgent={
+          trolleyDetails?.isRepairing ? "" : "Mark trolley as repaired"
+        }
         deleteBtn="Delete Trolley"
         handleClickOpen={handleClickOpen}
         handleClickOpenAgent={handleClickOpenAgent}
         deleteFunction={deleteTrolley}
         edit={true}
+        breadcrumbItems={breadcrumbItems}
       />
       {loading ? (
         <DetailsListingSkeleton listingHead={new Array(15).fill(0)} />
@@ -373,7 +344,7 @@ const Page: React.FC = () => {
         setSearchQuery={setSearchQuery}
         loading={loading}
       />
-    </Grid>
+    </>
   );
 };
 
