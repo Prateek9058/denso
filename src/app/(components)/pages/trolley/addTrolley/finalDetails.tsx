@@ -19,9 +19,10 @@ import {
 import { MapContainer, ImageOverlay, Marker, Polyline } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { useForm, Controller, FormProvider } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import axiosInstance from "@/app/api/axiosInstance";
+import Autocomplete from "@/app/(components)/mui-components/Text-Field's/Autocomplete/index";
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   marginBottom: theme.spacing(5),
@@ -183,6 +184,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                     {(errors as any)?.department?.message}
                   </FormHelperText>
                 </FormControl>
+                <Autocomplete />
               </Grid>
               <Grid item md={5.8}>
                 <FormControl fullWidth error={!!errors?.section} sx={{ mt: 1 }}>

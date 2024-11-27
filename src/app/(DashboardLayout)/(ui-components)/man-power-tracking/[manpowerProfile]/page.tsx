@@ -31,22 +31,16 @@ const Page: React.FC = () => {
   const { manpowerProfile } = useParams<{ manpowerProfile: string }>();
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
-  const [page, setPage] = React.useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
   const [deviceData, setDeviceData] = useState<any>([]);
   const [userDetails, setUserDetails] = useState<any>([]);
-  const [searchQuery, setSearchQuery] = useState<any>("");
   const [date, setDate] = useState<any>(null);
   const [empJoinedDate, setEmpJoinedDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
     { label: "Manpower Tracking ", link: "/man-power-tracking" },
-    // {
-    //   label: userDetails?.fullName ? userDetails?.fullName : deviceId,
-    //   link: "",
-    // },
+ 
   ];
   const getDataFromChildHandler = (date: any, dataArr: any) => {
     setDate(date);
@@ -61,7 +55,6 @@ const Page: React.FC = () => {
       );
       if (res?.status === 200 || res?.status === 201) {
         setUserDetails(res?.data?.data);
-        setEmpJoinedDate(moment(res?.data?.data?.createdAt).format("lll"));
         setLoading(false);
       }
     } catch (err) {

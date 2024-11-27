@@ -1,17 +1,13 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import {
   Grid,
-  DialogContentText,
   Typography,
-  Radio,
   useRadioGroup,
   FormControlLabel,
   FormControlLabelProps,
-  Pagination,
   Stack,
-  Tooltip,
   Box,
   TablePagination,
   MenuItem,
@@ -20,8 +16,7 @@ import {
   Checkbox,
   InputLabel,
 } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
-// Icons Import
+
 import noData from "../../../../../../public/Img/nodata.png";
 import SkeletonCard from "../../Skeleton/assign-radio-card";
 import SkeletonLoader from "../../Skeleton/skeleton-loader";
@@ -62,7 +57,6 @@ interface AssignProps {
 
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
-  // setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   role?: any;
   handleInputChange?: any;
   zoneId?: any;
@@ -74,31 +68,32 @@ interface AssignProps {
   selectedSection?: string;
   selectedLine?: string;
   setTrolley: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedDevice?: any;
 }
 export default function AssignAssessmentTabSelected({
   select,
   rowsPerPage,
   getAllList,
   setRowsPerPage,
-
   page,
   setPage,
   setSearchQuery,
   searchQuery,
   loading,
-  // setLoading,
   handleInputChange,
-  role,
-  zoneId,
-  departments,
-  sections,
-  lines,
   selectedDepartment,
-  selectedSection,
-  selectedLine,
   departmentList,
+  selectedDevice,
   setTrolley,
 }: AssignProps) {
+  useEffect(() => {
+    setTrolley(
+      selectedDevice?.trolley?.map((item: any) => {
+        return item?._id;
+      })
+    );
+  }, [selectedDevice]);
+
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -129,14 +124,14 @@ export default function AssignAssessmentTabSelected({
 
   const toggleTrolley = (id: string) => {
     setTrolley((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((item) => item !== id);
-      } else {
-        return [...prev, id];
-      }
+      const updatedTrolley = prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id];
+
+      return updatedTrolley;
     });
   };
-
+  console.log(select);
   return (
     <div>
       <form>
@@ -222,7 +217,7 @@ export default function AssignAssessmentTabSelected({
                 {getAllAssignAssessments?.length ?? 0}
               </Box>
             )}
-            Users
+            Trolleys
           </Box>
         </Typography>
 

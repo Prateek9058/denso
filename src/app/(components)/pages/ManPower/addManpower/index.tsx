@@ -50,7 +50,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   selectedDevice,
 }) => {
   const [selectData, setSelectData] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [activeStep, setActiveStep] = useState(0);
   const [file, setFile] = useState<File | null>(null);
   // const [progress, setProgress] = useState<number>(0);
@@ -75,7 +74,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
     reset,
     formState: { errors },
     control,
-    register,
   } = methods;
   useEffect(() => {
     if (selectedDevice) {
@@ -99,9 +97,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
     reset();
   };
   const onDrop = (acceptedFiles: File[]) => {
-    // setFile(acceptedFiles[0]);
     const selectedFile = acceptedFiles[0];
-    // setProgress(0);
     setFile(selectedFile);
     setFilePreview(URL.createObjectURL(selectedFile));
   };
@@ -110,13 +106,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
     onDrop,
     maxSize: 10485760,
   });
-  // useEffect(() => {
-  //   const storedSite = localStorage.getItem("selectedSite");
-  //   console.log("dataaaa", storedSite);
-  //   if (storedSite) {
-  //     setSelectedSite(JSON.parse(storedSite));
-  //   }
-  // }, [open]);
 
   useEffect(() => {
     return () => {
@@ -127,8 +116,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   }, [filePreview]);
 
   const getAllShifts = useCallback(async () => {
-    // if (!selectedSite?._id) return;
-
     try {
       const res = await axiosInstance.get(`shifts/getAllShifts`);
       if (res?.status === 200 || res?.status === 201) {
@@ -173,7 +160,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
       let res;
       if (selectedDevice && activeStep === 1) {
         res = await axiosInstance.patch(
-          `employees/updateEmployee/${selectedDevice?._id}`,
+          `employees/updateEmployee/${selectedDevice?._id}?isTrolleyChange=true`,
           body
         );
       } else if (trolley.length > 0) {
@@ -193,7 +180,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
         axiosError?.response?.data?.message || "Error creating employee"
       );
       console.log(error);
-      // handleClose();
     }
   };
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -204,12 +190,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
     }
   };
   const handleNext = () => {
-    if (activeStep === 1) {
-      // if (trolley.length === 0) {
-      //   notifyError("Please select a trolley");
-      //   return;
-      // }
-    }
     if (activeStep < steps.length - 1) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -585,6 +565,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                   <Grid container justifyContent={"space-between"}>
                     <AssignDialog
                       open={open}
+                      selectedDevice={selectedDevice}
                       url="trolleys/getAllTrolleys"
                       setOpen={setOpen}
                       title="Assign User"

@@ -1,18 +1,11 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent, useMemo } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
 import { Grid } from "@mui/material";
 import FirstTab from "./SelectTab";
-import {
-  notifyError,
-  notifySuccess,
-} from "@/app/(components)/mui-components/Snackbar";
-import axiosInstance from "@/app/api/axiosInstance";
-import { AxiosError } from "axios";
 
-interface ErrorResponse {
-  error?: string;
-}
+import axiosInstance from "@/app/api/axiosInstance";
+
 interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,30 +15,18 @@ interface Props {
   role?: any;
   setTrolley: React.Dispatch<React.SetStateAction<string[]>>;
   trolley: string;
+  selectedDevice?: any;
 }
-interface TabData {
-  label: string;
-}
-interface FinalSectionDropDownDataProps {
-  createdAt: string;
-  createdBy: string;
-  name: string;
-  type: string;
-  uId: string;
-  updatedAt: string;
-  _id: string;
-}
+
 export default function AssignAssessment({
   open,
   setOpen,
-  title,
-  deviceAssign,
   role,
   setTrolley,
   trolley,
+  selectedDevice,
 }: Props) {
   const { reset } = useForm();
-  const [select, setSelect] = useState<any[]>([]);
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
   const [searchQuery, setSearchQuery] = useState<any>("");
@@ -83,7 +64,7 @@ export default function AssignAssessment({
     try {
       setLoading(true);
       const { data, status } = await axiosInstance.get(
-        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=${false}&departmentId=${selectedDepartmentId}&sectionId=&lineId=&search=${searchQuery}`
+        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=${selectedDevice ? "" : false}&departmentId=${selectedDepartmentId}&sectionId=&lineId=&search=${searchQuery}`
       );
       if (status === 200 || status === 201) {
         console.log("all trollley", data?.data?.data);
@@ -112,31 +93,6 @@ export default function AssignAssessment({
     setTrolley([]);
     reset();
   };
-  // const handleAssessmentSubmit = async () => {
-  //   if (!Boolean(select)) {
-  //     notifyError("Please select at least one item!");
-  //     return;
-  //   }
-  //   let body;
-  //   if (role == 1) {
-  //     body = { agent: itemId };
-  //   } else if (role === 0) {
-  //     body = { user: select?.map((item) => item?._id) };
-  //   } else {
-  //     body = { user: [itemId] };
-  //   }
-  //   try {
-  //     const res = await axiosInstance.patch("api/user/assign-agent", body);
-  //     if (res?.status === 200 || res?.status === 201) {
-  //       notifySuccess("Assign Successful");
-  //       handleClose();
-  //     }
-  //   } catch (error) {
-  //     handleClose();
-  //     const axiosError = error as AxiosError<ErrorResponse>;
-  //     notifyError(axiosError?.response?.data?.error || "Error assigning agent");
-  //   }
-  // };
 
   return (
     <Grid item xs={12} md={12}>
@@ -152,6 +108,7 @@ export default function AssignAssessment({
         loading={loading}
         handleInputChange={handleInputChange}
         role={role}
+        selectedDevice={selectedDevice}
         departments={department}
         departmentList={department}
         selectedDepartment={selectedDepartmentId}

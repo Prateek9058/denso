@@ -296,7 +296,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     }
   };
   const handleNext = () => {
-    const values = getValues();
     if (activeStep === 1) {
       if (points.length === 0 || points.length === 1) {
         notifyError("Please mark a trolley route");
@@ -360,7 +359,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
             </Stepper>
 
             <DialogContent>
-              {activeStep === 0 && (
+              {activeStep === 3 && (
                 <Grid container justifyContent={"space-between"}>
                   <Grid item md={12}>
                     <Box
@@ -554,7 +553,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   <SelectRoute rows={rows} setRows={setRows} />
                 </Grid>
               )}
-              {activeStep === 3 && (
+              {activeStep === 0 && (
                 <Grid container justifyContent={"space-between"}>
                   <FinalDetails
                     points={points}
@@ -587,7 +586,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   <Button
                     variant="contained"
                     type="submit"
-                    // onClick={handleNext}
                     sx={{ width: "150px" }}
                   >
                     Next
