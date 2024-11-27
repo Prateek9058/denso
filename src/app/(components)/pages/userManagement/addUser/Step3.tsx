@@ -1,47 +1,43 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Grid,
-  Paper,
-  Button,
-  Box,
-  Checkbox,
-  TextField,
-  Card,
-  Typography,
-} from "@mui/material";
+import { Grid, Checkbox, TextField, Card, Typography } from "@mui/material";
 type assignProps = {
   selectedPermissions: any;
   handleCheckboxChange: any;
 };
 type cardProps = {
-  label: string;
   value: string;
   permission: object;
 };
 
 const RolesData: cardProps[] = [
-  { label: "Username", value: "Manpower tracking", permission: {"manpower":true} },
   {
-    label: "Email Address",
+    value: "Manpower tracking",
+    permission: { manpowerTracking: true },
+  },
+  {
     value: "Trolley tracking",
-    permission: {"trolley":true},
+    permission: { trolleyTracking: true },
   },
   {
-    label: "Phone Number",
-    value: "Attendance details",
-    permission: {"attandence":true},
+    value: "Trolley  Maintenance",
+    permission: { maintenance: true },
   },
-  { label: "Department", value: "User Management", permission:{"department":true} },
-  { label: "Alerts", value: "Alerts", permission: {"Alerts":true} },
+  {
+    value: "User Management",
+    permission: { user: true },
+  },
+  { value: "Department", permission: { department: true } },
+  { value: "Alerts", permission: { alerts: true } },
+  { value: "Setting", permission: { setting: true } },
 ];
 const UserPermission = ({
   selectedPermissions,
   handleCheckboxChange,
 }: assignProps) => {
-  console.log("persmissss",selectedPermissions)
   return (
-    <Grid container spacing={2}>
+    <>
+      <Typography variant="h6"> Select Access Permission</Typography>
       <Grid container spacing={2} mt={1.5}>
         {RolesData?.map((item, index) => (
           <Grid item xs={4} key={index} display={"flex"}>
@@ -55,7 +51,7 @@ const UserPermission = ({
           </Grid>
         ))}
       </Grid>
-    </Grid>
+    </>
   );
 };
 

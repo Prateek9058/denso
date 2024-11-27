@@ -8,6 +8,8 @@ import { TbTrolley } from "react-icons/tb";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
 import { BsEye } from "react-icons/bs";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
+
+
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -96,7 +98,7 @@ const Table: React.FC<TableProps> = ({
       ],
     }));
   };
-console.log("deviceData table",deviceData)
+  console.log("deviceData table", deviceData);
   return (
     <>
       <CommonDialog
@@ -118,8 +120,8 @@ console.log("deviceData table",deviceData)
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
           <Grid item>
-            <Typography variant="h5">
-              {"Manpower Details | "}
+            <Typography variant="h5">{"Manpower Details"}</Typography>
+            <Typography variant="body1">
               Showing {deviceData?.data?.length} out of {deviceData?.totalCount}
             </Typography>
           </Grid>
