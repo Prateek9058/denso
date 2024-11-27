@@ -13,7 +13,7 @@ import { IoIosCloseCircleOutline } from "@/app/(components)/mui-components/icons
 interface CommonDialogProps extends DialogProps {
   onClose: () => void;
   title?: string;
-  message?: string;
+  message?: any;
   color?: "primary" | "secondary" | "error" | "info" | "success" | "warning";
   messageSize?: "small" | "medium" | "large";
   onConfirm?: () => void;

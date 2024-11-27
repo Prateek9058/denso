@@ -1,17 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  Typography,
-  IconButton,
-  Tooltip,
-  Chip,
-  Button,
-} from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
-import { TbTrolley } from "react-icons/tb";
+
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
 import { BsEye } from "react-icons/bs";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
@@ -62,43 +55,12 @@ const Table: React.FC<TableProps> = ({
     setDebouncedSearchQuery(event.target.value);
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
   const handleConfirm = () => {
     handleCancel();
   };
 
   const handleCancel = () => {
     setOpenDialog(false);
-  };
-
-  const getStatus = (str: string) => {
-    if (str?.toUpperCase() === "PRESENT")
-      return { status: "Present", color: "customChip activeGreen" };
-    else return { status: "Absent", color: "customChip activeRed" };
-  };
-  const getStatusInfo = (ele: string, index: number) => {
-    if (ele?.toUpperCase() === "PRESENT") {
-      return [
-        <Chip
-          key={index}
-          sx={{ width: "120px" }}
-          className="customChip activeGreen"
-          label={ele}
-        />,
-      ];
-    } else {
-      return [
-        <Chip
-          key={index}
-          className={getStatus(ele)?.color}
-          sx={{ width: "120px" }}
-          label={getStatus(ele)?.status}
-        />,
-      ];
-    }
   };
 
   const getFormattedData = (data: any[]) => {
@@ -134,7 +96,7 @@ const Table: React.FC<TableProps> = ({
       ],
     }));
   };
-  console.log("deviceData table", deviceData);
+console.log("deviceData table",deviceData)
   return (
     <>
       <CommonDialog
@@ -147,7 +109,7 @@ const Table: React.FC<TableProps> = ({
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <Grid container mt={3}>
+      <Grid container mt={2}>
         <Grid
           container
           justifyContent={"space-between"}
@@ -158,7 +120,6 @@ const Table: React.FC<TableProps> = ({
           <Grid item>
             <Typography variant="h5">
               {"Manpower Details | "}
-              {/* Showing {deviceData ? deviceData?.data?.length : 0} out of{" "} */}
               Showing {deviceData?.data?.length} out of {deviceData?.totalCount}
             </Typography>
           </Grid>

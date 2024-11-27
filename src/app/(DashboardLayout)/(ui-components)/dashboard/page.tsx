@@ -17,9 +17,6 @@ import users from "../../../../../public/Img/trolleydash.png";
 import clock from "../../../../../public/Img/attendencedash.png";
 import Avatar from "@mui/material/Avatar";
 import Image from "next/image";
-import axiosInstance from "@/app/api/axiosInstance";
-import ManagementGrid from "@/app/(components)/mui-components/Card";
-import { useSitesData } from "@/app/(context)/SitesContext";
 import dynamic from "next/dynamic";
 import ManpowerWaiting from "@/app/(components)/pages/dashboard/manPowerWaitingTime";
 import TrolleyDetails from "@/app/(components)/pages/dashboard/trolleyDetails.tsx";
@@ -46,7 +43,6 @@ const StatCard = styled(Card)<{ selected: boolean }>(({ theme, selected }) => ({
   padding: "0px",
 }));
 const Page = () => {
-  const { selectedSite } = useSitesData();
   const [selectedCard, setSelectedCard] = useState<string | null>(
     "totalRegisterDevice"
   );
@@ -97,62 +93,7 @@ const Page = () => {
     setSelectedCard(selectedCard === id ? null : id);
     setSelectedGraph(selectedGraph === title ? null : title);
   };
-  const getOverAllCount = useCallback(async () => {
-    try {
-      const res = await axiosInstance.get(
-        `dashboard/dashboardData/${selectedSite?._id}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        console.log(res);
-        const data = res?.data?.data;
-        const updatedStats = [
-          {
-            title: "Manpower",
-            value: data?.totalEmployees,
-            active: "0",
-            assigned: "0",
-            in: "0",
-            nonActive: "0",
-            notAssigned: "0",
-            out: "0",
-            id: "totalRegisterDevice",
-            icon: salesIcon,
-          },
-          {
-            title: "Trolleys",
-            value: data?.totalTrolleys,
-            active: "0",
-            assigned: "0",
-            in: "0",
-            nonActive: "0",
-            notAssigned: "0",
-            out: "0",
-            id: "totalActiveDevice",
-            icon: users,
-          },
-          {
-            title: "Maintenance trolleys",
-            value: 0,
-            change: "+7 from yesterday",
-            id: "totalUser",
-            icon: clock,
-          },
-          {
-            title: "Trolley running time",
-            value: data?.totalAlerts,
-            change: "+6 from yesterday",
-            id: "pendingSubscription",
-            icon: deviceIcon,
-          },
-        ];
 
-        setStats(updatedStats);
-      }
-    } catch (err) {}
-  }, [selectedSite]);
-  useEffect(() => {
-    getOverAllCount();
-  }, [selectedSite]);
   return (
     <Grid>
       <Grid container spacing={2}>

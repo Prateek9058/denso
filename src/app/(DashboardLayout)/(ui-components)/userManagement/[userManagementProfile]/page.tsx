@@ -19,7 +19,6 @@ import ToastComponent, {
   notifyError,
   notifySuccess,
 } from "@/app/(components)/mui-components/Snackbar";
-import axios from "axios";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 
 type cardProps = {
@@ -43,7 +42,6 @@ const Page = ({ params }: { params: { userManagementProfile: string } }) => {
     setValue,
     clearErrors,
     getValues,
-    reset,
   } = useForm();
   const [userData, setUserData] = React.useState<any>(null);
   const [open, setOpenDialog] = React.useState(false);

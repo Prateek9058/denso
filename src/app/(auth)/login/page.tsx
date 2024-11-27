@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import type { ReactElement } from "react";
-import { Grid, Box, Card, Stack, Typography, IconButton } from "@mui/material";
+import { Grid, Box, Card, Stack, Typography } from "@mui/material";
 import BlankLayout from "@/app/(DashboardLayout)/layout/blank/BlankLayout";
 import Image from "next/image";
 import Logo from "../../../../public/Img/logodenzo.png";
@@ -16,20 +16,19 @@ const Login2 = () => {
     <>
       <PageContainer title="Login" description="this is Login page">
         <Box
-        sx={{
-          position: "relative",
-          mx: 10,
-          "&:before": {
-            content: '""',
-            backgroundSize: "400% 400%",
-            animation: "gradient 15s ease infinite",
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            opacity: "0.3",
-          },
-        }}
-        
+          sx={{
+            position: "relative",
+            mx: 10,
+            "&:before": {
+              content: '""',
+              backgroundSize: "400% 400%",
+              animation: "gradient 15s ease infinite",
+              position: "absolute",
+              height: "100%",
+              width: "100%",
+              opacity: "0.3",
+            },
+          }}
         >
           <Grid
             container

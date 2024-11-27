@@ -1,9 +1,6 @@
 import React from "react";
-import Image from "next/image";
-import { useMediaQuery, Box, Drawer, Grid } from "@mui/material";
-import brandMark from "@/app/(components)/assets/brand-mark.png";
+import { useMediaQuery, Box, Drawer } from "@mui/material";
 import SidebarItems from "./SidebarItems";
-import logo from "../../../../../public/Img/logo2.png";
 
 interface ItemType {
   isMobileSidebarOpen: boolean;
@@ -42,7 +39,6 @@ const Sidebar = ({
             width: sidebarWidth,
             boxSizing: "border-box",
             border: "0",
-         
           },
         }}
       >
@@ -52,7 +48,6 @@ const Sidebar = ({
             overflow: lgUp ? "auto" : "hidden",
           }}
         >
-       
           <Box mt={3}>
             <SidebarItems />
           </Box>

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, useCallback, useEffect } from "react";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import {
   DialogActions,
@@ -18,8 +18,8 @@ import {
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
 import { AxiosError } from "axios";
-import UserDepartment from "./userDepartment";
-import UserPermission from "./userPermission";
+import Step2 from "./Step2";
+import Step3 from "./Step3";
 
 interface AddUserProps {
   open: boolean;
@@ -34,16 +34,14 @@ interface ErrorResponse {
 const AddUser: React.FC<AddUserProps> = ({
   open,
   setOpen,
-  selectedDevice,
   FetchUserDetails,
 }) => {
   const [activeStep, setActiveStep] = useState(0);
+  const [uid, setUid] = useState<any>("");
   const [select, setSelect] = useState<null | string>(null);
   const [itemId, setItemId] = useState<string | undefined>("");
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
-
   const methods = useForm<any>();
-
   const handleRadioChange = (
     item: any,
     event: React.ChangeEvent<HTMLInputElement>
@@ -56,7 +54,6 @@ const AddUser: React.FC<AddUserProps> = ({
     handleSubmit,
     clearErrors,
     getValues,
-    watch,
     reset,
     formState: { errors },
     control,
@@ -69,11 +66,11 @@ const AddUser: React.FC<AddUserProps> = ({
     setActiveStep(0);
     reset();
     setSelect(null);
-    setSelectedPermissions([])
+    setSelectedPermissions([]);
   };
   const trolleyBoxLabel = () => {
     if (activeStep == 0) {
-      return `${selectedDevice ? "Edit" : "Add"} User `;
+      return `Add User `;
     } else if (activeStep == 1) {
       return "Department";
     } else if (activeStep == 2) {
@@ -88,6 +85,24 @@ const AddUser: React.FC<AddUserProps> = ({
         : [...prev, permission]
     );
   };
+
+  const getUid = useCallback(async () => {
+    try {
+      let apiPath = "users/getUserUid";
+      const res = await axiosInstance.get(apiPath);
+      if (res?.status === 200 || res?.status === 201) {
+        setUid(res?.data?.data);
+      }
+    } catch (err) {
+      console.log("Error fetching UID:", err);
+    }
+  }, []);
+  useEffect(() => {
+    getUid();
+    if (uid && open) {
+      setValue("Uid", uid);
+    }
+  }, [open]);
   const onSubmit = async () => {
     if (activeStep === 1) {
       if (!Boolean(select)) {
@@ -154,7 +169,7 @@ const AddUser: React.FC<AddUserProps> = ({
     <>
       <CommonDialog
         open={open}
-        maxWidth={"lg"}
+        maxWidth={"md"}
         fullWidth={true}
         title={`${trolleyBoxLabel()}`}
         message={"Are you sure you want to cancel?"}
@@ -175,54 +190,10 @@ const AddUser: React.FC<AddUserProps> = ({
               ))}
             </Stepper>
 
-            <DialogContent>
+            <DialogContent sx={{ minHeight: "300px" }}>
               {activeStep === 0 && (
-                <Grid container justifyContent={"space-between"}>
-                  <Grid item md={5.8}>
-                    <Controller
-                      name="firstName"
-                      control={control}
-                      rules={{
-                        required: "User first name is required",
-                      }}
-                      render={({ field }) => (
-                        <CustomTextField
-                          {...field}
-                          label="First Name"
-                          placeholder="Enter First Name"
-                          error={!!errors.firstName}
-                          helperText={errors.firstName?.message}
-                          onChange={handleInputChange}
-                          defaultValue={
-                            selectedDevice ? selectedDevice?.firstName : ""
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item md={5.8}>
-                    <Controller
-                      name="secondName"
-                      control={control}
-                      rules={{
-                        required: "User second name is required",
-                      }}
-                      render={({ field }) => (
-                        <CustomTextField
-                          {...field}
-                          label="Second name"
-                          placeholder="Enter Second Name"
-                          error={!!errors.secondName}
-                          helperText={errors.secondName?.message}
-                          onChange={handleInputChange}
-                          defaultValue={
-                            selectedDevice ? selectedDevice?.secondName : ""
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item md={5.8}>
+                <Grid container spacing={2} rowSpacing={3}>
+                  <Grid item md={6}>
                     <Controller
                       name="uId"
                       control={control}
@@ -237,14 +208,77 @@ const AddUser: React.FC<AddUserProps> = ({
                           error={!!errors.uId}
                           helperText={errors.uId?.message}
                           onChange={handleInputChange}
-                          defaultValue={
-                            selectedDevice ? selectedDevice?.uId : ""
-                          }
+                          defaultValue={uid ? uid : ""}
+                          disabled
                         />
                       )}
                     />
                   </Grid>
-                  <Grid item md={5.8}>
+                  <Grid item md={6}>
+                    {" "}
+                    <Controller
+                      name="email"
+                      control={control}
+                      rules={{
+                        required: "User email address is required",
+                        pattern: {
+                          value:
+                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                          message: "Enter a valid email address",
+                        },
+                      }}
+                      render={({ field }) => (
+                        <CustomTextField
+                          {...field}
+                          label="Email Address"
+                          placeholder="Enter Email Address"
+                          error={!!errors.email}
+                          helperText={errors.email?.message}
+                          onChange={handleInputChange}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item md={6}>
+                    <Controller
+                      name="firstName"
+                      control={control}
+                      rules={{
+                        required: "User first name is required",
+                      }}
+                      render={({ field }) => (
+                        <CustomTextField
+                          {...field}
+                          label="First Name"
+                          placeholder="Enter First Name"
+                          error={!!errors.firstName}
+                          helperText={errors.firstName?.message}
+                          onChange={handleInputChange}
+                        />
+                      )}
+                    />
+                    <Grid item mt={3}>
+                      <Controller
+                        name="secondName"
+                        control={control}
+                        rules={{
+                          required: "User second name is required",
+                        }}
+                        render={({ field }) => (
+                          <CustomTextField
+                            {...field}
+                            label="Second name"
+                            placeholder="Enter Second Name"
+                            error={!!errors.secondName}
+                            helperText={errors.secondName?.message}
+                            onChange={handleInputChange}
+                          />
+                        )}
+                      />
+                    </Grid>{" "}
+                  </Grid>
+
+                  <Grid item md={6}>
                     <Controller
                       name="phone"
                       control={control}
@@ -265,58 +299,21 @@ const AddUser: React.FC<AddUserProps> = ({
                           error={!!errors.phone}
                           helperText={errors.phone?.message}
                           onChange={handleInputChange}
-                          defaultValue={
-                            selectedDevice ? selectedDevice?.phone : ""
-                          }
                         />
                       )}
                     />
                   </Grid>
-                  <Grid item md={5.8}>
-                    <Controller
-                      name="email"
-                      control={control}
-                      rules={{
-                        required: "User email address is required",
-                        pattern: {
-                          value:
-                            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                          message: "Enter a valid email address",
-                        },
-                      }}
-                      render={({ field }) => (
-                        <CustomTextField
-                          {...field}
-                          label="Email Address"
-                          placeholder="Enter Email Address"
-                          error={!!errors.email}
-                          helperText={errors.email?.message}
-                          onChange={handleInputChange}
-                          defaultValue={
-                            selectedDevice ? selectedDevice?.email : ""
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
+                  <Grid item md={6}></Grid>
                 </Grid>
               )}
               {activeStep === 1 && (
-                <Grid container>
-                  <UserDepartment
-                    select={select}
-                    setSelect={setSelect}
-                    handleRadioChange={handleRadioChange}
-                  />
-                </Grid>
+                <Step2 select={select} handleRadioChange={handleRadioChange} />
               )}
               {activeStep === 2 && (
-                <Grid container justifyContent={"space-between"}>
-                  <UserPermission
-                    selectedPermissions={selectedPermissions}
-                    handleCheckboxChange={handleCheckboxChange}
-                  />
-                </Grid>
+                <Step3
+                  selectedPermissions={selectedPermissions}
+                  handleCheckboxChange={handleCheckboxChange}
+                />
               )}
             </DialogContent>
             <DialogActions className="dialog-action-btn">
@@ -341,7 +338,6 @@ const AddUser: React.FC<AddUserProps> = ({
                   <Button
                     variant="contained"
                     type="submit"
-                    // onClick={handleNext}
                     sx={{ width: "150px" }}
                   >
                     Next

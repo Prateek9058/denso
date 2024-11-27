@@ -2,8 +2,6 @@ import FullLayout from "@/app/(DashboardLayout)/layout/FullLayout";
 import AuthProvider from "@/app/(components)/authentication/AuthProvider";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
-import { SitesProvider } from "../(context)/SitesContext";
-import { SiteProvider } from "../(context)/SiteContext";
 import { NotificationProvider } from "../(context)/NotificationContext";
 export default async function RootLayout({
   children,
@@ -20,13 +18,9 @@ export default async function RootLayout({
         {!session ? (
           <AuthProvider>{children}</AuthProvider>
         ) : (
-          <SitesProvider>
-            <SiteProvider>
-              <NotificationProvider>
-                <FullLayout>{children}</FullLayout>
-              </NotificationProvider>
-            </SiteProvider>
-          </SitesProvider>
+          <NotificationProvider>
+            <FullLayout>{children}</FullLayout>
+          </NotificationProvider>
         )}
       </body>
     </html>

@@ -2,8 +2,8 @@
 import React from "react";
 import { Tabs, Tab, Grid, Button } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { IoMdAddCircleOutline } from "react-icons/io";
 import { CgAddR } from "react-icons/cg";
+import { IoMdAddCircleOutline } from "react-icons/io";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -51,16 +51,13 @@ const CustomTab: React.FC<CommonTabsProps> = ({
   tabs,
   handleChange,
   TabPanelList,
-  authRole,
   button,
   handleClickOpen,
-  // handleInputChange,
-  // breadcrumbItems
 }) => {
   return (
     <>
       <Grid container justifyContent="left" alignItems="center">
-        <Grid container justifyContent={"space-between"} mt={2} alignItems={"center"}>
+        <Grid container justifyContent={"space-between"} alignItems={"center"}>
           <Tabs
             value={value}
             className="TabStyleAddDevice"
@@ -85,22 +82,7 @@ const CustomTab: React.FC<CommonTabsProps> = ({
             <Button
               variant={"contained"}
               onClick={handleClickOpen}
-              startIcon={<CgAddR />}
-              // variant="outlined"
-              size="large"
-              sx={{
-                mt: 1,
-                color: "#FFFFFF",
-                backgroundColor: "#4C4C4C",
-                // '& .MuiButton-root':{
-                //   ":hover":{
-                //     backgroundColor: "#4C4C4C",
-                //   }
-                // }
-                ":hover": {
-                  backgroundColor: "#4C4C4C", // Set a new color if needed for hover effect
-                },
-              }}
+              startIcon={<IoMdAddCircleOutline />}
             >
               {button}
             </Button>

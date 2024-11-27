@@ -30,8 +30,10 @@ const Page: React.FC = () => {
   const tabs: TabData[] = [{ label: "Assigned" }, { label: "Not assigned" }];
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+    setSearchQuery("");
+    setPage(0);
+    setRowsPerPage(10);
   };
-
   const getEmployeeData = useCallback(async () => {
     setLoading(true);
     try {

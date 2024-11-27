@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
-import IconButton from "@mui/material/IconButton";
+import { IconButton } from "@mui/material";
 import {
   notifySuccess,
   notifyError,
@@ -82,7 +82,7 @@ const ParentComponent: React.FC<ParentComponentProps> = ({
 
   return (
     <div>
-      <IconButton variant="contained" onClick={() => setOpen(true)}>
+      <IconButton onClick={() => setOpen(true)}>
         <AiOutlineDelete />
       </IconButton>
       <CommonDialog

@@ -18,7 +18,6 @@ import moment from "moment";
 import TrolleyTrack from "./trolleyTrack";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
 import AddRepair from "@/app/(components)/pages/trolley/addRepair";
-import { useSitesData } from "@/app/(context)/SitesContext";
 
 const viewCount = [
   {
@@ -59,7 +58,6 @@ type GetDataHandler = (state: any, resultArray: any) => void;
 const Page: React.FC = () => {
   const { trolleyId } = useParams<{ trolleyId: any }>();
   const router = useRouter();
-  const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
   const [openRepair, setOoenRepair] = useState<boolean>(false);
   const [page, setPage] = React.useState<number>(0);

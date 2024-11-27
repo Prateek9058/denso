@@ -40,13 +40,13 @@ const Menuitems = [
     iconActive: trollyActive,
     href: "/trolley",
   },
-  {
-    id: uniqueId(),
-    title: "Trolley history",
-    icon: trolleyIcon,
-    iconActive: activeTrolleyIcon,
-    href: "/attendance",
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: "Trolley history",
+  //   icon: trolleyIcon,
+  //   iconActive: activeTrolleyIcon,
+  //   href: "/attendance",
+  // },
   {
     id: uniqueId(),
     title: "Trolley maintenance",
