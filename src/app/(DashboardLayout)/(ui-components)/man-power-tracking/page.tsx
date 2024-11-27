@@ -41,7 +41,6 @@ const Page: React.FC = () => {
     setPage(0);
     setRowsPerPage(10);
   };
-  console.log("valuekkkk", value);
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedZone = event.target.value;
     setZoneId(selectedZone);

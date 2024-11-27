@@ -6,7 +6,6 @@ import empImg from "../../../../../public/Img/profile.png";
 import { IoLogOut } from "react-icons/io5";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
-import { LuPlusSquare } from "react-icons/lu";
 import Link from "next/link";
 import CustomTextField from "../../mui-components/Text-Field's";
 import { useForm } from "react-hook-form";
@@ -20,8 +19,6 @@ const ProfileDetails = () => {
     formState: { errors },
     setValue,
     clearErrors,
-    getValues,
-    reset,
   } = useForm();
   const [adminData, setAdminData] = useState<any>();
   const fetchData = async () => {
@@ -55,16 +52,22 @@ const ProfileDetails = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container rowGap={2} sx={{ padding: "12px 15px" }}>
-          <Grid container justifyContent={"flex-end"} mb={2}>
-            <Button
-              variant="contained"
-              startIcon={<MdModeEdit />}
-              size="large"
-              type="submit"
-            >
-              Edit
-            </Button>
+        <Grid container rowGap={2}>
+          <Grid
+            container
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            <Typography variant="h5">Manage Profile</Typography>
+            <Grid item>
+              <Button
+                variant="contained"
+                startIcon={<MdModeEdit />}
+                type="submit"
+              >
+                Edit
+              </Button>
+            </Grid>
           </Grid>
           <Grid container spacing={2}>
             <Grid item xs={3}>
@@ -225,12 +228,6 @@ const ProfileDetails = () => {
             </Grid>
           </Grid>
 
-          {/* <Grid container justifyContent={"space-between"} alignItems={"center"}>
-          <Typography variant="h5">Shift :</Typography>
-          <Button variant="contained" startIcon={<LuPlusSquare />} size="large">
-            Add shift
-          </Button>
-        </Grid> */}
           <Grid container>
             <ManageSites />
           </Grid>

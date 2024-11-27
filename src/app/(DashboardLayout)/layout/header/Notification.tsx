@@ -111,11 +111,7 @@ const Notification: React.FC = () => {
         aria-controls="customized-menu"
         sx={{ marginRight: "10px" }}
       >
-        <Badge
-          color="primary"
-          max={5}
-          badgeContent={readCount ? readCount : 0}
-        >
+        <Badge color="primary" max={5} badgeContent={readCount ? readCount : 0}>
           <NotificationsNoneIcon color="primary" sx={{ fontSize: "30px" }} />
         </Badge>
       </IconButton>

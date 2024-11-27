@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { Grid } from "@mui/material";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -32,7 +31,7 @@ const Page: React.FC = () => {
     FetchUserDetails();
   }, [page, rowsPerPage, searchQuery]);
   return (
-    <Grid>
+    <>
       <ToastComponent />
       <Table
         FetchUserDetails={FetchUserDetails}
@@ -45,7 +44,7 @@ const Page: React.FC = () => {
         setSearchQuery={setSearchQuery}
         loading={loading}
       />
-    </Grid>
+    </>
   );
 };
 

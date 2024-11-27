@@ -30,7 +30,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({
       if (res?.status === 200 || res?.status === 201) {
         setProfileData(res?.data?.data);
         localStorage.setItem("loginId", res?.data?.data?._id);
-        console.log('login data ', res)
+        console.log("login data ", res);
         setLoading(false);
       }
     } catch (err) {

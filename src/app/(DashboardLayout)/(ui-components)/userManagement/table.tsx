@@ -4,13 +4,13 @@ import { Grid, Typography, IconButton, Tooltip, Button } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
-import moment from "moment";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { BsEye } from "react-icons/bs";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 import AddUser from "@/app/(components)/pages/userManagement/addUser";
-import { useSitesData } from "@/app/(context)/SitesContext";
+import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+import DeleteAction from "@/app/(components)/pages/userManagement/deleteUser";
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -22,6 +22,14 @@ interface TableProps {
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   FetchUserDetails: any;
 }
+type Breadcrumb = {
+  label: string;
+  link: string;
+};
+const breadcrumbItems: Breadcrumb[] = [
+  { label: "Dashboard", link: "/" },
+  { label: "User ", link: "" },
+];
 const Table: React.FC<TableProps> = ({
   deviceData,
   rowsPerPage,
@@ -36,7 +44,6 @@ const Table: React.FC<TableProps> = ({
   const columns = ["Sno.", "username", "Phone Number", "Department", "View"];
   const [open, setOpenDialog] = React.useState(false);
   const [openUser, setOpenUser] = useState<boolean>(false);
-  const { selectedSite } = useSitesData();
   const handleClickOpen = () => {
     setOpenUser(true);
   };
@@ -56,10 +63,6 @@ const Table: React.FC<TableProps> = ({
     setDebouncedSearchQuery(event.target.value);
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
   const handleConfirm = () => {
     handleCancel();
   };
@@ -75,16 +78,20 @@ const Table: React.FC<TableProps> = ({
       phoneNumber: item?.phoneNumber ? item?.phoneNumber : "N/A",
       departmentId: item?.departmentId ? item?.departmentId?.name : "N/A",
       Action: [
-        <Grid container justifyContent="center" key={index}>
-          <Grid item>
-            <Link href={`/userManagement/${item?._id}`}>
-              <Tooltip title="View">
-                <IconButton size="small">
-                  <BsEye color="#DC0032" />
-                </IconButton>
-              </Tooltip>
-            </Link>
-          </Grid>
+        <Grid
+          container
+          alignItems={"center"}
+          justifyContent="space-around"
+          key={index}
+        >
+          <Link href={`/userManagement/${item?._id}`}>
+            <Tooltip title="View">
+              <IconButton size="small">
+                <BsEye color="#DC0032" />
+              </IconButton>
+            </Tooltip>
+          </Link>
+          <DeleteAction id={item?._id} getFetchAllDetails={FetchUserDetails} />
         </Grid>,
       ],
     }));
@@ -95,7 +102,7 @@ const Table: React.FC<TableProps> = ({
       <AddUser
         open={openUser}
         setOpen={setOpenUser}
-        selectedDevice={selectedSite}
+        selectedDevice={""}
         FetchUserDetails={FetchUserDetails}
       />
       <CommonDialog
@@ -108,7 +115,21 @@ const Table: React.FC<TableProps> = ({
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <Grid container mt={3}>
+      <Grid container>
+        <Grid container justifyContent={"space-between"}>
+          <Grid item>
+            <Breadcrumb breadcrumbItems={breadcrumbItems} />
+          </Grid>
+          <Grid item>
+            <Button
+              onClick={handleClickOpen}
+              startIcon={<IoMdAddCircleOutline />}
+              variant="contained"
+            >
+              Add User
+            </Button>
+          </Grid>
+        </Grid>
         <Grid
           container
           justifyContent={"space-between"}
@@ -117,10 +138,10 @@ const Table: React.FC<TableProps> = ({
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
           <Grid item>
-            <Typography variant="h5">
-              {" "}
-              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} User
+            <Typography variant="h5"> User Management</Typography>
+            <Typography variant="body1">
+              Showing {deviceData?.data?.length ?? 0} out of{" "}
+              {deviceData?.totalCount} User{" "}
             </Typography>
           </Grid>
           <Grid item>
@@ -132,20 +153,6 @@ const Table: React.FC<TableProps> = ({
                   value={debouncedSearchQuery}
                   onChange={handleSearchChange}
                 />
-              </Grid>
-              <Grid item className="customSearch" ml={2}>
-                <Button
-                  onClick={handleClickOpen}
-                  startIcon={<IoMdAddCircleOutline />}
-                  variant="contained"
-                  size="large"
-                  sx={{
-                    color: "#FFFFFF",
-                    backgroundColor: "#4C4C4C",
-                  }}
-                >
-                  Add User
-                </Button>
               </Grid>
             </Grid>
           </Grid>

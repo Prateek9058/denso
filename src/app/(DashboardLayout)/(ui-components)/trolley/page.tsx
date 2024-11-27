@@ -1,22 +1,19 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent } from "react";
-import { Grid } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Grid, Button } from "@mui/material";
 import dynamic from "next/dynamic";
 
 const AddDevice = dynamic(
   () => import("@/app/(components)/pages/trolley/addTrolley/addTrolley"),
   { ssr: false }
 );
-import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 import UploadFile from "@/app/(components)/pages/trolley/uploadFile";
-import { useSitesData } from "@/app/(context)/SitesContext";
-import salesIcon from "../../../../../public/Img/trolleydash.png";
 import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";
-import CountCard from "@/app/(components)/mui-components/Card/CountCard";
 import AddCategory from "@/app/(components)/pages/trolley/addCategory";
+import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
 type Breadcrumb = {
   label: string;
   link: string;
@@ -32,15 +29,6 @@ const tabs: TabData[] = [
   { label: "Trolley details" },
   { label: "Trolley Category" },
 ];
-const useClientSide = () => {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  return isClient;
-};
 const columns1 = [
   "Trolley ID",
   "Trolley name",
@@ -52,8 +40,6 @@ const columns1 = [
 ];
 const columns2 = ["Trolley ID", "Trolley name", "Trolly color", "Date"];
 const Page: React.FC = () => {
-  const isClient = useClientSide();
-  const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
   const [openCat, setOpenCat] = useState<boolean>(false);
   const [openUpload, setOpenUpload] = useState<boolean>(false);
@@ -63,43 +49,7 @@ const Page: React.FC = () => {
   const [deviceData, setDeviceData] = useState<any>([]);
   const [categoryData, setCategoryData] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<any>("");
-  const [zoneId, setZoneId] = useState<any>("");
   const [value, setTabValue] = useState<number>(0);
-  const [stats, setStats] = useState<any>([
-    {
-      title: "Trolleys",
-      value: 0,
-      active: 0,
-      assigned: "0",
-      in: "0",
-      nonActive: "0",
-      notAssigned: "0",
-      out: "0",
-      icon: salesIcon,
-    },
-    {
-      title: "Assign status",
-      value: 0,
-      active: "0",
-      assigned: "0",
-      in: "0",
-      nonActive: 0,
-      notAssigned: "0",
-      out: "0",
-      icon: salesIcon,
-    },
-    {
-      title: "Under maintenance",
-      value: 0,
-      active: "0",
-      assigned: "0",
-      in: "0",
-      nonActive: "0",
-      notAssigned: "0",
-      out: "0",
-      icon: salesIcon,
-    },
-  ]);
 
   useEffect(() => {
     getTrolleyData();
@@ -112,11 +62,7 @@ const Page: React.FC = () => {
     setPage(0);
     setRowsPerPage(10);
   };
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedZone = event.target.value;
-    setZoneId(selectedZone);
-  };
-  ///// Api call's /////
+
   const getTrolleyData = async () => {
     setLoading(true);
 
@@ -131,32 +77,6 @@ const Page: React.FC = () => {
       if (res?.status === 200 || res?.status === 201) {
         if (value === 0) {
           setCategoryData(res?.data?.data);
-          setStats((prevStats: any) =>
-            prevStats.map((stat: any) => {
-              if (stat.title === "Trolleys") {
-                return {
-                  ...stat,
-                  nonActive: res?.data?.data?.notActiveTrollees || 0,
-                  active: res?.data?.data?.activeTrollees || 0,
-                };
-              }
-              if (stat.title === "Assign status") {
-                return {
-                  ...stat,
-                  notAssigned: res?.data?.data?.notAssingendTrolley || 0,
-                  assigned: res?.data?.data?.assingedTrolley || 0,
-                };
-              }
-              if (stat.title === "Under maintenance") {
-                return {
-                  ...stat,
-                  out: res?.data?.data?.notAssingendTrolley || 0,
-                  in: res?.data?.data?.totalMaintananceTrolleys || 0,
-                };
-              }
-              return stat;
-            })
-          );
         } else {
           setDeviceData(res?.data?.data);
         }
@@ -175,9 +95,6 @@ const Page: React.FC = () => {
   };
   const handleClickOpenCat = () => {
     setOpenCat(true);
-  };
-  const handleClickOpenUpload = () => {
-    setOpenUpload(true);
   };
 
   const TabPanelList = [
@@ -235,21 +152,19 @@ const Page: React.FC = () => {
         setOpenUpload={setOpenUpload}
         getDeviceData={getTrolleyData}
       />
-      <CountCard cardDetails={stats} />
-      <ManagementGrid
-        moduleName={value == 0 ? "Trolley List" : "Trolley Category"}
-        button={value == 0 ? "Add Trolley" : "Add Category"}
-        handleClickOpen={value == 0 ? handleClickOpen : handleClickOpenCat}
-        handleClickOpenUpload={handleClickOpenUpload}
-        breadcrumbItems={breadcrumbItems}
-        handleInputChange={handleInputChange}
-      />
-      <Tabs
-        value={value}
-        handleChange={handleChange}
-        tabs={tabs}
-        TabPanelList={TabPanelList}
-      />
+      <Breadcrumb breadcrumbItems={breadcrumbItems} />
+      <Grid container justifyContent={"space-between"}>
+        <Grid item xs={12}>
+          <Tabs
+            button={value === 0 ? "Add Trolley" : "Add Category"}
+            value={value}
+            handleChange={handleChange}
+            tabs={tabs}
+            handleClickOpen={value === 0 ? handleClickOpen : handleClickOpenCat}
+            TabPanelList={TabPanelList}
+          />
+        </Grid>
+      </Grid>
     </Grid>
   );
 };

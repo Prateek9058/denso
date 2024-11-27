@@ -13,9 +13,7 @@ import noData from "../../../../../public/Img/nodata.png";
 import Image from "next/image";
 import axiosInstance from "@/app/api/axiosInstance";
 import moment from "moment";
-import empImg from "../../../../../public/Img/empImg.png";
-import { useParams, useRouter } from "next/navigation";
-import { useSitesData } from "@/app/(context)/SitesContext";
+import { useRouter } from "next/navigation";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 interface NotifyContextType {
   value: any;
@@ -78,7 +76,6 @@ function NotificationCard({
 }
 const NotificationsList: React.FC<NotifyContextType> = ({ value }) => {
   const router = useRouter();
-  const { selectedSite } = useSitesData();
   const [page, setPage] = React.useState<number>(0);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
@@ -103,11 +100,10 @@ const NotificationsList: React.FC<NotifyContextType> = ({ value }) => {
     }
   };
   const getnotification = async () => {
-    if (!selectedSite?._id) return;
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `api/v1/alerts/getAllAlerts/${selectedSite?._id}?page=${
+        `api/v1/alerts/getAllAlerts?page=${
           page + 1
         }&limit=${rowsPerPage}&startDate=${moment(date?.[0]?.startDate).format(
           "YYYY-MM-DD"
@@ -130,7 +126,7 @@ const NotificationsList: React.FC<NotifyContextType> = ({ value }) => {
     if (date) {
       getnotification();
     }
-  }, [page, date, value, rowsPerPage, selectedSite]);
+  }, [page, date, value, rowsPerPage]);
 
   const readNotification = async (data: any) => {
     try {
@@ -153,30 +149,22 @@ const NotificationsList: React.FC<NotifyContextType> = ({ value }) => {
     <>
       <Grid
         container
-        justifyContent={"space-between"}
-        alignItems="center"
-        p={1}
+        p={2}
         mb={1}
+        alignItems="center"
+        justifyContent={"space-between"}
       >
         <Grid item>
-          <Typography variant="h5">
-            {" "}
-            Showing {notification?.alerts
-              ? notification?.alerts?.length
-              : 0}{" "}
-            out of {notification?.totalCount} Alerts
+          <Typography variant="h5">Manage Alerts</Typography>
+          <Typography variant="body1">
+            Showing {notification?.alerts ? notification?.alerts?.length : 0}{" "}
+            out of {notification?.totalCount ?? 0} Alerts
           </Typography>
         </Grid>
         <Grid item>
-          <Grid container justifyContent={"space-between"}>
-            <Grid item>
-              <CommonDatePicker
-                getDataFromChildHandler={getDataFromChildHandler}
-              />
-            </Grid>
-          </Grid>
+          <CommonDatePicker getDataFromChildHandler={getDataFromChildHandler} />
         </Grid>
-      </Grid>{" "}
+      </Grid>
       {notification?.alerts?.length > 0 ? (
         <Grid container direction="column" alignItems="stretch">
           {notification?.alerts?.map((notification: any) => (

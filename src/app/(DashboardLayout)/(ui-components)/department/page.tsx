@@ -1,8 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import Table from "@/app/(components)/pages/organization";
-
 import axiosInstance from "@/app/api/axiosInstance";
 import AddDepartment from "@/app/(components)/pages/organization/Action/add";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
@@ -47,7 +46,7 @@ const Page: React.FC = () => {
   return (
     <>
       <ToastComponent />
-      <Grid mt={4} container justifyContent={"space-between"}>
+      <Grid container justifyContent={"space-between"}>
         <Grid item>
           <Breadcrumb breadcrumbItems={breadcrumbItems} />
         </Grid>

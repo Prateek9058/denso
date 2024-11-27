@@ -1,24 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  Typography,
-  IconButton,
-  Tooltip,
-  Chip,
-  Button,
-} from "@mui/material";
+import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
-import moment from "moment";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
-import { saveAs } from "file-saver";
-import Papa from "papaparse";
 import { BsEye } from "react-icons/bs";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
-import { CategoryScale } from "chart.js";
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -66,10 +54,6 @@ const Table: React.FC<TableProps> = ({
     setDebouncedSearchQuery(event.target.value);
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
   const handleConfirm = () => {
     handleCancel();
   };
@@ -78,40 +62,13 @@ const Table: React.FC<TableProps> = ({
     setOpenDialog(false);
   };
 
-  const getStatus = (str: string) => {
-    if (str?.toUpperCase() === "PRESENT")
-      return { status: "Present", color: "customChip activeGreen" };
-    else return { status: "Absent", color: "customChip activeRed" };
-  };
-  const getStatusInfo = (ele: string, index: number) => {
-    if (ele?.toUpperCase() === "PRESENT") {
-      return [
-        <Chip
-          key={index}
-          sx={{ width: "120px" }}
-          className="customChip activeGreen"
-          label={ele}
-        />,
-      ];
-    } else {
-      return [
-        <Chip
-          key={index}
-          className={getStatus(ele)?.color}
-          sx={{ width: "120px" }}
-          label={getStatus(ele)?.status}
-        />,
-      ];
-    }
-  };
-
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
       uId: item?.uId ?? "N/A",
       fullName: item?.fullName ? item?.fullName : "N/A",
       jobRole: item?.jobRole ?? "N/A",
       assignTrolley: item?.trolleyCount ?? "N/A",
-      avgWaitingTime: item?.avgWaitingTime?? "N/A",
+      avgWaitingTime: item?.avgWaitingTime ?? "N/A",
       category: item?.category ?? "N/A",
       shiftName: item?.shiftName ?? "N/A",
       Action: [
@@ -129,7 +86,6 @@ const Table: React.FC<TableProps> = ({
       ],
     }));
   };
-console.log("deviceData table",deviceData)
   return (
     <>
       <CommonDialog
@@ -142,7 +98,7 @@ console.log("deviceData table",deviceData)
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <Grid container mt={3}>
+      <Grid container mt={2}>
         <Grid
           container
           justifyContent={"space-between"}
@@ -153,7 +109,6 @@ console.log("deviceData table",deviceData)
           <Grid item>
             <Typography variant="h5">
               {"Manpower Details | "}
-              {/* Showing {deviceData ? deviceData?.data?.length : 0} out of{" "} */}
               Showing {deviceData?.data?.length} out of {deviceData?.totalCount}
             </Typography>
           </Grid>

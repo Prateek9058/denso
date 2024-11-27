@@ -9,6 +9,8 @@ import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkele
 import { BsEye } from "react-icons/bs";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
+import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -20,6 +22,14 @@ interface TableProps {
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   getDataFromChildHandler: any;
 }
+type Breadcrumb = {
+  label: string;
+  link: string;
+};
+const breadcrumbItems: Breadcrumb[] = [
+  { label: "Dashboard", link: "/" },
+  { label: "Maintenance ", link: "" },
+];
 const Table: React.FC<TableProps> = ({
   deviceData,
   rowsPerPage,
@@ -120,7 +130,10 @@ const Table: React.FC<TableProps> = ({
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <Grid container mt={3}>
+      <Grid container>
+        <Grid item>
+          <Breadcrumb breadcrumbItems={breadcrumbItems} />
+        </Grid>
         <Grid
           container
           justifyContent={"space-between"}
@@ -129,10 +142,10 @@ const Table: React.FC<TableProps> = ({
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
           <Grid item>
-            <Typography variant="h5">
-              {" "}
-              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} Trolleys
+            <Typography variant="h5">Maintenance Management</Typography>
+            <Typography variant="body1">
+              Showing {deviceData?.data?.length ?? 0} out of{" "}
+              {deviceData?.totalCount ?? 0} Trolleys
             </Typography>
           </Grid>
           <Grid item>

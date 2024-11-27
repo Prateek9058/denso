@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import axiosInstance from "@/app/api/axiosInstance";
 import AddShift from "./addShift";
@@ -16,7 +16,7 @@ const ShiftCard: React.FC<{
   shift: Shift;
   handleClickOpen: (id: number) => void;
   cardData: any;
-}> = ({ shift, handleClickOpen, cardData }) => {
+}> = ({ shift, handleClickOpen }) => {
   return (
     <Card
       sx={{
@@ -76,7 +76,6 @@ function ManageSites() {
   const handleClickOpenAddShift = () => {
     setOpen(true);
   };
-  console.log("dfghjk==>", selectedShift);
   return (
     <>
       <AddShift
@@ -88,7 +87,7 @@ function ManageSites() {
         setSelectedShift={setSelectedShift}
       />
       <ManagementGrid
-        moduleName="Shifts:"
+        moduleName="Shifts"
         button="Add Shift"
         handleClickOpen={handleClickOpenAddShift}
       />

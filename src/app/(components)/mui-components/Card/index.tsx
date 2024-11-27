@@ -4,20 +4,17 @@ import {
   Grid,
   Typography,
   Stack,
-  TextField,
   MenuItem,
   Select,
-  InputLabel,
   FormControl,
 } from "@mui/material";
-import Breadcrumbs from "@/app/(components)/mui-components/Breadcrumbs";
-import { Tabs, Tab, Button, Tooltip, IconButton } from "@mui/material";
+import { Button } from "@mui/material";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import Breadcrumbs from "@/app/(components)/mui-components/Breadcrumbs";
 interface Breadcrumb {
   label: string;
   link: string;
@@ -69,8 +66,8 @@ const ManagementGrid: React.FC<ManagementGridProps> = ({
   handleBack,
 }) => {
   return (
-    <Grid container justifyContent="space-between" alignItems="center" mt={1}>
-      {/* {breadcrumbItems && <Breadcrumbs breadcrumbItems={breadcrumbItems} />} */}
+    <Grid container justifyContent="space-between" alignItems="center">
+      {breadcrumbItems && <Breadcrumbs breadcrumbItems={breadcrumbItems} />}
       <Grid item>
         <Typography component={"h5"} variant="h4" mb={1}>
           {moduleName}

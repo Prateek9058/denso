@@ -32,7 +32,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [readCount, setReadCount] = useState<any>(null);
 
-  const getnotification = async () => {    
+  const getnotification = async () => {
     const storedSite = localStorage.getItem("selectedSite");
     if (!storedSite) {
       console.error("No site selected");

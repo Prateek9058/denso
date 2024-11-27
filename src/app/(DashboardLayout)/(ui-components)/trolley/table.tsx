@@ -5,7 +5,6 @@ import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import moment from "moment";
-import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
 import { FaMapLocation } from "react-icons/fa6";
 import { BsEye } from "react-icons/bs";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
@@ -36,7 +35,6 @@ const Table: React.FC<TableProps> = ({
 }) => {
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
-  console.log("deviceData123456", deviceData);
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -51,10 +49,6 @@ const Table: React.FC<TableProps> = ({
     setDebouncedSearchQuery(event.target.value);
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
   const handleConfirm = () => {
     handleCancel();
   };
@@ -67,7 +61,6 @@ const Table: React.FC<TableProps> = ({
       label={status}
       variant="filled"
       sx={{
-        
         color: "#000",
         fontWeight: 500,
         minWidth: 50,
@@ -114,7 +107,6 @@ const Table: React.FC<TableProps> = ({
   const getFormattedDataTable2 = (data: any[]) => {
     console.log("table2 response data", data);
     return data?.map((item, index) => ({
-      // sno: index + 1,
       trolleyUid: item?.uId ?? "N/A",
       trolleyName: item?.name ?? "N/A",
       color: item?.color ?? "N/A",
@@ -134,7 +126,7 @@ const Table: React.FC<TableProps> = ({
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      <Grid container mt={3}>
+      <Grid container mt={1}>
         <Grid
           container
           justifyContent={"space-between"}
@@ -143,25 +135,21 @@ const Table: React.FC<TableProps> = ({
           sx={{ backgroundColor: "#FFFFFF", borderRadius: "8px" }}
         >
           <Grid item>
-            <Typography variant="h5">
-              {" "}
-              Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
-              {deviceData?.totalCount} Trolleys
+            <Typography variant="h5"> Trolleys Management</Typography>
+            <Typography variant="body1">
+              Showing {deviceData?.data?.length ?? 0} out of{" "}
+              {deviceData?.totalCount} Trolleys{" "}
             </Typography>
           </Grid>
           <Grid item>
-            <Grid container justifyContent={"space-between"}>
-              <Grid item className="customSearch">
-                <CustomTextField
-                  type="search"
-                  placeholder="Search ID / Name"
-                  value={debouncedSearchQuery}
-                  onChange={handleSearchChange}
-                />
-              </Grid>
-            </Grid>
+            <CustomTextField
+              type="search"
+              placeholder="Search ID / Name"
+              value={debouncedSearchQuery}
+              onChange={handleSearchChange}
+            />
           </Grid>
-        </Grid>{" "}
+        </Grid>
         <CustomTable
           page={page}
           loading={loading}

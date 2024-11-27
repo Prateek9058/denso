@@ -12,12 +12,8 @@ import ToastComponent, {
   notifyError,
   notifySuccess,
 } from "@/app/(components)/mui-components/Snackbar";
-import { AxiosError } from "axios";
 import moment from "moment";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
-import AddRepair from "@/app/(components)/pages/trolley/addRepair";
-import { useSitesData } from "@/app/(context)/SitesContext";
-import Router from "next/router";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 
 const viewCount = [
@@ -59,7 +55,6 @@ type GetDataHandler = (state: any, resultArray: any) => void;
 const Page = ({ params }: { params: { maintenanceId: string } }) => {
   const { trolleyId } = useParams<{ trolleyId: any }>();
   const router = useRouter();
-  const { selectedSite } = useSitesData();
   const [open, setOpen] = useState<boolean>(false);
   const [openRepair, setOoenRepair] = useState<boolean>(false);
   const [page, setPage] = React.useState<number>(0);
@@ -151,12 +146,6 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
         onClose={handleCancel}
         onConfirm={handleConfirm}
       />
-      {/* <AddRepair
-        open={openRepair}
-        setOpen={setOoenRepair}
-        getTrolleyData={[]}
-        selectedDevice={trolleyDetails}
-      /> */}
       <ManagementGrid
         buttonAgent={
           trolleyDetails?.isRepairing ? "Mark trolley as repaired" : ""
