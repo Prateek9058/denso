@@ -35,7 +35,6 @@ const CustomBreadcrumbs: React.FC<CustomBreadcrumbsProps> = ({
       container
       sx={{
         pr: "12px",
-        pt: "12px",
         pb: "20px",
       }}
       direction="row"

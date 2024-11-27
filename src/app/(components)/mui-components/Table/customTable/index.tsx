@@ -87,8 +87,8 @@ const index: React.FC<CustomTableProps> = ({
                   index === 0
                     ? "left"
                     : index === columns.length - 1
-                    ? "center"
-                    : "center"
+                      ? "center"
+                      : "center"
                 }
               >
                 {column == "Expiry Date" ? (
@@ -122,8 +122,8 @@ const index: React.FC<CustomTableProps> = ({
                     ind === 0
                       ? "left"
                       : ind === Object.values(row).length - 1
-                      ? "center"
-                      : "center"
+                        ? "center"
+                        : "center"
                   }
                   component="th"
                   scope="row"
@@ -179,7 +179,7 @@ const index: React.FC<CustomTableProps> = ({
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </TableRow>
-            )} 
+            )}
           </TableFooter>
         )}
       </Table>
