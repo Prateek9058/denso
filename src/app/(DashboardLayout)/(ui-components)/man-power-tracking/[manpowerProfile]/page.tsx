@@ -43,16 +43,15 @@ const Page: React.FC = () => {
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
     { label: "Manpower Tracking ", link: "/man-power-tracking" },
-    // {
-    //   label: userDetails?.fullName ? userDetails?.fullName : deviceId,
-    //   link: "",
-    // },
+    {
+      label: userDetails?.fullName ? userDetails?.fullName : "",
+      link: "",
+    },
   ];
   const getDataFromChildHandler = (date: any, dataArr: any) => {
     setDate(date);
     setAnalyticsDate(dataArr);
   };
-  /// api call's ///
   const getUserDetails = async () => {
     setLoading(true);
     try {
@@ -77,7 +76,6 @@ const Page: React.FC = () => {
   const handleClickOpen = () => {
     setOpen(true);
   };
-  /// delete user ///
   const deleteUser = async () => {
     try {
       const res = await axiosInstance.delete(
@@ -125,7 +123,7 @@ const Page: React.FC = () => {
   };
 
   return (
-    <Grid sx={{ padding: "12px 15px" }}>
+    <>
       <ToastComponent />
       {open && (
         <AddDevice
@@ -278,7 +276,8 @@ const Page: React.FC = () => {
           <Typography variant="h4">Location</Typography>
         </Grid>
       </Grid>
-      <EmpTrack userDetails={manpowerProfile} />
+      <EmpTrack userDetails={manpowerProfile} />{" "}
+      <Table deviceId={manpowerProfile} empJoinedDate={empJoinedDate} />
       <Grid container justifyContent={"space-between"}>
         <Grid mt={3} item md={12} sm={12} xs={12}>
           <Grid sx={{ backgroundColor: "white", borderRadius: "10px" }} p={2}>
@@ -304,8 +303,7 @@ const Page: React.FC = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Table deviceId={manpowerProfile} empJoinedDate={empJoinedDate} />
-    </Grid>
+    </>
   );
 };
 

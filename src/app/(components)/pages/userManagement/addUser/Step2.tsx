@@ -12,7 +12,9 @@ import {
   FormControlLabelProps,
   FormControlLabel,
 } from "@mui/material";
+import Image from "next/image";
 import axiosInstance from "@/app/api/axiosInstance";
+import NoDataImg from "@/app/(components)/assets/nodataFound.png";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import SkeletonCard from "../../../mui-components/Skeleton/assign-radio-card";
 interface StyledFormControlLabelProps extends FormControlLabelProps {
@@ -96,22 +98,22 @@ const UserDepartment = ({ select, handleRadioChange }: DepartmentProps) => {
 
   return (
     <>
-      <Grid container>
+      <Grid container justifyContent={"space-between"}>
         <Grid item>
-          <Typography variant="subtitle1">Select Content Folder</Typography>
-        </Grid>
-        <Grid item>
+          <Typography variant="h6">Select Department</Typography>
           <Typography variant="subtitle1">
             Showing {data?.data?.length ?? 0} of
             <span> {totalLength ?? 0}</span>
           </Typography>
         </Grid>
-        <CustomTextField
-          type="search"
-          placeholder="Search ID / Name"
-          value={debouncedSearchQuery}
-          onChange={handleSearchChange}
-        />
+        <Grid item>
+          <CustomTextField
+            type="search"
+            placeholder="Search ID / Name"
+            value={debouncedSearchQuery}
+            onChange={handleSearchChange}
+          />
+        </Grid>
       </Grid>
       <Grid container>
         {loading ? (
@@ -131,7 +133,6 @@ const UserDepartment = ({ select, handleRadioChange }: DepartmentProps) => {
                     borderRadius: "8px",
                     marginBottom: "15px",
                   }}
-                  className="mt-20 assign-radio-grid"
                 >
                   <MyFormControlLabel
                     className="assign-formlable"
@@ -166,32 +167,42 @@ const UserDepartment = ({ select, handleRadioChange }: DepartmentProps) => {
           </>
         )}
 
-        {!loading && data?.length === 0 && (
+        {data?.data?.length === 0 && (
           <Grid
             container
             direction="column"
             justifyContent="center"
             alignItems="center"
           >
-            {/* <Image alt="NoDataImg" src={NoDataImg} /> */}
+            <Image width={220} height={160} alt="NoDataImg" src={NoDataImg} />
             <Typography variant="subtitle1">
               Looks like there is no Department added.
             </Typography>
           </Grid>
         )}
-
+      </Grid>{" "}
+      <Grid
+        container
+        direction="column"
+        alignItems="center"
+        justifyContent="flex-end"
+      >
         {!loading && (
-          <Grid container justifyContent="center">
-            <Stack spacing={2}>
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={(event, page) => handlePagination(page)}
-                showFirstButton
-                showLastButton
-              />
-            </Stack>
-          </Grid>
+          <Stack
+            spacing={2}
+            direction="column"
+            alignItems="center"
+            justifyContent="flex-end"
+            sx={{ position: "absolute", bottom: 60 }}
+          >
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={(event, page) => handlePagination(page)}
+              showFirstButton
+              showLastButton
+            />
+          </Stack>
         )}
       </Grid>
     </>

@@ -5,7 +5,7 @@ import AddManpower from "@/app/(components)/pages/ManPower/addManpower/index";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
-
+import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
 import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";
 
 type Breadcrumb = {
@@ -99,7 +99,7 @@ const Page: React.FC = () => {
         setOpen={setOpen}
         getEmployeeData={getEmployeeData}
       />
-
+      <Breadcrumb breadcrumbItems={breadcrumbItems} />
       <Tabs
         value={value}
         handleChange={handleChange}

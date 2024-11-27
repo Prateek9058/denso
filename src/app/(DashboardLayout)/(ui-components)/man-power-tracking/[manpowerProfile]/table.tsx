@@ -61,9 +61,6 @@ const Table: React.FC<TableProps> = ({ deviceId, empJoinedDate }) => {
       getEmployeeData();
     }
   }, [deviceId, page, rowsPerPage, date]);
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
 
   const handleConfirm = () => {
     handleCancel();
@@ -132,7 +129,6 @@ const Table: React.FC<TableProps> = ({ deviceId, empJoinedDate }) => {
           <Grid item>
             <Typography variant="h3">Route report</Typography>
             <Typography variant="body1">
-              {" "}
               Showing {deviceData ? deviceData?.data?.length : 0} out of{" "}
               {deviceData?.totalCount} routes
             </Typography>
