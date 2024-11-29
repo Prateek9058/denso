@@ -54,11 +54,11 @@ const AddRepair: React.FC<AddDeviceProps> = ({
   const dropDownData = [
     {
       _id: "671645b6740b31a416f231c1",
-      label: "test",
+      label: "break",
     },
     {
       _id: "67177d3bb5491ed7dad99c75",
-      label: "test",
+      label: "short",
     },
     {
       _id: "671f552da5ec829121b895de",
@@ -77,18 +77,25 @@ const AddRepair: React.FC<AddDeviceProps> = ({
       label: "test",
     },
   ];
-  console.log("selectedDevice55o", selectedDevice?._id);
 
   const onSubmit = async () => {
-    console.log("selectedDevice55o", selectedDevice?._id);
     if (!selectedDevice?._id) return;
+    let body;
+    const formdata = getValues();
+    const matchingItem = dropDownData?.find(
+      (item) => item?._id === formdata?.issue
+    );
+    if (matchingItem) {
+      body = {
+        issue: matchingItem?.label,
+      };
+    }
     try {
       const res = await axiosInstance.post(
-        `trolleyRepairing/addTrolleyRepairing/${selectedDevice?._id}`
-        // body
+        `trolleyRepairing/addTrolleyRepairing/${selectedDevice?._id}`,
+        body
       );
       if (res?.status === 200 || res?.status === 201) {
-        console.log(res);
         notifySuccess("Trolley repair info added successfully");
         getTrolleyData();
         handleClose();
@@ -100,7 +107,6 @@ const AddRepair: React.FC<AddDeviceProps> = ({
           "Error updating trolley repair info"
       );
       console.log(error);
-      handleClose();
     }
   };
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {

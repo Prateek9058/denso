@@ -53,7 +53,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   const [activeStep, setActiveStep] = useState(0);
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [empUid, setEmpUid] = React.useState<string>(selectedDevice ? selectedDevice?.uId : "");
+  const [empUid, setEmpUid] = React.useState<string>(
+    selectedDevice ? selectedDevice?.uId : ""
+  );
 
   const [trolley, setTrolley] = useState<any>([]);
 
@@ -228,7 +230,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
           open={open}
           maxWidth={"lg"}
           fullWidth={true}
-          title={`${selectedDevice ? "Edit" : "Add"} Manpower`}
+          title={` Manpower`}
           message={"Are you sure you want to cancel?"}
           titleConfirm={"Cancel"}
           onClose={handleClose}

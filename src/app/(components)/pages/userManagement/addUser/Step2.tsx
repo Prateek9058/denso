@@ -115,7 +115,7 @@ const UserDepartment = ({ select, handleRadioChange }: DepartmentProps) => {
           />
         </Grid>
       </Grid>
-      <Grid container>
+      <Grid container columnGap={2} >
         {loading ? (
           <SkeletonCard width={250} arrayLength={5} />
         ) : (

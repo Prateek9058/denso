@@ -419,28 +419,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   </Grid>
                   <Grid item md={5.8}>
                     <Controller
-                      name="name"
-                      control={control}
-                      rules={{
-                        required: "Trolley name is required",
-                      }}
-                      render={({ field }) => (
-                        <CustomTextField
-                          {...field}
-                          label="Trolley Name"
-                          placeholder="Enter Trolley Name"
-                          error={!!errors.name}
-                          helperText={errors.name?.message}
-                          onChange={handleInputChange}
-                          defaultValue={
-                            selectedDevice ? selectedDevice?.name : ""
-                          }
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item md={5.8}>
-                    <Controller
                       name="trolleyId"
                       control={control}
                       rules={{
@@ -461,6 +439,29 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       )}
                     />
                   </Grid>
+                  <Grid item md={5.8}>
+                    <Controller
+                      name="name"
+                      control={control}
+                      rules={{
+                        required: "Trolley name is required",
+                      }}
+                      render={({ field }) => (
+                        <CustomTextField
+                          {...field}
+                          label="Trolley Name"
+                          placeholder="Enter Trolley Name"
+                          error={!!errors.name}
+                          helperText={errors.name?.message}
+                          onChange={handleInputChange}
+                          defaultValue={
+                            selectedDevice ? selectedDevice?.name : ""
+                          }
+                        />
+                      )}
+                    />
+                  </Grid>
+
                   <Grid item md={5.8}>
                     <Controller
                       name="macId"

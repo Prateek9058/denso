@@ -27,7 +27,8 @@ export default function CheckboxesTags({
   label,
   handleChange,
   handleclear,
-  value
+  value,
+  size
 }: AutocompleteProps) {
   return (
     <Autocomplete

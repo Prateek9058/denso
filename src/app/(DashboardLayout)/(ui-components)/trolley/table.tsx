@@ -105,7 +105,6 @@ const Table: React.FC<TableProps> = ({
   };
 
   const getFormattedDataTable2 = (data: any[]) => {
-    console.log("table2 response data", data);
     return data?.map((item, index) => ({
       trolleyUid: item?.uId ?? "N/A",
       trolleyName: item?.name ?? "N/A",

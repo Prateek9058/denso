@@ -117,7 +117,7 @@ const Table: React.FC<TableProps> = ({
           selectedDevice={selectedDevice}
           url="trolleys/getAllTrolleys"
           setOpen={setOpenAssign}
-          title="Assign User"
+          title="Assign trolley"
           trolley={trolley}
           setTrolley={setTrolley}
         />

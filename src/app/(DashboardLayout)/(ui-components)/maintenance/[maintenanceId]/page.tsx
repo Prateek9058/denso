@@ -1,11 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Grid, Typography, Button } from "@mui/material";
-import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import empImg from "../../../../../../public/Img/trolleyImg.png";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ToastComponent, {
@@ -39,7 +38,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
     { label: "Maintenance ", link: "/maintenance" },
     { label: trolleyDetails?.name, link: "" },
   ];
-  const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
+  const getDataFromChildHandler: GetDataHandler = (state) => {
     const startDate = moment(state?.[0]?.startDate);
     const endDate = moment(state?.[0]?.endDate);
     setStartDate(startDate);
@@ -97,9 +96,9 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
       const { data, status } = await axiosInstance.post(
         `trolleyRepairing/updateTrolleyToRepair/${params?.maintenanceId}`
       );
-      console.log("data", data);
       if (status === 200 || status === 201) {
         getTrolleyDetails();
+        getAllTrolleyRepairings();
         notifySuccess("Trolley marked as repaired successfully");
         handleCancel();
       }
@@ -230,7 +229,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
                 <CustomTextField
                   disabled
                   defaultValue={
-                    trolleyDetails ? trolleyDetails?.runningTime : ""
+                    trolleyDetails ? trolleyDetails?.runningTime || 0 : "0"
                   }
                 />
               </Grid>
