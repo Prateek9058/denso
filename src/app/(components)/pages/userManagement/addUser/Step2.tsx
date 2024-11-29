@@ -121,7 +121,6 @@ const UserDepartment = ({ select, handleRadioChange }: DepartmentProps) => {
         ) : (
           <>
             {data?.data?.map((item: any, index: number) => {
-  
               return (
                 <Grid
                   item
@@ -158,9 +157,7 @@ const UserDepartment = ({ select, handleRadioChange }: DepartmentProps) => {
                         onClick={(event: any) => {
                           handleRadioChange(item, event);
                         }}
-                        checked={
-                          select?._id === item._id
-                        }
+                        checked={select?._id === item._id}
                       />
                     }
                   />
