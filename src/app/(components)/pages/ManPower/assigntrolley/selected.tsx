@@ -21,7 +21,7 @@ import noData from "../../../../../../public/Img/nodata.png";
 import SkeletonCard from "../../../../(components)/mui-components/Skeleton/assign-radio-card";
 import SkeletonLoader from "../../../../(components)/mui-components/Skeleton/skeleton-loader";
 import Image from "next/image";
-import { useForm,  } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import Autocomplete from "@/app/(components)/mui-components/Text-Field's/Autocomplete";
 import axiosInstance from "@/app/api/axiosInstance";
@@ -109,13 +109,7 @@ export default function AssignAssessmentTabSelected({
   //     })
   //   );
   // }, [selectedDevice]);
-  const {
-    formState: { errors },
-    setValue,
-    clearErrors,
-    control,
-    watch,
-  } = methods;
+
   const [site, setSite] = useState<any>(null);
   const [Line, setLine] = useState<any>(null);
   const [selectedSections, setSelectedSections] = React.useState<any[]>([]);
@@ -207,61 +201,54 @@ export default function AssignAssessmentTabSelected({
   return (
     <div>
       <form>
-        <Grid container justifyContent="space-between" alignItems={"center"} >
-          <Grid item>
-            <Grid
-              container
-              justifyContent="space-between"
-              gap={1}
-              alignItems={"center"}
-              zIndex={1}
-            >
-              <Grid item display={"flex"} flexDirection={"row"}>
-                <FormControl fullWidth sx={{ minWidth: "200px" }}>
-                  <InputLabel>Departments</InputLabel>
-                  <Select
-                    value={selectedDepartment}
-                    onChange={(event) => {
-                      const modifiedEvent = {
-                        ...event,
-                        target: {
-                          ...event.target,
-                          name: "department",
-                        },
-                      };
-                      handleInputChange(modifiedEvent);
-                    }}
-                    label="Departments"
-                  >
-                    <MenuItem disabled value="">
-                      <em>Select Department</em>
+        <Grid container justifyContent="space-between" alignItems={"center"}>
+          <Grid item display={"flex"} width={"80%"} columnGap={2}>
+            <FormControl fullWidth sx={{ minWidth: "200px", }}>
+              <InputLabel>Departments</InputLabel>
+              <Select
+                value={selectedDepartment}
+                size="medium"
+                onChange={(event) => {
+                  const modifiedEvent = {
+                    ...event,
+                    target: {
+                      ...event.target,
+                      name: "department",
+                    },
+                  };
+                  handleInputChange(modifiedEvent);
+                }}
+                label="Departments"
+              >
+                <MenuItem disabled value="">
+                  <em>Select Department</em>
+                </MenuItem>
+                {departmentList &&
+                  departmentList?.map((item: any, index: any) => (
+                    <MenuItem key={index} value={item?._id}>
+                      {item?.name}
                     </MenuItem>
-                    {departmentList &&
-                      departmentList?.map((item: any, index: any) => (
-                        <MenuItem key={index} value={item?._id}>
-                          {item?.name}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-                <Autocomplete
-                  id="Section"
-                  options={site?.length > 0 ? site : []}
-                  disabled={selectedDepartmentId ? false : true}
-                  label="Select Section"
-                  handleChange={handleChangeAutocompleteSIte}
-                  value={selectedSections}
-                />
-                <Autocomplete
-                  id="Line"
-                  options={Line?.length > 0 ? Line : []}
-                  disabled={selectedDepartmentId ? false : true}
-                  label="Select line"
-                  handleChange={handleChangeAutocompleteLine}
-                  value={selectedLines}
-                />
-              </Grid>
-            </Grid>
+                  ))}
+              </Select>
+            </FormControl>
+            <Autocomplete
+              id="Section"
+              size={"small"}
+              options={site?.length > 0 ? site : []}
+              disabled={selectedDepartmentId ? false : true}
+              label="Select Section"
+              handleChange={handleChangeAutocompleteSIte}
+              value={selectedSections}
+            />
+            <Autocomplete
+              id="Line"
+              size={"small"}
+              options={Line?.length > 0 ? Line : []}
+              disabled={selectedDepartmentId ? false : true}
+              label="Select line"
+              handleChange={handleChangeAutocompleteLine}
+              value={selectedLines}
+            />
           </Grid>
           <Grid item>
             <CustomTextField

@@ -1,5 +1,5 @@
 "use client";
-import { Button, Card, Grid, IconButton, Typography } from "@mui/material";
+import { Button, Card, Grid, Typography } from "@mui/material";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { MdModeEdit } from "react-icons/md";
 import empImg from "../../../../../public/Img/profile.png";
@@ -78,22 +78,22 @@ const ProfileDetails = () => {
     localStorage.removeItem("loginId");
     signOut({ callbackUrl: "/login", redirect: true });
   };
+  console.log("forget", Forget);
   const onSubmit = async () => {
     try {
       if (Forget) {
         const formdata = getValues();
-        console.log("dfg", formdata);
         const body = {
           oldPassword: formdata?.oldPassword,
           newPassword: formdata?.newPassword,
           cnfimPassword: formdata?.cnfimPassword,
         };
-        const { status, data } = await axiosInstance.patch(
+        const { status } = await axiosInstance.patch(
           `/auth/updatePassword/${adminData?._id}`,
           body
         );
         if (status === 200 || status === 201) {
-          notifySuccess("admin pass change successfully successfully!");
+          notifySuccess("password changed successfully!");
           setIsEditable(false);
           setForget(false);
           fetchData();
@@ -104,12 +104,12 @@ const ProfileDetails = () => {
           fullName: formdata?.name,
           phoneNumber: formdata?.phone,
         };
-        const { status, data } = await axiosInstance.patch(
+        const { status } = await axiosInstance.patch(
           "/auth/updateAdminProfile",
           body
         );
         if (status === 200 || status === 201) {
-          notifySuccess("admin profile successfully!");
+          notifySuccess("Profile updated successfully!");
           setIsEditable(false);
           fetchData();
         }
@@ -171,12 +171,13 @@ const ProfileDetails = () => {
                         style={{
                           objectFit: "cover",
 
+                          borderRadius: "50%",
                           display: "block",
                           margin: "0 auto",
                           marginTop: "2rem",
                         }}
-                        height={100}
-                        width={100}
+                        height={130}
+                        width={130}
                         src={empImg}
                         alt="employee Img"
                       />

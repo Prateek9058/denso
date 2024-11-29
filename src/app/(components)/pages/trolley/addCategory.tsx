@@ -1,7 +1,17 @@
 "use client";
 import React, { ChangeEvent, useEffect, useState, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { DialogActions, Button, DialogContent, Grid } from "@mui/material";
+import { Controller, useForm } from "react-hook-form";
+import {
+  DialogActions,
+  Button,
+  DialogContent,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+} from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
 import {
@@ -10,9 +20,16 @@ import {
 } from "@/app/(components)/mui-components/Snackbar";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 
-const selectData = ["A", "B"];
+type selectDropDownData = {
+  label: string;
+  value: string;
+};
+const selectColor: selectDropDownData[] = [
+  { label: "Pink", value: "pink" },
+  { label: "Red", value: "Red" },
+];
 interface AddDeviceProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,15 +53,32 @@ const AddCategory: React.FC<AddDeviceProps> = ({
     clearErrors,
     getValues,
     reset,
+    control,
   } = useForm();
   const handleClose = () => {
     setOpen(false);
     reset();
   };
+  const [categoryUid, setcategoryUid] = useState<string>("");
+  const handleCategoryUid = async () => {
+    try {
+      const { data, status } = await axiosInstance.get("");
+      if (status === 200 || status === 201) {
+        setcategoryUid(data?.data?.data);
+      }
+    } catch (error) {
+      notifyError((error as any)?.response?.data?.message);
+    }
+  };
+  useEffect(() => {
+    if (open) {
+      handleCategoryUid();
+    }
+    setValue("macId", categoryUid);
+  }, [categoryUid, open]);
 
   const onSubmit = async () => {
     const formData = getValues();
-    console.log("app data",formData)
     const body = {
       name: formData?.name,
       uId: formData?.macId,
@@ -59,7 +93,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
         notifySuccess(`Category added successfully`);
         getCategoryData();
         handleClose();
-      }  
+      }
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
       notifyError(
@@ -100,11 +134,12 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                     },
                   })}
                   name="macId"
-                  label="Trolley Uid "
+                  label="Trolley category Uid "
                   placeholder="Enter trolley uid"
                   error={!!errors.macId}
                   helperText={errors.macId?.message}
                   onChange={handleInputChange}
+                  defaultValue={categoryUid ? categoryUid : ""}
                 />
               </Grid>
               <Grid item md={5.8}>
@@ -121,7 +156,41 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                 />
               </Grid>
               <Grid item md={5.8}>
-                <CustomTextField
+                <FormControl fullWidth error={!!errors?.color}>
+                  <InputLabel>Trolley Color </InputLabel>
+                  <Controller
+                    name="color"
+                    control={control}
+                    rules={{
+                      required: "Trolley color is required",
+                    }}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        placeholder="Select Trolley type"
+                        label={"Trolley type"}
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        defaultValue={
+                          selectedDevice
+                            ? selectedDevice?.trolleyCategoryId?.name
+                            : ""
+                        }
+                      >
+                        {selectColor &&
+                          selectColor?.map((item: any, index: number) => (
+                            <MenuItem key={index} value={item?.value}>
+                              {item?.label}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    )}
+                  />
+                  <FormHelperText>
+                    {(errors as any) && errors?.color?.message}
+                  </FormHelperText>
+                </FormControl>
+                {/* <CustomTextField
                   {...register("color", {
                     required: "Trolley color is required",
                   })}
@@ -131,7 +200,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                   error={!!errors.color}
                   helperText={errors.color?.message}
                   onChange={handleInputChange}
-                />
+                /> */}
               </Grid>
             </Grid>
           </DialogContent>

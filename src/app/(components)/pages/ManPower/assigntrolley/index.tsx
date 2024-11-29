@@ -6,6 +6,10 @@ import FirstTab from "./selected";
 import axiosInstance from "@/app/api/axiosInstance";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
+import {
+  notifyError,
+  notifySuccess,
+} from "@/app/(components)/mui-components/Snackbar";
 
 interface Props {
   open: boolean;
@@ -28,7 +32,16 @@ export default function AssignAssessment({
   selectedDevice,
 }: Props) {
   const methods = useForm<any>();
-  const { reset } = methods;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    clearErrors,
+    getValues,
+    reset,
+  } = methods;
+
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
   const [searchQuery, setSearchQuery] = useState<any>("");
@@ -69,14 +82,17 @@ export default function AssignAssessment({
       setLoading(true);
       const data1 = {
         sectionId: selectIDs,
-        lineId:lineIds
+        lineId: lineIds,
       };
       const { data, status } = await axiosInstance.post(
-        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=${true}&departmentId=${selectedDepartmentId}&search=${searchQuery}`,data1
+        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=${false}&departmentId=${selectedDepartmentId}&search=${searchQuery}`,
+        data1
       );
       if (status === 200 || status === 201) {
         console.log("all trollley", data?.data?.data);
-        setGetAllList(data?.data?.data);
+        if (selectIDs && lineIds) {
+          setGetAllList(data?.data?.data);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -117,52 +133,76 @@ export default function AssignAssessment({
       })
     );
   }, [selectedDevice]);
+  const onSubmit = async () => {
+    console.log("values,values", trolley);
+    if (trolley?.length === 0) {
+      notifyError("please ");
+    }
+    const body = {
+      employeeId: selectedDevice?._id,
+      trolleyIds: trolley,
+    };
+    try {
+      const { data, status } = await axiosInstance.post(
+        `/employees/assingendTrolley?isTrolleyChange=true`,
+        body
+      );
+      if (status === 200 || status === 201) {
+        notifySuccess("trolley assigned successfully !");
+        handleClose();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <CommonDialog
       open={open}
-      maxWidth={"md"}
+      maxWidth={"lg"}
       fullWidth={true}
-      title={`${selectedDevice ? "Edit" : "Add"} Manpower`}
+      title={` Assign trolley`}
       message={"Are you sure you want to cancel?"}
       titleConfirm={"Cancel"}
       onClose={handleClose}
     >
-      <Grid p={2}>
-        <FirstTab
-          methods={methods}
-          select={trolley}
-          rowsPerPage={rowsPerPage}
-          setRowsPerPage={setRowsPerPage}
-          page={page}
-          setPage={setPage}
-          getAllList={getAllList}
-          setSearchQuery={setSearchQuery}
-          searchQuery={searchQuery}
-          loading={loading}
-          handleInputChange={handleInputChange}
-          role={role}
-          selectedDevice={selectedDevice}
-          departments={department}
-          departmentList={department}
-          selectedDepartment={selectedDepartmentId}
-          setTrolley={setTrolley}
-          setSelectedIds={setSelectedIds}
-          selectIDs={selectIDs}
-          lineIds={lineIds}
-          setLineIds={setLineIds}
-          selectedDepartmentId={selectedDepartmentId}
-        />
-      </Grid>
-      <DialogActions className="dialog-action-btn">
-        <ConfirmationDialog
-          title={"Cancel"}
-          handleCloseFirst={handleClose}
-          message={"Are you sure you want to cancel?"}
-        />
-        <Button variant="contained" type="submit" sx={{ width: "150px" }}>
-          Submit
-        </Button>
-      </DialogActions>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Grid p={2}>
+          <FirstTab
+            methods={methods}
+            select={trolley}
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+            page={page}
+            setPage={setPage}
+            getAllList={getAllList}
+            setSearchQuery={setSearchQuery}
+            searchQuery={searchQuery}
+            loading={loading}
+            handleInputChange={handleInputChange}
+            role={role}
+            selectedDevice={selectedDevice}
+            departments={department}
+            departmentList={department}
+            selectedDepartment={selectedDepartmentId}
+            setTrolley={setTrolley}
+            setSelectedIds={setSelectedIds}
+            selectIDs={selectIDs}
+            lineIds={lineIds}
+            setLineIds={setLineIds}
+            selectedDepartmentId={selectedDepartmentId}
+          />
+        </Grid>
+        <DialogActions className="dialog-action-btn">
+          <ConfirmationDialog
+            title={"Cancel"}
+            handleCloseFirst={handleClose}
+            message={"Are you sure you want to cancel?"}
+          />
+          <Button variant="contained" type="submit" sx={{ width: "150px" }}>
+            Submit
+          </Button>
+        </DialogActions>
+      </form>
     </CommonDialog>
   );
 }

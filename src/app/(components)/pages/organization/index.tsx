@@ -41,6 +41,7 @@ const Table: React.FC<TableProps> = ({
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
+  console.log("link", type);
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -71,15 +72,17 @@ const Table: React.FC<TableProps> = ({
       createAt: item?.createdAt ? moment(item?.createdAt).format("lll") : "N/A",
       Action: [
         <Grid container justifyContent="space-between" key={index}>
-          <Grid item>
-            <Link href={`/${link}${item?._id}`}>
-              <Tooltip title="View">
-                <IconButton size="small">
-                  <BsEye color="#DC0032" />
-                </IconButton>
-              </Tooltip>
-            </Link>
-          </Grid>
+          {type != "line" && (
+            <Grid item>
+              <Link href={`/${link}${item?._id}`}>
+                <Tooltip title="View">
+                  <IconButton size="small">
+                    <BsEye color="#DC0032" />
+                  </IconButton>
+                </Tooltip>
+              </Link>
+            </Grid>
+          )}
           <EditAction
             item={item}
             type={type}

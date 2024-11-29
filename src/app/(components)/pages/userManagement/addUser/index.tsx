@@ -58,7 +58,7 @@ const AddUser: React.FC<AddUserProps> = ({
 
   useEffect(() => {
     if (selectedDevice?.departmentId?._id) {
-      setSelect({ _id: selectedDevice.departmentId._id });
+      setSelect({ _id: selectedDevice?.departmentId?._id });
     }
   }, [selectedDevice]);
   const {
@@ -95,15 +95,6 @@ const AddUser: React.FC<AddUserProps> = ({
     setSelect(null);
     setSelectedPermissions([]);
     setUserDetails(null);
-  };
-  const trolleyBoxLabel = () => {
-    if (activeStep == 0) {
-      return `Add User `;
-    } else if (activeStep == 1) {
-      return "Department";
-    } else if (activeStep == 2) {
-      return "Permission";
-    }
   };
 
   const handleCheckboxChange = (permission: { [key: string]: boolean }) => {
@@ -165,17 +156,17 @@ const AddUser: React.FC<AddUserProps> = ({
     try {
       if (activeStep >= 2) {
         if (selectedDevice) {
-          const { data, status } = await axiosInstance.patch(
+          const { status } = await axiosInstance.patch(
             `/users/updateUser/${selectedDevice?._id}`,
             payload
           );
           if (status === 201 || status === 200) {
-            notifySuccess("user added successfully");
+            notifySuccess("user updated successfully");
             FetchUserDetails();
             handleClose();
           }
         } else {
-          const { data, status } = await axiosInstance.post(
+          const { status } = await axiosInstance.post(
             "/users/createUser",
             payload
           );
@@ -218,7 +209,7 @@ const AddUser: React.FC<AddUserProps> = ({
         open={open}
         maxWidth={"md"}
         fullWidth={true}
-        title={selectedDevice?"Edit User":"Add User"}
+        title={selectedDevice ? "Edit User" : "Add User"}
         message={"Are you sure you want to cancel?"}
         titleConfirm={"Cancel"}
         onClose={handleClose}

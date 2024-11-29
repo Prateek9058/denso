@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import axiosInstance from "@/app/api/axiosInstance";
 import AddShift from "./addShift";
-import { Grid, Card, Typography, Button, Box } from "@mui/material";
+import { Grid, Card, Typography, Button, Box, IconButton } from "@mui/material";
+import { MdOutlineDeleteOutline } from "react-icons/md";
 import noData from "../../../../../public/Img/nodata.png";
 import Image from "next/image";
+import CommonDialog from "../../mui-components/Dialog";
+import { notifySuccess } from "../../mui-components/Snackbar";
 
 interface Shift {
   id: number;
@@ -16,7 +19,8 @@ const ShiftCard: React.FC<{
   shift: Shift;
   handleClickOpen: (id: number) => void;
   cardData: any;
-}> = ({ shift, handleClickOpen }) => {
+  handleOpenDelete?: any;
+}> = ({ shift, handleClickOpen, handleOpenDelete }) => {
   return (
     <Card
       sx={{
@@ -27,19 +31,30 @@ const ShiftCard: React.FC<{
       }}
     >
       <Typography variant="body1">{shift.timeRange}</Typography>
-      <Button size="small" onClick={() => handleClickOpen(shift.id)}>
-        Edit
-      </Button>
+      <Grid>
+        <Button size="small" onClick={() => handleClickOpen(shift.id)}>
+          Edit
+        </Button>
+        <IconButton
+          onClick={() => {
+            handleOpenDelete(shift?.id);
+          }}
+        >
+          <MdOutlineDeleteOutline />
+        </IconButton>
+      </Grid>
     </Card>
   );
 };
 
 function ManageSites() {
   const [open, setOpen] = useState<boolean>(false);
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [allShifts, setAllShifts] = useState<any>([]);
   const [id, setId] = React.useState<any>(null);
   const [selectedShift, setSelectedShift] = useState<any>(null);
+  const [deleteId, setDeleteID] = useState<string>("");
 
   useEffect(() => {
     getAllShifts();
@@ -76,8 +91,39 @@ function ManageSites() {
   const handleClickOpenAddShift = () => {
     setOpen(true);
   };
+  const handleOpenDelete = (id: string) => {
+    setOpenDelete(true);
+    setDeleteID(id);
+  };
+  const handleCancel = () => {
+    setOpenDelete(false);
+  };
+  const handleConfirm = async () => {
+    try {
+      const { status } = await axiosInstance.delete(
+        `/shifts/deleteShift/${deleteId}`
+      );
+      if (status === 200 || status === 201) {
+        notifySuccess("shift deleted successfully!");
+        getAllShifts();
+        handleCancel();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
+      <CommonDialog
+        open={openDelete}
+        fullWidth={true}
+        maxWidth={"sm"}
+        title="Confirmation"
+        message={"are you sure want to delete this shift?"}
+        color="error"
+        onClose={handleCancel}
+        onConfirm={handleConfirm}
+      />
       <AddShift
         title={selectedShift ? "Edit Shift" : "Add Shift"}
         open={open}
@@ -114,6 +160,7 @@ function ManageSites() {
                     shift={shift}
                     handleClickOpen={handleClickOpenUpload}
                     cardData={shift?.id}
+                    handleOpenDelete={handleOpenDelete}
                   />
                 </Box>
               </Grid>

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography } from "@mui/material";
+import { Chip, Grid, Typography } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import moment from "moment";
@@ -58,12 +58,25 @@ const Table: React.FC<TableProps> = ({
   const handleCancel = () => {
     setOpenDialog(false);
   };
+  const renderPowerStatus = (status: string) => (
+    <Chip
+      label={status === "not_repaired" ? "Not Repaired" : "Repaired"}
+      variant="filled"
+      sx={{
+        backgroundColor: status === "not_repaired" ? "#F2F4F7" : "#ECFDF3",
+        color: status === "not_repaired" ? "#364254" : "#037847",
+        fontWeight: 500,
+        minWidth: 110,
+      }}
+    />
+  );
+
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
       sno: index + 1,
       issue: item?.issue ?? "N/A",
       repairDate: moment(item?.createdAt).format("lll"),
-      repairingStatus: item?.repairingStatus ? "Repaired" : "Not repairable",
+      repairingStatus: renderPowerStatus(item?.status),
     }));
   };
   return (

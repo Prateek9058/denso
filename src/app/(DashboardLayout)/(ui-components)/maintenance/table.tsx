@@ -99,8 +99,8 @@ const Table: React.FC<TableProps> = ({
       trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
 
       avgRepairTime: item?.avgRepairTime
-        ? `${item?.avgRepairTime} hours`
-        : "0 hours",
+        ? `${item?.avgRepairTime} ${item?.unit}`
+        : "0 ",
       status: item?.status ? renderPowerStatus(item?.status) : "N/A",
       Action: [
         <Grid container justifyContent="center" key={index}>
