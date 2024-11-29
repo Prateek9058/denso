@@ -37,7 +37,7 @@ const Page = () => {
       <Grid sx={{ backgroundColor: "white", borderRadius: "10px" }} p={2}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <Typography variant="h5">Average trolley repair time</Typography>
+            <Typography variant="h5">Total Alerts</Typography>
           </Grid>
           <Grid item>
             <CommonDatePicker

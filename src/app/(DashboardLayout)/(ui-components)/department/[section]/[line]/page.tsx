@@ -10,8 +10,7 @@ import Add from "@/app/(components)/pages/organization/Action/add";
 import ToastComponent from "@/app/(components)/mui-components/Snackbar";
 
 const Page = ({ params }: { params: { section: string } }) => {
-  const { section } = useParams<{ section: string; line: string }>();
-
+  const { section, line } = useParams<{ section: string; line: string }>();
   type Breadcrumb = {
     label: string;
     link: string;
@@ -33,7 +32,7 @@ const Page = ({ params }: { params: { section: string } }) => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `line/sectionBaseLine/${params?.section}?page=${
+        `line/sectionBaseLine/${line}?page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}`
       );
