@@ -154,7 +154,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
       try {
         const { data, status } = await axiosInstance.post(
           `/line/getAllLines/`,
-          { lines: selectIDs }
+          { sectionIds: selectIDs }
         );
         if (status === 200 || status === 201) {
           setLine(data?.data?.data);

@@ -63,7 +63,7 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
     });
     return graph;
   };
-
+console.log("markerCounter",markerCounter)
   const findShortestPath = (start: Point, end: Point): Point[] => {
     const graph = buildGraph();
     const startKey = `${start[0]},${start[1]}`;
@@ -157,6 +157,7 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
   };
 
   const getNumberedIcon = (number: number) => {
+    console.log("markerCounterjj",number)
     return L.divIcon({
       html: `<div style="display: flex; align-items: center; justify-content: center;
               width: 25px; height: 25px; background-color: red; border-radius: 50%; color: white;

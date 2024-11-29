@@ -361,7 +361,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
             </Stepper>
 
             <DialogContent>
-              {activeStep === 1 && (
+              {activeStep === 0 && (
                 <Grid container justifyContent={"space-between"}>
                   <Grid item md={12}>
                     <Box
@@ -555,7 +555,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   <SelectRoute rows={rows} setRows={setRows} />
                 </Grid>
               )}
-              {activeStep === 0 && (
+              {activeStep === 3 && (
                 <Grid container justifyContent={"space-between"}>
                   <FinalDetails
                     points={points}
