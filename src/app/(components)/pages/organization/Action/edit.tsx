@@ -21,7 +21,7 @@ import { MdOutlineEdit } from "react-icons/md";
 interface EditEntityProps {
   getFetchAllDetails: () => void;
   item: any;
-  type: "department" | "section" | "line"; // Define type for section or line as well
+  type: "department" | "section" | "line"; 
 }
 
 interface ErrorResponse {

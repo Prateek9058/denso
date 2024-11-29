@@ -63,11 +63,12 @@ export default function AssignAssessment({
   const getAllTrolleyByDepartmentId = async () => {
     try {
       setLoading(true);
-      const { data, status } = await axiosInstance.get(
-        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=${selectedDevice ? "" : false}&departmentId=${selectedDepartmentId}&sectionId=&lineId=&search=${searchQuery}`
+      
+      const { data, status } = await axiosInstance.post(
+        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=${true}&departmentId=${selectedDepartmentId}&search=${searchQuery}`,
       );
       if (status === 200 || status === 201) {
-        console.log("all trollley", data?.data?.data);
+       
         setGetAllList(data?.data?.data);
       }
     } catch (error) {
@@ -87,12 +88,13 @@ export default function AssignAssessment({
       getAllTrolleyByDepartmentId();
     }
   }, [value, page, rowsPerPage, searchQuery, selectedDepartmentId]);
-
-  const handleClose = () => {
-    setOpen(false);
-    setTrolley([]);
-    reset();
-  };
+  useEffect(() => {
+    setTrolley(
+      selectedDevice?.trolley?.map((item: any) => {
+        return item?._id;
+      })
+    );
+  }, [selectedDevice]);
 
   return (
     <Grid item xs={12} md={12}>

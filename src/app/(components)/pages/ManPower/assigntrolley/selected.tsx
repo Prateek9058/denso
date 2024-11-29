@@ -18,10 +18,13 @@ import {
 } from "@mui/material";
 
 import noData from "../../../../../../public/Img/nodata.png";
-import SkeletonCard from "../../Skeleton/assign-radio-card";
-import SkeletonLoader from "../../Skeleton/skeleton-loader";
+import SkeletonCard from "../../../../(components)/mui-components/Skeleton/assign-radio-card";
+import SkeletonLoader from "../../../../(components)/mui-components/Skeleton/skeleton-loader";
 import Image from "next/image";
+import { useForm,  } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
+import Autocomplete from "@/app/(components)/mui-components/Text-Field's/Autocomplete";
+import axiosInstance from "@/app/api/axiosInstance";
 
 interface StyledFormControlLabelProps extends FormControlLabelProps {
   checked: boolean;
@@ -69,6 +72,12 @@ interface AssignProps {
   selectedLine?: string;
   setTrolley: React.Dispatch<React.SetStateAction<string[]>>;
   selectedDevice?: any;
+  methods: ReturnType<typeof useForm>;
+  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
+  selectIDs?: any;
+  lineIds?: any;
+  setLineIds: React.Dispatch<React.SetStateAction<any>>;
+  selectedDepartmentId?: any;
 }
 export default function AssignAssessmentTabSelected({
   select,
@@ -85,6 +94,12 @@ export default function AssignAssessmentTabSelected({
   departmentList,
   selectedDevice,
   setTrolley,
+  methods,
+  selectIDs,
+  setSelectedIds,
+  setLineIds,
+  lineIds,
+  selectedDepartmentId,
 }: AssignProps) {
   // console.log("selected", select);
   // useEffect(() => {
@@ -94,6 +109,63 @@ export default function AssignAssessmentTabSelected({
   //     })
   //   );
   // }, [selectedDevice]);
+  const {
+    formState: { errors },
+    setValue,
+    clearErrors,
+    control,
+    watch,
+  } = methods;
+  const [site, setSite] = useState<any>(null);
+  const [Line, setLine] = useState<any>(null);
+  const [selectedSections, setSelectedSections] = React.useState<any[]>([]);
+  const [selectedLines, setSelectedLines] = React.useState<any[]>([]);
+  const handleChangeAutocompleteSIte = (event: any, value: any[]) => {
+    const selectedIds = value.map((item) => item._id);
+    setSelectedSections(value);
+    setSelectedIds(selectedIds);
+  };
+  const handleChangeAutocompleteLine = (event: any, value: any[]) => {
+    const selectedIds = value.map((item) => item._id);
+    setSelectedLines(value);
+    setLineIds(selectedIds);
+  };
+  const handleSection = async () => {
+    try {
+      const { data, status } = await axiosInstance.get(
+        `/section/departmentBaseSections/${selectedDepartmentId}`
+      );
+      if (status === 200 || status === 201) {
+        setSite(data?.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+  const handleLine = async () => {
+    try {
+      const { data, status } = await axiosInstance.post(`/line/getAllLines/`, {
+        sectionIds: selectIDs,
+      });
+      if (status === 200 || status === 201) {
+        setLine(data?.data?.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    handleSection();
+    setSelectedSections([]);
+    setSelectedLines([]);
+  }, [selectedDepartmentId]);
+  useEffect(() => {
+    if (selectIDs) {
+      handleLine();
+    }
+
+    setSelectedLines([]);
+  }, [selectIDs]);
 
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   useEffect(() => {
@@ -135,16 +207,17 @@ export default function AssignAssessmentTabSelected({
   return (
     <div>
       <form>
-        <Grid container justifyContent="space-between" alignItems={"center"}>
+        <Grid container justifyContent="space-between" alignItems={"center"} >
           <Grid item>
             <Grid
               container
               justifyContent="space-between"
               gap={1}
               alignItems={"center"}
+              zIndex={1}
             >
-              <Grid item>
-                <FormControl fullWidth sx={{ minWidth: "270px", mb: 1, mt: 1 }}>
+              <Grid item display={"flex"} flexDirection={"row"}>
+                <FormControl fullWidth sx={{ minWidth: "200px" }}>
                   <InputLabel>Departments</InputLabel>
                   <Select
                     value={selectedDepartment}
@@ -171,6 +244,22 @@ export default function AssignAssessmentTabSelected({
                       ))}
                   </Select>
                 </FormControl>
+                <Autocomplete
+                  id="Section"
+                  options={site?.length > 0 ? site : []}
+                  disabled={selectedDepartmentId ? false : true}
+                  label="Select Section"
+                  handleChange={handleChangeAutocompleteSIte}
+                  value={selectedSections}
+                />
+                <Autocomplete
+                  id="Line"
+                  options={Line?.length > 0 ? Line : []}
+                  disabled={selectedDepartmentId ? false : true}
+                  label="Select line"
+                  handleChange={handleChangeAutocompleteLine}
+                  value={selectedLines}
+                />
               </Grid>
             </Grid>
           </Grid>

@@ -27,7 +27,7 @@ import {
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import AvtarIcon from "../../../../../../public/Img/clarityAvatarLine.png";
 import axiosInstance from "@/app/api/axiosInstance";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { useDropzone } from "react-dropzone";
@@ -52,10 +52,11 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   const [selectData, setSelectData] = useState<any>(null);
   const [activeStep, setActiveStep] = useState(0);
   const [file, setFile] = useState<File | null>(null);
-  // const [progress, setProgress] = useState<number>(0);
   const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [empUid, setEmpUid] = React.useState<string>(selectedDevice ? selectedDevice?.uId : "");
 
   const [trolley, setTrolley] = useState<any>([]);
+
   const employmentTypes = [
     { _id: "Permanent", label: "Permanent" },
     { _id: "Temporary", label: "Temporary" },
@@ -87,6 +88,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
       setValue("shiftRange", selectedDevice?.shiftDateRange?.value);
       setValue("age", selectedDevice?.age);
       setValue("category", selectedDevice?.category);
+      setValue("salary", selectedDevice?.salary);
     } else {
       reset();
     }
@@ -95,7 +97,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
     setOpen(false);
     getEmployeeData();
     reset();
-    setTrolley(null)
+    setTrolley(null);
+    setActiveStep(0);
   };
   const onDrop = (acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles[0];
@@ -115,6 +118,27 @@ const AddManPower: React.FC<AddDeviceProps> = ({
       }
     };
   }, [filePreview]);
+  const getEmpUid = async () => {
+    try {
+      const { data, status } = await axiosInstance.get(
+        "/employees/getEmployeeUid"
+      );
+      if (status === 200 || status === 201) {
+        console.log("data", data);
+        setEmpUid(data?.data);
+      }
+    } catch (error: any) {
+      notifyError(error?.response?.data?.message);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedDevice && open) {
+      getEmpUid();
+    }
+
+    setValue("manpowerId", empUid);
+  }, [open, empUid]);
 
   const getAllShifts = useCallback(async () => {
     try {
@@ -132,17 +156,16 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   }, [open]);
 
   const onSubmit = async () => {
-    if (activeStep === 1) {
-      if (trolley.length === 0) {
-        notifyError("please select at least one trolley!");
-      }
+    if (trolley?.length === 0 && activeStep === 1) {
+      notifyError("please select at least one trolley!");
+      return;
     }
-    const formData = getValues();
+
     handleNext();
     try {
       const formData = getValues();
       const body = {
-        uId: formData?.manpowerId,
+        uId: empUid,
         name: formData?.name,
         phoneNumber: `${formData?.phone}`,
         countryCode: "91",
@@ -159,12 +182,12 @@ const AddManPower: React.FC<AddDeviceProps> = ({
         trolley: trolley,
       };
       let res;
-      if (selectedDevice && activeStep === 1) {
+      if (selectedDevice && activeStep > 0) {
         res = await axiosInstance.patch(
           `employees/updateEmployee/${selectedDevice?._id}?isTrolleyChange=true`,
           body
         );
-      } else if (trolley.length > 0) {
+      } else if (trolley.length > 0 && activeStep > 0) {
         res = await axiosInstance.post(`employees/addEmployee`, body);
       }
       if (res?.status === 200 || res?.status === 201) {
@@ -175,11 +198,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
         getEmployeeData();
         handleClose();
       }
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      notifyError(
-        axiosError?.response?.data?.message || "Error creating employee"
-      );
+    } catch (error: any) {
+      notifyError(error?.response?.data?.message);
       console.log(error);
     }
   };
@@ -312,11 +332,11 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         control={control}
                         rules={{
                           required: "Manpower Id is requiredd",
-                          pattern: {
-                            value: /^[a-zA-Z0-9]{6}$/,
-                            message:
-                              "Manpower id must be 6 alphanumeric characters",
-                          },
+                          // pattern: {
+                          //   value: /^[a-zA-Z0-9]{6}$/,
+                          //   message:
+                          //     "Manpower id must be 6 alphanumeric characters",
+                          // },
                         }}
                         render={({ field }) => (
                           <CustomTextField
@@ -327,8 +347,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             error={!!errors.manpowerId}
                             helperText={errors.manpowerId?.message}
                             onChange={handleInputChange}
+                            disabled
                             defaultValue={
-                              selectedDevice ? selectedDevice?.uId : ""
+                              selectedDevice ? selectedDevice?.uId : empUid
                             }
                           />
                         )}

@@ -12,6 +12,7 @@ import ToastComponent, {
 } from "@/app/(components)/mui-components/Snackbar";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+import AddUser from "@/app/(components)/pages/userManagement/addUser";
 type Breadcrumb = {
   label: string;
   link: string;
@@ -34,6 +35,7 @@ const Page = ({ params }: { params: { userManagementProfile: string } }) => {
   const router = useRouter();
   const [userData, setUserData] = React.useState<any>(null);
   const [open, setOpenDialog] = React.useState(false);
+  const [openUser, setOpenUser] = React.useState<boolean>(false);
 
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
@@ -43,8 +45,10 @@ const Page = ({ params }: { params: { userManagementProfile: string } }) => {
       link: "",
     },
   ];
-  console.log("Check userData", userData);
 
+  const handleClickOpenEdit = () => {
+    setOpenUser(true);
+  };
   const getUser = async () => {
     const { data, status } = await axiosInstance.get(
       `/users/getSingleUser/${params.userManagementProfile}`
@@ -91,6 +95,15 @@ const Page = ({ params }: { params: { userManagementProfile: string } }) => {
   return (
     <>
       <ToastComponent />
+      {openUser && (
+        <AddUser
+          open={openUser}
+          setOpen={setOpenUser}
+          selectedDevice={userData}
+          FetchUserDetails={getUser}
+          setUserDetails={setUserData}
+        />
+      )}
       <CommonDialog
         open={open}
         fullWidth={true}
@@ -111,6 +124,7 @@ const Page = ({ params }: { params: { userManagementProfile: string } }) => {
             size="large"
             startIcon={<MdModeEdit />}
             color="inherit"
+            onClick={handleClickOpenEdit}
           >
             Edit
           </Button>

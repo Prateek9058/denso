@@ -8,7 +8,7 @@ import { TbTrolley } from "react-icons/tb";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
 import { BsEye } from "react-icons/bs";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
-
+import AssignTrolley from "@/app/(components)/pages/ManPower/assigntrolley/index";
 
 interface TableProps {
   deviceData: any;
@@ -42,6 +42,14 @@ const Table: React.FC<TableProps> = ({
   ];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+  const [openAssign, setOpenAssign] = React.useState<boolean>(false);
+  const [selectedDevice,setSelectedDevice]=React.useState<any>(null)
+  const [trolley, setTrolley] = useState<any>([]);
+
+  const handleOpenAssoign = (data: any) => {
+    setOpenAssign(true);
+    setSelectedDevice(data)
+  };
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -86,21 +94,34 @@ const Table: React.FC<TableProps> = ({
             </Link>
           </Grid>
           <Grid item xs={4}>
-            <Link href={`/man-power-tracking/${item?._id}`}>
-              <Tooltip title="View">
-                <IconButton size="small">
-                  <TbTrolley color="#DC0032" />
-                </IconButton>
-              </Tooltip>
-            </Link>
+            <Tooltip title="assign trolley">
+              <IconButton
+                size="small"
+                onClick={() => {
+                  handleOpenAssoign(item);
+                }}
+              >
+                <TbTrolley color="#DC0032" />
+              </IconButton>
+            </Tooltip>
           </Grid>
         </Grid>,
       ],
     }));
   };
-  console.log("deviceData table", deviceData);
   return (
     <>
+      {openAssign && (
+        <AssignTrolley
+          open={openAssign}
+          selectedDevice={selectedDevice}
+          url="trolleys/getAllTrolleys"
+          setOpen={setOpenAssign}
+          title="Assign User"
+          trolley={trolley}
+          setTrolley={setTrolley}
+        />
+      )}
       <CommonDialog
         open={open}
         fullWidth={true}
