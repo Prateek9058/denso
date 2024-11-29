@@ -16,7 +16,7 @@ type AutocompleteProps = {
   label?: string;
   handleChange?: any;
   handleclear?: any;
-  value?:any
+  value?: any;
 };
 
 export default function CheckboxesTags({
@@ -26,7 +26,7 @@ export default function CheckboxesTags({
   label,
   handleChange,
   handleclear,
-  value
+  value,
 }: AutocompleteProps) {
   return (
     <Autocomplete
@@ -37,7 +37,7 @@ export default function CheckboxesTags({
       options={options}
       disableCloseOnSelect
       onChange={handleChange}
-      value={value} 
+      value={value}
       getOptionLabel={(option: any) => option?.name}
       clearIcon={<ClearIcon onClick={handleclear} />}
       renderOption={(props, option, { selected }) => {

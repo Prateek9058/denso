@@ -131,65 +131,78 @@ const Page = () => {
                     </Avatar>
                   </Grid>
                 </Grid>
-                {(stat.title == "Manpower" || stat.title == "Trolleys") && (
+                {stat.title == "Manpower" && (
                   <Box>
                     <Grid container spacing={1}>
+                      <Grid item xs={12} mt={1}>
+                        <LinearProgress
+                          variant="determinate"
+                          color="success"
+                          value={72}
+                          sx={{
+                            height: 8,
+                            borderRadius: 5,
+                            backgroundColor: "#CCCCCC",
+                          }}
+                        />
+                      </Grid>
                       <Grid item xs={6}>
-                        <Typography variant="body1">
-                          <span style={{ color: "#227B52", fontSize: "18px" }}>
-                            ●
-                          </span>{" "}
-                          Active - 100
-                        </Typography>
-                        <Typography variant="body1">
+                        <Typography
+                          variant="body1"
+                          style={{ color: "#227B52" }}
+                        >
                           <span style={{ color: "#227B52", fontSize: "18px" }}>
                             ●
                           </span>{" "}
                           Assigned - 100
                         </Typography>
-                        <Typography variant="body1">
-                          <span style={{ color: "#227B52", fontSize: "18px" }}>
-                            ●
-                          </span>{" "}
-                          In - 100
-                        </Typography>
                       </Grid>
                       <Grid item xs={6}>
                         <Typography variant="body1">
-                          <span style={{ color: "#b0bec5" }}>●</span> Non-active
-                          - 20
-                        </Typography>
-                        <Typography variant="body1">
-                          <span style={{ color: "#b0bec5" }}>●</span>{" "}
-                          Not-assigned - 20
-                        </Typography>
-                        <Typography variant="body1">
-                          <span style={{ color: "#b0bec5" }}>●</span> Out - 20
+                          <span style={{ color: "#b0bec5" }}>●</span> Not
+                          assigned - 20
                         </Typography>
                       </Grid>
                     </Grid>
                   </Box>
                 )}
-                {(stat.title == "Maintenance trolleys" ||
-                  stat.title == "Trolley running time") && (
+                {stat.title == "Trolleys" && (
                   <Box>
-                    <Grid
-                      container
-                      spacing={1}
-                      justifyContent="space-between"
-                      alignItems="center"
-                    >
-                      <Typography variant="body1">
-                        Average repair time
-                      </Typography>
-                      <Grid item>
-                        <Typography variant="body1" display="inline">
-                          4 H{" "}
+                    <Grid container spacing={1}>
+                      <Grid item xs={12} mt={1}>
+                        <LinearProgress
+                          variant="determinate"
+                          color="success"
+                          value={72}
+                          sx={{
+                            height: 8,
+                            borderRadius: 5,
+                            backgroundColor: "#CCCCCC",
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography
+                          variant="body1"
+                          style={{ color: "#227B52" }}
+                        >
+                          <span style={{ color: "#227B52", fontSize: "18px" }}>
+                            ●
+                          </span>{" "}
+                          Assigned - 100
                         </Typography>
-                        <AccessTimeIcon fontSize="small" />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="body1">
+                          <span style={{ color: "#b0bec5" }}>●</span> Not
+                          assigned - 20
+                        </Typography>
                       </Grid>
                     </Grid>
-
+                  </Box>
+                )}
+                {stat.title == "Maintenance trolleys" && (
+                  <Box>
                     <Box mt={1}>
                       <LinearProgress
                         variant="determinate"
@@ -204,17 +217,47 @@ const Page = () => {
                     </Box>
 
                     <Grid container justifyContent="space-between" mt={1}>
-                      <Typography variant="body2" style={{ color: "#227B52" }}>
+                      <Typography variant="body1" style={{ color: "#227B52" }}>
                         <span style={{ color: "#227B52", fontSize: "18px" }}>
                           ●
                         </span>{" "}
-                        Not repaired - 72
+                        Repaired - 72
                       </Typography>
-                      <Typography variant="body2">
+                      <Typography variant="body1">
                         <span style={{ color: "#b0bec5", fontSize: "18px" }}>
                           ●
                         </span>{" "}
-                        Repaired - 17
+                        Not repaired - 17
+                      </Typography>
+                    </Grid>
+                  </Box>
+                )}
+                {stat.title == "Trolley running time" && (
+                  <Box>
+                    <Box mt={1}>
+                      <LinearProgress
+                        variant="determinate"
+                        color="success"
+                        value={72}
+                        sx={{
+                          height: 8,
+                          borderRadius: 5,
+                          backgroundColor: "#CCCCCC",
+                        }}
+                      />
+                    </Box>
+                    <Grid container justifyContent="space-between" mt={1}>
+                      <Typography variant="body1" style={{ color: "#227B52" }}>
+                        <span style={{ color: "#227B52", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Idle time - 72 H
+                      </Typography>
+                      <Typography variant="body1">
+                        <span style={{ color: "#b0bec5", fontSize: "18px" }}>
+                          ●
+                        </span>{" "}
+                        Running time - 17 H
                       </Typography>
                     </Grid>
                   </Box>

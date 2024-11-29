@@ -17,10 +17,9 @@ import {
   Polyline,
 } from "react-leaflet";
 import L from "leaflet";
-import Site from "../../../../../../../public/Img/layoutPsiborg.jpg";
+import Site from "../../../../../../public/Img/layoutPsiborg.jpg";
 import "leaflet/dist/leaflet.css";
 import axiosInstance from "@/app/api/axiosInstance";
-import trolleyIconSrc from "../../../../../../../public/Img/trolleyLive.png";
 import { Rectangle } from "react-leaflet";
 import moment from "moment";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
@@ -39,10 +38,6 @@ interface TabData {
   color: string;
 }
 const tabs: TabData[] = [
-  // {
-  //   label: "All",
-  //   color: "",
-  // },
   {
     label: "Zone 1",
     color: "#00ffff",
