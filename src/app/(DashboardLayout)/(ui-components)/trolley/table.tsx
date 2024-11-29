@@ -1,13 +1,27 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, IconButton, Tooltip, Chip } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  Tooltip,
+  Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import moment from "moment";
 import { FaMapLocation } from "react-icons/fa6";
 import { BsEye } from "react-icons/bs";
+import { GoOrganization } from "react-icons/go";
+import Organization from "../.../../../../.././../public/Img/gg_organisation.png";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
+import AssignDepartment from "@/app/(components)/pages/trolley/assignDeparment";
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -19,8 +33,9 @@ interface TableProps {
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   value: any;
   columns: any;
+  getTrolleyData?: any;
 }
-
+type Category = "all" | "assigned" | "not_assigned";
 const Table: React.FC<TableProps> = ({
   deviceData,
   rowsPerPage,
@@ -32,6 +47,7 @@ const Table: React.FC<TableProps> = ({
   loading,
   value,
   columns,
+  getTrolleyData,
 }) => {
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
@@ -52,6 +68,20 @@ const Table: React.FC<TableProps> = ({
   const handleConfirm = () => {
     handleCancel();
   };
+  const [selectedCategory, setSelectedCategory] = useState<Category>("all");
+  const handleCategoryChange = (event: SelectChangeEvent<Category>) => {
+    const selectedValue = event.target.value as Category;
+    setSelectedCategory(selectedValue);
+    getTrolleyData(selectedValue);
+  };
+  const [openAssign, setOpenAssign] = React.useState<boolean>(false);
+  const [selectedDevice, setSelectedDevice] = React.useState<any>(null);
+  const [trolley, setTrolley] = useState<any>([]);
+
+  const handleOpenAssign = (data: any) => {
+    setOpenAssign(true);
+    setSelectedDevice(data);
+  };
 
   const handleCancel = () => {
     setOpenDialog(false);
@@ -69,7 +99,6 @@ const Table: React.FC<TableProps> = ({
   );
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
-      // sno: index + 1,
       trolleyUid: item?.uId ?? "N/A",
       name: item?.name ?? "N/A",
       trolleyMacId: item?.macId ?? "N/A",
@@ -82,15 +111,6 @@ const Table: React.FC<TableProps> = ({
               <Grid container justifyContent="center" key={index}>
                 <Grid item xs={3}>
                   <Link href={`/trolley/${item?._id}`}>
-                    <Tooltip title="Animated routes">
-                      <IconButton size="small">
-                        <FaMapLocation color="#DC0032" />
-                      </IconButton>
-                    </Tooltip>
-                  </Link>
-                </Grid>
-                <Grid item xs={3}>
-                  <Link href={`/trolley/${item?._id}`}>
                     <Tooltip title="View">
                       <IconButton size="small">
                         <BsEye color="#DC0032" />
@@ -98,6 +118,23 @@ const Table: React.FC<TableProps> = ({
                     </Tooltip>
                   </Link>
                 </Grid>
+                <Grid item xs={3}>
+                  <Tooltip title="Animated routes">
+                    <IconButton size="small">
+                      <FaMapLocation color="#DC0032" />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                {selectedCategory === "not_assigned" && (
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      handleOpenAssign(item);
+                    }}
+                  >
+                    <GoOrganization color="#DC0032" />
+                  </IconButton>
+                )}
               </Grid>,
             ]
           : null,
@@ -115,6 +152,15 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <>
+      {openAssign && (
+        <AssignDepartment
+          open={openAssign}
+          trolley={trolley}
+          setOpen={setOpenAssign}
+          setTrolley={setTrolley}
+          selectedDevice={selectedDevice}
+        />
+      )}
       <CommonDialog
         open={open}
         fullWidth={true}
@@ -140,13 +186,31 @@ const Table: React.FC<TableProps> = ({
               {deviceData?.totalCount} Trolleys{" "}
             </Typography>
           </Grid>
-          <Grid item>
-            <CustomTextField
-              type="search"
-              placeholder="Search ID / Name"
-              value={debouncedSearchQuery}
-              onChange={handleSearchChange}
-            />
+          <Grid item xs={4}>
+            <Grid container justifyContent={"space-between"}>
+              <Grid item xs={5.5}>
+                <FormControl fullWidth>
+                  <InputLabel>Select Type</InputLabel>
+                  <Select
+                    id="demo-simple-select"
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                  >
+                    <MenuItem value="all">All</MenuItem>
+                    <MenuItem value="assigned">Assigned</MenuItem>
+                    <MenuItem value="not_assigned">Not Assigned</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <CustomTextField
+                  type="search"
+                  placeholder="Search ID / Name"
+                  value={debouncedSearchQuery}
+                  onChange={handleSearchChange}
+                />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
         <CustomTable

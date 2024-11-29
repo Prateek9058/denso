@@ -21,6 +21,7 @@ type Breadcrumb = {
 interface TabData {
   label: string;
 }
+type Category = "all" | "assigned" | "not_assigned";
 const breadcrumbItems: Breadcrumb[] = [
   { label: "Dashboard", link: "/" },
   { label: "Trolley Tracking ", link: "" },
@@ -63,16 +64,23 @@ const Page: React.FC = () => {
     setRowsPerPage(10);
   };
 
-  const getTrolleyData = async () => {
+  const getTrolleyData = async (status?: Category) => {
+    let statusValue = "";
+    if (status === "assigned") {
+      statusValue = "true";
+    } else if (status === "not_assigned") {
+      statusValue = "false";
+    } else if (status === "all") {
+      statusValue = "";
+    }
     setLoading(true);
-
     const Url =
       value == 0
         ? "trolleys/getAllTrolleys"
         : "trolleyCategory/getAllTrolleyCategories";
     try {
       const res = await axiosInstance.get(
-        `${Url}?page=${page + 1}&limit=${rowsPerPage}&search=${searchQuery}`
+        `${Url}?page=${page + 1}&limit=${rowsPerPage}&search=${searchQuery}&status=${statusValue}`
       );
       if (res?.status === 200 || res?.status === 201) {
         if (value === 0) {
@@ -111,6 +119,7 @@ const Page: React.FC = () => {
           setSearchQuery={setSearchQuery}
           loading={loading}
           value={value}
+          getTrolleyData={getTrolleyData}
         />
       ),
     },

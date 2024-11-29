@@ -16,8 +16,8 @@ type AutocompleteProps = {
   label?: string;
   handleChange?: any;
   handleclear?: any;
-  value?:any
-  size?:any
+  value?: any;
+  size?: any;
 };
 
 export default function CheckboxesTags({
@@ -28,7 +28,7 @@ export default function CheckboxesTags({
   handleChange,
   handleclear,
   value,
-  size
+  size,
 }: AutocompleteProps) {
   return (
     <Autocomplete
@@ -37,7 +37,6 @@ export default function CheckboxesTags({
       disabled={disabled}
       id={id}
       size={size}
-      
       options={options}
       disableCloseOnSelect
       onChange={handleChange}
@@ -59,7 +58,13 @@ export default function CheckboxesTags({
         );
       }}
       renderInput={(params) => (
-        <TextField {...params} label={label} placeholder={label} fullWidth size={size} />
+        <TextField
+          {...params}
+          label={label}
+          placeholder={label}
+          fullWidth
+          size={size}
+        />
       )}
     />
   );

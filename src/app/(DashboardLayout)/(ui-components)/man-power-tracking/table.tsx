@@ -43,12 +43,12 @@ const Table: React.FC<TableProps> = ({
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   const [openAssign, setOpenAssign] = React.useState<boolean>(false);
-  const [selectedDevice,setSelectedDevice]=React.useState<any>(null)
+  const [selectedDevice, setSelectedDevice] = React.useState<any>(null);
   const [trolley, setTrolley] = useState<any>([]);
 
   const handleOpenAssoign = (data: any) => {
     setOpenAssign(true);
-    setSelectedDevice(data)
+    setSelectedDevice(data);
   };
 
   useEffect(() => {
