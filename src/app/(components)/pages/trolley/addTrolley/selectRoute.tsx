@@ -19,8 +19,8 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import "leaflet/dist/leaflet.css";
-import moment from "moment";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver"; 
 
 interface ProcessFormRow {
   process: string;
@@ -45,6 +45,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
   const [start, setStartTime] = React.useState<any>(null);
   const [end, setEndTime] = React.useState<any>(null);
   const CurrDate = new Date();
+
   const formatTimeForTextField = (time: any) => {
     if (!time) return "";
     const date = new Date(time);
@@ -52,6 +53,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
   };
+
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -70,10 +72,12 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
       },
     ]);
   };
+
   const handleRemoveRow = (index: number) => {
     const newRows = rows.filter((_, idx) => idx !== index);
     setRows(newRows);
   };
+
   const formatTimeToISO = (time: any, title: string) => {
     if (title === "startTime") {
       setStartTime(time);
@@ -81,14 +85,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     if (title === "endTime") {
       setEndTime(time);
     }
-    const date = new Date(CurrDate);
-    const [hours, minutes] = time?.split(":")?.map(Number);
-    date.setHours(hours, minutes, 0, 0);
-    return date.toISOString();
-  };
-  const formatTimeToISO1 = (time: any) => {
-    setStartTime(time);
-
     const date = new Date(CurrDate);
     const [hours, minutes] = time?.split(":")?.map(Number);
     date.setHours(hours, minutes, 0, 0);
@@ -119,6 +115,40 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     setRows(newRows);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event: any) => {
+        const binaryStr = event.target.result;
+        const wb = XLSX.read(binaryStr, { type: "binary" });
+        const ws = wb.Sheets[wb.SheetNames[0]]; // Use the first sheet
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        const processedData = data.slice(1).map((row: any) => ({
+          process: row[0] || "",
+          activityName: row[1] || "",
+          jobRole: row[2] || "",
+          jobNature: row[3] || "",
+          startTime: row[4] || "",
+          endTime: row[5] || "",
+          totalTime: { time: row[6] || 0, unit: "min" },
+          remarks: row[7] || "",
+        }));
+        setRows(processedData);
+      };
+      reader.readAsBinaryString(file);
+    }
+  };
+
+  // Handle file download
+  const handleDownload = () => {
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    const excelFile = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(new Blob([excelFile]), "download.xlsx");
+  };
+
   return (
     <Grid
       item
@@ -136,12 +166,22 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
         <Button
           variant="contained"
           startIcon={<FileDownloadIcon />}
-          onClick={() => (window.location.href = "/sample.csv")}
+          onClick={handleDownload}
         >
-          Download sample csv
+          Download Excel
         </Button>
-        <Button variant="outlined" startIcon={<FileUploadIcon />}>
-          Upload standard
+        <Button
+          variant="outlined"
+          startIcon={<FileUploadIcon />}
+          component="label"
+        >
+          Upload Excel
+          <input
+            type="file"
+            hidden
+            accept=".xlsx,.xls"
+            onChange={handleFileUpload}
+          />
         </Button>
       </Box>
 

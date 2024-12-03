@@ -27,7 +27,6 @@ import {
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import AvtarIcon from "../../../../../../public/Img/clarityAvatarLine.png";
 import axiosInstance from "@/app/api/axiosInstance";
-import axios, { AxiosError } from "axios";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { useDropzone } from "react-dropzone";
