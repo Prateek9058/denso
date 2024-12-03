@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import {
   Card,
@@ -9,7 +9,6 @@ import {
   Box,
   LinearProgress,
 } from "@mui/material";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { styled } from "@mui/system";
 import salesIcon from "../../../../../public/Img/sales.png";
 import deviceIcon from "../../../../../public/Img/alertsdash.png";
@@ -23,6 +22,7 @@ import TrolleyDetails from "@/app/(components)/pages/dashboard/trolleyDetails.ts
 import TrolleyRepairTime from "@/app/(components)/pages/dashboard/trolleyRepairTime";
 import TotalAlerts from "@/app/(components)/pages/dashboard/totalAlerts";
 import NotificationList from "@/app/(components)/pages/dashboard/notificationList";
+import axiosInstance from "@/app/api/axiosInstance";
 
 const DynamicHeader = dynamic(
   () => import("../../../(components)/pages/track"),
@@ -30,11 +30,6 @@ const DynamicHeader = dynamic(
     ssr: false,
   }
 );
-type Breadcrumb = {
-  label: string;
-  link: string;
-};
-const breadcrumbItems: Breadcrumb[] = [{ label: "Dashboard", link: "" }];
 const StatCard = styled(Card)<{ selected: boolean }>(({ theme, selected }) => ({
   borderRadius: "16px",
   backgroundColor: "#E8E8EA",
@@ -53,24 +48,16 @@ const Page = () => {
     {
       title: "Manpower",
       value: 0,
-      active: "0",
       assigned: "0",
-      in: "0",
-      nonActive: "0",
       notAssigned: "0",
-      out: "0",
       id: "totalRegisterDevice",
       icon: salesIcon,
     },
     {
       title: "Trolleys",
       value: 0,
-      active: "0",
       assigned: "0",
-      in: "0",
-      nonActive: "0",
       notAssigned: "0",
-      out: "0",
       id: "totalActiveDevice",
       icon: users,
     },
@@ -93,11 +80,64 @@ const Page = () => {
     setSelectedCard(selectedCard === id ? null : id);
     setSelectedGraph(selectedGraph === title ? null : title);
   };
+  const fetchStatsData = async () => {
+    try {
+      const { data, status } = await axiosInstance.get(
+        "dashboard/dashboardData"
+      );
+
+      if (status === 200 && data?.data) {
+        const finalData = data?.data;
+        console.log("Check finalData", finalData);
+        const statsData = [
+          {
+            title: "Manpower",
+            value: finalData?.totalEmployees,
+            assigned: finalData?.totalAssignedMenPower,
+            notAssigned: finalData?.totalNotAssignedMenPower,
+            id: "totalRegisterDevice",
+            icon: salesIcon,
+          },
+          {
+            title: "Trolleys",
+            value: finalData?.totalTrolleys,
+            assigned: finalData?.totalAssignedTrolleys,
+            notAssigned: finalData?.totalNotAssignedTrolleys,
+            id: "totalActiveDevice",
+            icon: users,
+          },
+          {
+            title: "Maintenance trolleys",
+            value: finalData?.trolleyMaintenanceCount,
+            change: `${finalData?.totalRepairedTrolleyMaintenance} , ${finalData?.totalNotRepairedTrolleyMaintenance}`,
+            id: "totalUser",
+            icon: clock,
+          },
+          {
+            title: "Trolley running time",
+            value: finalData?.totalRunningTrolley,
+            change: `${finalData?.workingHours} , ${finalData?.waitingTime} `,
+            id: "pendingSubscription",
+            icon: deviceIcon,
+          },
+        ];
+
+        setStats(statsData);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStatsData();
+  }, []);
+  console.log("Check stats", stats);
 
   return (
     <Grid>
       <Grid container spacing={2}>
-        {stats?.map((stat) => (
+        {stats?.map((stat: any) => (
           <Grid item md={3} mt={2} sm={5.8} xs={12} key={stat?.id}>
             <StatCard
               key={stat?.id}
@@ -131,14 +171,15 @@ const Page = () => {
                     </Avatar>
                   </Grid>
                 </Grid>
-                {stat.title == "Manpower" && (
+
+                {stat.title === "Manpower" && (
                   <Box>
                     <Grid container spacing={1}>
                       <Grid item xs={12} mt={1}>
                         <LinearProgress
                           variant="determinate"
                           color="success"
-                          value={72}
+                          value={72} // You can replace 72 with actual progress calculation logic
                           sx={{
                             height: 8,
                             borderRadius: 5,
@@ -154,26 +195,27 @@ const Page = () => {
                           <span style={{ color: "#227B52", fontSize: "18px" }}>
                             ●
                           </span>{" "}
-                          Assigned - 100
+                          Assigned - {stat?.assigned}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
                         <Typography variant="body1">
                           <span style={{ color: "#b0bec5" }}>●</span> Not
-                          assigned - 20
+                          assigned - {stat?.notAssigned}
                         </Typography>
                       </Grid>
                     </Grid>
                   </Box>
                 )}
-                {stat.title == "Trolleys" && (
+
+                {stat.title === "Trolleys" && (
                   <Box>
                     <Grid container spacing={1}>
                       <Grid item xs={12} mt={1}>
                         <LinearProgress
                           variant="determinate"
                           color="success"
-                          value={72}
+                          value={72} // You can replace 72 with actual progress calculation logic
                           sx={{
                             height: 8,
                             borderRadius: 5,
@@ -189,19 +231,20 @@ const Page = () => {
                           <span style={{ color: "#227B52", fontSize: "18px" }}>
                             ●
                           </span>{" "}
-                          Assigned - 100
+                          Assigned - {stat?.assigned}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
                         <Typography variant="body1">
                           <span style={{ color: "#b0bec5" }}>●</span> Not
-                          assigned - 20
+                          assigned - {stat?.notAssigned}
                         </Typography>
                       </Grid>
                     </Grid>
                   </Box>
                 )}
-                {stat.title == "Maintenance trolleys" && (
+
+                {stat.title === "Maintenance trolleys" && (
                   <Box>
                     <Box mt={1}>
                       <LinearProgress
@@ -221,24 +264,25 @@ const Page = () => {
                         <span style={{ color: "#227B52", fontSize: "18px" }}>
                           ●
                         </span>{" "}
-                        Repaired - 72
+                        Repaired - {stat?.change.split(",")[0]}
                       </Typography>
                       <Typography variant="body1">
                         <span style={{ color: "#b0bec5", fontSize: "18px" }}>
                           ●
                         </span>{" "}
-                        Not repaired - 17
+                        Not repaired - {stat?.change.split(",")[1]}
                       </Typography>
                     </Grid>
                   </Box>
                 )}
-                {stat.title == "Trolley running time" && (
+
+                {stat.title === "Trolley running time" && (
                   <Box>
                     <Box mt={1}>
                       <LinearProgress
                         variant="determinate"
                         color="success"
-                        value={72}
+                        value={72} // You can replace 72 with actual progress calculation logic
                         sx={{
                           height: 8,
                           borderRadius: 5,
@@ -251,13 +295,13 @@ const Page = () => {
                         <span style={{ color: "#227B52", fontSize: "18px" }}>
                           ●
                         </span>{" "}
-                        Idle time - 72 H
+                        Worked time - {stat?.change.split(",")[0]}
                       </Typography>
                       <Typography variant="body1">
                         <span style={{ color: "#b0bec5", fontSize: "18px" }}>
                           ●
                         </span>{" "}
-                        Running time - 17 H
+                        Waiting time - {stat?.change.split(",")[1]}
                       </Typography>
                     </Grid>
                   </Box>
@@ -267,6 +311,7 @@ const Page = () => {
           </Grid>
         ))}
       </Grid>
+
       {/* <Grid container>
         <Grid item md={12} xs={12}>
           <NotificationList />

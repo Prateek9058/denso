@@ -20,7 +20,10 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver"; 
 import "leaflet/dist/leaflet.css";
+
 
 interface ProcessFormRow {
   process: string;
@@ -43,7 +46,6 @@ interface empProps {
 
 const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
   const CurrDate = new Date();
-
   const formatTimeForTextField = (time: string | null) => {
     if (!time) return "";
     const date = new Date(time);
@@ -58,7 +60,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     date.setHours(hours, minutes, 0, 0);
     return date.toISOString();
   };
-
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -82,7 +83,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     const newRows = rows.filter((_, idx) => idx !== index);
     setRows(newRows);
   };
-
   const handleChange = (
     index: number,
     field: keyof ProcessFormRow,
@@ -122,7 +122,76 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     setRows(newRows);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event: any) => {
+        const binaryStr = event.target.result;
+        const wb = XLSX.read(binaryStr, { type: "binary" });
+        const ws = wb.Sheets[wb.SheetNames[0]]; // Use the first sheet
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        const processedData = data.slice(1).map((row: any) => ({
+          process: row[0] || "",
+          activityName: row[1] || "",
+          jobRole: row[2] || "",
+          jobNature: row[3] || "",
+          startTime: row[4] || "",
+          endTime: row[5] || "",
+          totalTime: { time: row[6] || 0, unit: "min" },
+          remarks: row[7] || "",
+        }));
+        setRows(processedData);
+      };
+      reader.readAsBinaryString(file);
+    }
+  };
+
+  // Handle file download
+  const handleDownload = () => {
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    const excelFile = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(new Blob([excelFile]), "download.xlsx");
+  };
+
   return (
+    <Grid
+      item
+      xs={12}
+      md={12}
+      sx={{
+        height: "550px",
+        width: "200%",
+        position: "relative",
+        bgcolor: "white",
+        p: 2,
+      }}
+    >
+      <Box sx={{ display: "flex", gap: 2, mb: 4, justifyContent: "flex-end" }}>
+        <Button
+          variant="contained"
+          startIcon={<FileDownloadIcon />}
+          onClick={handleDownload}
+        >
+          Download Excel
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<FileUploadIcon />}
+          component="label"
+        >
+          Upload Excel
+          <input
+            type="file"
+            hidden
+            accept=".xlsx,.xls"
+            onChange={handleFileUpload}
+          />
+        </Button>
+      </Box>
+
     <DialogContent>
       <Grid
         item
