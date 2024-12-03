@@ -21,9 +21,8 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver"; 
+import { saveAs } from "file-saver";
 import "leaflet/dist/leaflet.css";
-
 
 interface ProcessFormRow {
   process: string;
@@ -192,7 +191,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
         </Button>
       </Box>
 
-    <DialogContent>
       <Grid
         item
         xs={12}
@@ -239,7 +237,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
               <TableRow key={index}>
                 <TableCell>
                   <TextField
-                  placeholder="Enter process"
+                    placeholder="Enter process"
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -255,7 +253,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
                 </TableCell>
                 <TableCell>
                   <TextField
-                  placeholder="Enter activity name"
+                    placeholder="Enter activity name"
                     label="Activity Name"
                     sx={{ minWidth: "100px" }}
                     InputLabelProps={{
@@ -287,7 +285,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
                 </TableCell>
                 <TableCell>
                   <TextField
-                  placeholder="Enter job nature"
+                    placeholder="Enter job nature"
                     label="Job Nature"
                     InputLabelProps={{
                       shrink: true,
@@ -400,7 +398,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
           </TableBody>
         </Table>
       </Grid>
-    </DialogContent>
+    </Grid>
   );
 };
 
