@@ -14,8 +14,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import axiosInstance from "@/app/api/axiosInstance";
-import NoDataImg from '@/app/(components)/assets/noDataFound.png'
-// import NoDataImg from "@/app/(components)/assets/nodataFound.png";
+import NoDataImg from "@/app/(components)/assets/nodataFound.png";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import SkeletonCard from "../../../mui-components/Skeleton/assign-radio-card";
 interface StyledFormControlLabelProps extends FormControlLabelProps {
@@ -116,7 +115,7 @@ const UserDepartment = ({ select, handleRadioChange }: DepartmentProps) => {
           />
         </Grid>
       </Grid>
-      <Grid container columnGap={2} >
+      <Grid container columnGap={2}>
         {loading ? (
           <SkeletonCard width={250} arrayLength={5} />
         ) : (
