@@ -26,6 +26,7 @@ interface CustomTextFieldProps {
   field?: any;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   size?:any
+  onKeyDown?:any
 }
 
 const CustomTextField: React.FC<CustomTextFieldProps> = ({
@@ -43,6 +44,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
   disabled,
   field,
   size,
+  onKeyDown,
   ...restProps
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -56,6 +58,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         name={name}
         label={label}
         error={error}
+        onKeyDown={onKeyDown}
         value={value}
         type={
           field === "password" ? (showPassword ? "text" : "password") : field

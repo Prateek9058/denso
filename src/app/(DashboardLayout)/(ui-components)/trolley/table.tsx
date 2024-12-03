@@ -155,10 +155,10 @@ const Table: React.FC<TableProps> = ({
       {openAssign && (
         <AssignDepartment
           open={openAssign}
-          trolley={trolley}
+          // trolley={trolley}
           setOpen={setOpenAssign}
-          setTrolley={setTrolley}
-          selectedDevice={selectedDevice}
+          // setTrolley={setTrolley}
+          // selectedDevice={selectedDevice}
         />
       )}
       <CommonDialog

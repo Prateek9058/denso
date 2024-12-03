@@ -14,13 +14,13 @@ import {
   TableBody,
   FormControl,
   InputLabel,
+  DialogContent,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import "leaflet/dist/leaflet.css";
-import moment from "moment";
 
 interface ProcessFormRow {
   process: string;
@@ -42,57 +42,45 @@ interface empProps {
 }
 
 const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
-  const [start, setStartTime] = React.useState<any>(null);
-  const [end, setEndTime] = React.useState<any>(null);
   const CurrDate = new Date();
-  const formatTimeForTextField = (time: any) => {
+
+  const formatTimeForTextField = (time: string | null) => {
     if (!time) return "";
     const date = new Date(time);
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
   };
+
+  const formatTimeToISO = (time: string) => {
+    const date = new Date(CurrDate);
+    const [hours, minutes] = time.split(":").map(Number);
+    date.setHours(hours, minutes, 0, 0);
+    return date.toISOString();
+  };
+
   const handleAddRow = () => {
     setRows([
       ...rows,
       {
         process: "",
         activityName: "",
-        jobRole: "",
+        jobRole: "Permanent",
         jobNature: "",
-        startTime: start,
-        endTime: end,
+        startTime: "",
+        endTime: "",
         totalTime: {
           time: 0,
           unit: "min",
         },
-        remarks: "",
+        remarks: "Neutral",
       },
     ]);
   };
+
   const handleRemoveRow = (index: number) => {
     const newRows = rows.filter((_, idx) => idx !== index);
     setRows(newRows);
-  };
-  const formatTimeToISO = (time: any, title: string) => {
-    if (title === "startTime") {
-      setStartTime(time);
-    }
-    if (title === "endTime") {
-      setEndTime(time);
-    }
-    const date = new Date(CurrDate);
-    const [hours, minutes] = time?.split(":")?.map(Number);
-    date.setHours(hours, minutes, 0, 0);
-    return date.toISOString();
-  };
-  const formatTimeToISO1 = (time: any) => {
-    setStartTime(time);
-
-    const date = new Date(CurrDate);
-    const [hours, minutes] = time?.split(":")?.map(Number);
-    date.setHours(hours, minutes, 0, 0);
-    return date.toISOString();
   };
 
   const handleChange = (
@@ -102,6 +90,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     nestedField?: keyof ProcessFormRow["totalTime"]
   ) => {
     const newRows = [...rows];
+
     if (field === "totalTime" && nestedField) {
       newRows[index] = {
         ...newRows[index],
@@ -116,194 +105,233 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
         [field]: value,
       };
     }
+
+    if (field === "startTime" || field === "endTime") {
+      const startTime = new Date(newRows[index].startTime).getTime();
+      const endTime = new Date(newRows[index].endTime).getTime();
+
+      if (!isNaN(startTime) && !isNaN(endTime) && endTime > startTime) {
+        const totalMinutes = Math.floor((endTime - startTime) / (1000 * 60));
+
+        newRows[index].totalTime.time = totalMinutes;
+      } else {
+        newRows[index].totalTime.time = 0; // Reset if invalid
+      }
+    }
+
     setRows(newRows);
   };
 
   return (
-    <Grid
-      item
-      xs={12}
-      md={12}
-      sx={{
-        height: "550px",
-        width: "200%",
-        position: "relative",
-        bgcolor: "white",
-        p: 2,
-      }}
-    >
-      <Box sx={{ display: "flex", gap: 2, mb: 4, justifyContent: "flex-end" }}>
-        <Button
-          variant="contained"
-          startIcon={<FileDownloadIcon />}
-          onClick={() => (window.location.href = "/sample.csv")}
+    <DialogContent>
+      <Grid
+        item
+        xs={12}
+        md={12}
+        sx={{
+          height: "550px",
+          width: "100%",
+          position: "relative",
+          bgcolor: "white",
+          p: 2,
+        }}
+      >
+        <Box
+          sx={{ display: "flex", gap: 2, mb: 4, justifyContent: "flex-end" }}
         >
-          Download sample csv
-        </Button>
-        <Button variant="outlined" startIcon={<FileUploadIcon />}>
-          Upload standard
-        </Button>
-      </Box>
+          <Button
+            variant="contained"
+            startIcon={<FileDownloadIcon />}
+            onClick={() => (window.location.href = "/sample.csv")}
+          >
+            Download sample csv
+          </Button>
+          <Button variant="outlined" startIcon={<FileUploadIcon />}>
+            Upload standard
+          </Button>
+        </Box>
 
-      <Table sx={{ minWidth: 650 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Process</TableCell>
-            <TableCell>Activity</TableCell>
-            <TableCell>Job Type</TableCell>
-            <TableCell>Job Nature</TableCell>
-            <TableCell>Time (From)</TableCell>
-            <TableCell>Time (To)</TableCell>
-            <TableCell>Total Time</TableCell>
-            <TableCell>Remarks</TableCell>
-            <TableCell>Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <TextField
-                  label="process"
-                  value={row.process}
-                  onChange={(e) =>
-                    handleChange(index, "process", e.target.value)
-                  }
-                  size="small"
-                  fullWidth
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  label="activityName"
-                  value={row.activityName}
-                  onChange={(e) =>
-                    handleChange(index, "activityName", e.target.value)
-                  }
-                  size="small"
-                  fullWidth
-                />
-              </TableCell>
-              <TableCell>
-                <FormControl size="small" fullWidth>
-                  <InputLabel>jobRole</InputLabel>
-                  <Select
-                    value={row.jobRole}
-                    label="jobRole"
+        <Table sx={{ minWidth: "100%" }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Process</TableCell>
+              <TableCell>Activity</TableCell>
+              <TableCell>Job Type</TableCell>
+              <TableCell>Job Nature</TableCell>
+              <TableCell>Time (From)</TableCell>
+              <TableCell>Time (To)</TableCell>
+              <TableCell>Total Time</TableCell>
+              <TableCell>Remarks</TableCell>
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <TextField
+                  placeholder="Enter process"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    label="Process"
+                    sx={{ minWidth: "100px" }}
+                    value={row.process}
                     onChange={(e) =>
-                      handleChange(index, "jobRole", e.target.value)
+                      handleChange(index, "process", e.target.value)
                     }
-                  >
-                    <MenuItem value="Permanent">Permanent</MenuItem>
-                    <MenuItem value="Contractual">Contractual</MenuItem>
-                    <MenuItem value="Internship">Internship</MenuItem>
-                  </Select>
-                </FormControl>
-              </TableCell>
-              <TableCell>
-                <TextField
-                  label={"jobNature"}
-                  value={row.jobNature}
-                  onChange={(e) =>
-                    handleChange(index, "jobNature", e.target.value)
-                  }
-                  size="small"
-                  fullWidth
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  type="time"
-                  label="StartTime"
-                  value={formatTimeForTextField(row?.startTime)}
-                  onChange={(e) => {
-                    handleChange(
-                      index,
-                      "startTime",
-                      formatTimeToISO(e.target.value, "startTime")
-                    );
-                  }}
-                  size="small"
-                  fullWidth
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  type="time"
-                  label="endTime"
-                  value={formatTimeForTextField(row?.endTime)}
-                  onChange={(e) => {
-                    handleChange(
-                      index,
-                      "endTime",
-                      formatTimeToISO(e.target.value, "endtime")
-                    );
-                  }}
-                  size="small"
-                  fullWidth
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  value={row.totalTime.time}
-                  label={"totalTime"}
-                  onChange={(e) =>
-                    handleChange(
-                      index,
-                      "totalTime",
-                      Number(e.target.value),
-                      "time"
-                    )
-                  }
-                  size="small"
-                  type="number"
-                  fullWidth
-                  placeholder="Min"
-                  inputProps={{ min: 0 }}
-                />
-              </TableCell>
-              <TableCell>
-                <FormControl size="small" fullWidth>
-                  <InputLabel>Remarks</InputLabel>
-                  <Select
-                    value={row.remarks}
-                    label="Remarks"
-                    onChange={(e) =>
-                      handleChange(index, "remarks", e.target.value)
-                    }
-                  >
-                    <MenuItem value="Positive">Positive</MenuItem>
-                    <MenuItem value="Neutral">Neutral</MenuItem>
-                    <MenuItem value="Negative">Negative</MenuItem>
-                  </Select>
-                </FormControl>
-              </TableCell>
-              <TableCell>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleRemoveRow(index)}
-                    disabled={rows.length === 1}
                     size="small"
-                  >
-                    <RemoveIcon />
-                  </IconButton>
-                  {index === rows.length - 1 && (
+                    fullWidth
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                  placeholder="Enter activity name"
+                    label="Activity Name"
+                    sx={{ minWidth: "100px" }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={row.activityName}
+                    onChange={(e) =>
+                      handleChange(index, "activityName", e.target.value)
+                    }
+                    size="small"
+                    fullWidth
+                  />
+                </TableCell>
+                <TableCell>
+                  <FormControl size="small" fullWidth>
+                    <InputLabel>Job Role</InputLabel>
+                    <Select
+                      value={row.jobRole}
+                      onChange={(e) =>
+                        handleChange(index, "jobRole", e.target.value)
+                      }
+                      label="Job Role"
+                    >
+                      <MenuItem value="Permanent">Permanent</MenuItem>
+                      <MenuItem value="Contractual">Contractual</MenuItem>
+                      <MenuItem value="Internship">Internship</MenuItem>
+                    </Select>
+                  </FormControl>
+                </TableCell>
+                <TableCell>
+                  <TextField
+                  placeholder="Enter job nature"
+                    label="Job Nature"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    sx={{ minWidth: "100px" }}
+                    value={row.jobNature || ""}
+                    onChange={(e) =>
+                      handleChange(index, "jobNature", e.target.value)
+                    }
+                    size="small"
+                    fullWidth
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    type="time"
+                    label="Start Time"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    value={formatTimeForTextField(row.startTime)}
+                    onChange={(e) =>
+                      handleChange(
+                        index,
+                        "startTime",
+                        formatTimeToISO(e.target.value)
+                      )
+                    }
+                    size="small"
+                    fullWidth
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    type="time"
+                    label="End Time"
+                    value={formatTimeForTextField(row.endTime)}
+                    onChange={(e) =>
+                      handleChange(
+                        index,
+                        "endTime",
+                        formatTimeToISO(e.target.value)
+                      )
+                    }
+                    size="small"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    fullWidth
+                  />
+                </TableCell>
+                <TableCell>
+                  <TextField
+                    type="number"
+                    sx={{ minWidth: "100px" }}
+                    label="Total Time "
+                    value={row.totalTime.time}
+                    onChange={(e) =>
+                      handleChange(
+                        index,
+                        "totalTime",
+                        Number(e.target.value),
+                        "time"
+                      )
+                    }
+                    size="small"
+                    fullWidth
+                    inputProps={{ min: 0 }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <FormControl size="small" fullWidth>
+                    <InputLabel>Remarks</InputLabel>
+                    <Select
+                      value={row.remarks}
+                      onChange={(e) =>
+                        handleChange(index, "remarks", e.target.value)
+                      }
+                      label="Remarks"
+                    >
+                      <MenuItem value="Positive">Positive</MenuItem>
+                      <MenuItem value="Neutral">Neutral</MenuItem>
+                      <MenuItem value="Negative">Negative</MenuItem>
+                    </Select>
+                  </FormControl>
+                </TableCell>
+                <TableCell>
+                  <Box sx={{ display: "flex", gap: 1 }}>
                     <IconButton
-                      color="primary"
-                      onClick={handleAddRow}
+                      color="error"
+                      onClick={() => handleRemoveRow(index)}
+                      disabled={rows.length === 1}
                       size="small"
                     >
-                      <AddIcon />
+                      <RemoveIcon />
                     </IconButton>
-                  )}
-                </Box>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Grid>
+                    {index === rows.length - 1 && (
+                      <IconButton
+                        color="primary"
+                        onClick={handleAddRow}
+                        size="small"
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    )}
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Grid>
+    </DialogContent>
   );
 };
 
