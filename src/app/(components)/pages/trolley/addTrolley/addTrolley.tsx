@@ -31,6 +31,7 @@ import TrolleyRoute from "./trolleyRoute";
 import Image from "next/image";
 import SelectRoute from "./selectRoute";
 import FinalDetails from "./finalDetails";
+import { handleKeyPress } from "../../specialCharacter";
 
 interface AddDeviceProps {
   open: boolean;
@@ -201,7 +202,21 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     setFile(null);
     setActiveStep(0);
     setPoints([]);
-    setRows([]);
+    setRows([
+      {
+        process: "",
+        activityName: "",
+        jobRole: "Permanent",
+        jobNature: "",
+        startTime: "",
+        endTime: "",
+        totalTime: {
+          time: 0,
+          unit: "min",
+        },
+        remarks: "Neutral",
+      },
+    ]);
     reset();
   };
   const trolleyBoxLabel = () => {
@@ -235,6 +250,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     handleNext();
 
     const formData = getValues();
+    console.log("form", formData);
     const body = {
       uId: formData?.trolleyId,
       macId: formData?.macId,
@@ -339,7 +355,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     <>
       <CommonDialog
         open={open}
-        maxWidth={"lg"}
+        maxWidth={"xl"}
         fullWidth={true}
         title={`${trolleyBoxLabel()}`}
         message={"Are you sure you want to cancel?"}
@@ -423,6 +439,11 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       control={control}
                       rules={{
                         required: "Trolley ID is required",
+                        pattern: {
+                          value: /^[a-zA-Z0-9]{3,}$/,
+                          message:
+                            "Trolley ID must be at least 3 alphanumeric characters",
+                        },
                       }}
                       render={({ field }) => (
                         <CustomTextField
@@ -435,6 +456,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                           defaultValue={
                             selectedDevice ? selectedDevice?.uId : ""
                           }
+                          
                         />
                       )}
                     />
@@ -485,6 +507,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                           defaultValue={
                             selectedDevice ? selectedDevice?.macId : ""
                           }
+                          onKeyDown={handleKeyPress}
                         />
                       )}
                     />

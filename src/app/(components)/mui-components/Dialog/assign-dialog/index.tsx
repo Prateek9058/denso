@@ -63,12 +63,11 @@ export default function AssignAssessment({
   const getAllTrolleyByDepartmentId = async () => {
     try {
       setLoading(true);
-      
+
       const { data, status } = await axiosInstance.post(
-        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=${true}&departmentId=${selectedDepartmentId}&search=${searchQuery}`,
+        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=""&departmentId=${selectedDepartmentId}&search=${searchQuery}`
       );
       if (status === 200 || status === 201) {
-       
         setGetAllList(data?.data?.data);
       }
     } catch (error) {

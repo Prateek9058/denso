@@ -15,6 +15,9 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  Autocomplete,
+  Checkbox,
+  TextField,
 } from "@mui/material";
 import { MapContainer, ImageOverlay, Marker, Polyline } from "react-leaflet";
 import L from "leaflet";
@@ -22,7 +25,12 @@ import "leaflet/dist/leaflet.css";
 import { useForm, Controller } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import axiosInstance from "@/app/api/axiosInstance";
-import Autocomplete from "@/app/(components)/mui-components/Text-Field's/Autocomplete/index";
+// import Autocomplete from "@/app/(components)/mui-components/Text-Field's/Autocomplete/index";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   marginBottom: theme.spacing(5),
@@ -82,6 +90,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
       clearErrors,
       control,
       watch,
+      getValues,
     } = methods;
 
     const [site, setSite] = useState<any>(null);
@@ -101,8 +110,21 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
     useEffect(() => {
       if (selectedDevice) {
         setValue("department", selectedDevice?.departmentId?._id);
-        setValue("section", selectedDevice?.sectionId?._id);
-        setValue("line", selectedDevice?.lineId?._id);
+        setValue(
+          "section",
+          selectedDevice?.sectionId?.map((section: any) => section?._id) || []
+        );
+        setValue(
+          "line",
+          selectedDevice?.lineId?.map((line: any) => line?._id) || []
+        );
+        setValue("totalTime", selectedDevice?.totalTime?.time);
+        setValue("totalDistance", selectedDevice?.distance?.distanceValue);
+        setValue("repetedCycles", selectedDevice?.repetedCycles);
+        setSelectedIds(
+          selectedDevice?.sectionId?.map((section: any) => section?._id) || []
+        );
+        setLineIds(selectedDevice?.lineId?.map((line: any) => line?._id) || []);
       }
     }, [selectedDevice]);
 
@@ -171,7 +193,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
     useEffect(() => {
       handleLine();
       setSelectedLines([]);
-    }, [selectIDs]);
+    }, [selectIDs, selectedDevice]);
 
     return (
       <Grid container justifyContent="space-between">
@@ -214,23 +236,105 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                 </FormControl>
               </Grid>
               <Grid item md={5.8}>
-                <Autocomplete
-                  id="Section"
-                  options={site?.length > 0 ? site : []}
-                  disabled={departmentId ? false : true}
-                  label="Select Section"
-                  handleChange={handleChangeAutocompleteSIte}
-                  value={selectedSections}
+                <Controller
+                  name="section"
+                  control={control}
+                  rules={{
+                    required: "Section is required",
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <Autocomplete
+                      id="section"
+                      multiple
+                      options={site?.length > 0 ? site : []}
+                      disabled={!departmentId}
+                      getOptionLabel={(option: any) => option?.name}
+                      onChange={(event, value) => {
+                        handleChangeAutocompleteSIte(event, value);
+                        field.onChange(
+                          value?.map((option: any) => option?._id)
+                        );
+                      }}
+                      value={
+                        site?.filter((section: any) =>
+                          field.value?.includes(section?._id)
+                        ) || []
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select Section"
+                          placeholder="Select section"
+                          variant="outlined"
+                          fullWidth
+                          error={!!error}
+                          helperText={error?.message}
+                        />
+                      )}
+                      renderOption={(props, option, { selected }) => (
+                        <li {...props}>
+                          <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                          />
+                          {option?.name}
+                        </li>
+                      )}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item md={5.8}>
-                <Autocomplete
-                  id="Line"
-                  options={Line?.length > 0 ? Line : []}
-                  disabled={departmentId ? false : true}
-                  label="Select line"
-                  handleChange={handleChangeAutocompleteLine}
-                  value={selectedLines}
+                <Controller
+                  name="line"
+                  control={control}
+                  rules={{
+                    required: "line is required",
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <Autocomplete
+                      id="line"
+                      multiple
+                      options={Line || []}
+                      disabled={!selectIDs}
+                      getOptionLabel={(option: any) => option?.name}
+                      onChange={(event, value) => {
+                        handleChangeAutocompleteLine(event, value);
+                        field.onChange(
+                          value?.map((option: any) => option?._id)
+                        );
+                      }}
+                      value={
+                        Line?.filter((section: any) =>
+                          field?.value?.includes(section?._id)
+                        ) || []
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select line"
+                          placeholder="Select libne"
+                          variant="outlined"
+                          fullWidth
+                          error={!!error}
+                          helperText={error?.message}
+                        />
+                      )}
+                      renderOption={(props, option, { selected }) => (
+                        <li {...props}>
+                          <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                          />
+                          {option?.name}
+                        </li>
+                      )}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item md={2.7}>
@@ -253,7 +357,9 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                       error={!!errors.totalDistance}
                       helperText={errors.totalDistance?.message}
                       defaultValue={
-                        selectedDevice ? selectedDevice?.totalTime?.time : ""
+                        selectedDevice
+                          ? selectedDevice?.distance?.distanceValue
+                          : ""
                       }
                     />
                   )}
@@ -279,9 +385,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                       error={!!errors.totalTime}
                       helperText={errors.totalTime?.message}
                       defaultValue={
-                        selectedDevice
-                          ? selectedDevice?.distance?.distanceValue
-                          : ""
+                        selectedDevice ? selectedDevice?.totalTime?.time : ""
                       }
                     />
                   )}
