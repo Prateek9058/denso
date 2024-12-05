@@ -20,28 +20,25 @@ interface Props {
 
 export default function AssignAssessment({
   open,
-  setOpen,
   role,
   setTrolley,
   trolley,
   selectedDevice,
 }: Props) {
-  const { reset } = useForm();
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [getAllList, setGetAllList] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [value, setTabValue] = useState<number>(0);
+  const [value] = useState<number>(0);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
 
-  // my state
   const [department, setDepartment] = useState<any>(null);
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
     if (name == "department") {
-      setSelectedDepartmentId(value);
+      setSelectedDepartmentId(value); 
     }
   };
 
@@ -52,7 +49,7 @@ export default function AssignAssessment({
       );
       if (status === 200 || status === 201) {
         setDepartment(data?.data?.data);
-        if (department.length > 0) {
+        if (department?.length > 0) {
           setDepartment(department[0]._id);
         }
       }
