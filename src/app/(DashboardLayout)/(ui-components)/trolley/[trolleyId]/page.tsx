@@ -126,12 +126,10 @@ const Page: React.FC = () => {
         `trolleys/deleteTrolley/${trolleyId}`
       );
       if (res?.status === 200 || res?.status === 201) {
-        console.log(res);
         notifySuccess("Trolley deleted successfully");
         router.push("/trolley");
       }
     } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
       notifyError("Error deleting employee");
     }
   };
