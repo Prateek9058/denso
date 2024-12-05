@@ -16,7 +16,9 @@ import {
   MenuItem,
   Select,
   FormHelperText,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import AssignDialog from "@/app/(components)/mui-components/Dialog/assign-dialog";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
@@ -105,6 +107,10 @@ const AddManPower: React.FC<AddDeviceProps> = ({
     const selectedFile = acceptedFiles[0];
     setFile(selectedFile);
     setFilePreview(URL.createObjectURL(selectedFile));
+  };
+  const clearFile = () => {
+    setFile(null);
+    setFilePreview(null);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -247,7 +253,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                   </Step>
                 ))}
               </Stepper>
-              <DialogContent>
+              <DialogContent sx={{ minHeight: "60vh" }}>
                 {activeStep === 0 && (
                   <Grid container justifyContent={"space-between"}>
                     <Grid item md={12}>
@@ -273,8 +279,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             borderColor: "#E6E6E6",
                             boxShadow: 3,
                             position: "relative",
-                            width: "200px",
-                            height: "200px",
+                            width: "120px",
+                            height: "120px",
+                            borderRadius: "10px",
                             overflow: "hidden",
                           }}
                         >
@@ -282,6 +289,25 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             {...getInputProps()}
                             style={{ display: "none" }}
                           />
+                          {filePreview && (
+                            <IconButton
+                              onClick={clearFile}
+                              sx={{
+                                position: "absolute",
+                                top: "0px",
+                                right: "0px",
+                                zIndex: 10,
+                                borderRadius: "50%",
+                                padding: "2px",
+                              }}
+                            >
+                              <CloseIcon
+                                fontSize="small"
+                                sx={{ color: "red" }}
+                              />
+                            </IconButton>
+                          )}
+
                           {filePreview === null ? (
                             <Avatar
                               sx={{
@@ -304,30 +330,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         </Box>
                       </Box>
                     </Grid>
-                    <Grid item md={5.8}>
-                      <Controller
-                        name="name"
-                        control={control}
-                        rules={{
-                          required: "Name is required",
-                        }}
-                        render={({ field }) => (
-                          <CustomTextField
-                            {...field}
-                            name="name"
-                            label="Name"
-                            placeholder="Enter name"
-                            error={!!errors.name}
-                            helperText={errors.name?.message}
-                            onChange={handleInputChange}
-                            defaultValue={
-                              selectedDevice ? selectedDevice?.fullName : ""
-                            }
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
                       <Controller
                         name="manpowerId"
                         control={control}
@@ -356,7 +359,30 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         )}
                       />
                     </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
+                      <Controller
+                        name="name"
+                        control={control}
+                        rules={{
+                          required: "Name is required",
+                        }}
+                        render={({ field }) => (
+                          <CustomTextField
+                            {...field}
+                            name="name"
+                            label="Name"
+                            placeholder="Enter name"
+                            error={!!errors.name}
+                            helperText={errors.name?.message}
+                            onChange={handleInputChange}
+                            defaultValue={
+                              selectedDevice ? selectedDevice?.fullName : ""
+                            }
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item md={5.8} mt={2}>
                       <Controller
                         name="phone"
                         control={control}
@@ -385,7 +411,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         )}
                       />
                     </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
                       <Controller
                         name="email"
                         control={control}
@@ -413,7 +439,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         )}
                       />
                     </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
                       <Controller
                         name="jobRole"
                         control={control}
@@ -436,12 +462,27 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         )}
                       />
                     </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
                       <Controller
                         name="age"
                         control={control}
                         rules={{
                           required: "Age is required",
+                          min: {
+                            value: 18,
+                            message: "Age must be at least 18",
+                          },
+                          max: {
+                            value: 99,
+                            message: "Age must be a two-digit number",
+                          },
+                          validate: {
+                            isNotNegative: (value) =>
+                              value >= 0 || "Age cannot be negative",
+                            isTwoDigit: (value) =>
+                              /^[1-9][0-9]$/.test(value) ||
+                              "Age must be a two-digit number",
+                          },
                         }}
                         render={({ field }) => (
                           <CustomTextField
@@ -460,12 +501,16 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         )}
                       />
                     </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
                       <Controller
                         name="salary"
                         control={control}
                         rules={{
                           required: "Salary is required",
+                          validate: {
+                            isNotNegative: (value) =>
+                              value >= 0 || "Salary cannot be negative",
+                          },
                         }}
                         render={({ field }) => (
                           <CustomTextField
@@ -484,7 +529,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         )}
                       />
                     </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
                       <FormControl fullWidth error={!!errors?.category}>
                         <InputLabel>Category </InputLabel>
                         <Controller
@@ -520,7 +565,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         </FormHelperText>
                       </FormControl>
                     </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
                       <FormControl fullWidth error={!!errors?.shift}>
                         <InputLabel>Shift </InputLabel>
                         <Controller
@@ -552,7 +597,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         </FormHelperText>
                       </FormControl>
                     </Grid>
-                    <Grid item md={5.8}>
+                    <Grid item md={5.8} mt={2}>
                       <Controller
                         name="shiftRange"
                         control={control}
