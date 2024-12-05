@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
@@ -14,7 +15,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import axiosInstance from "@/app/api/axiosInstance";
-import NoDataImg from "@/app/(components)/assets/nodataFound.png";
+import NoDataImg from "@/app/(components)/assets/noDataFound.png";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import SkeletonCard from "../../../mui-components/Skeleton/assign-radio-card";
 interface StyledFormControlLabelProps extends FormControlLabelProps {

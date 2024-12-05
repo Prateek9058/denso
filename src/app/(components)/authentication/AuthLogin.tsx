@@ -31,7 +31,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     try {
       const response = await axiosInstance.post("auth/login", body);
       if (response.status) {
-        console.log("response",setLoginData(response))
+        console.log("response", setLoginData(response));
         login(
           response?.data?.data?.token,
           response?.data?.data?.role,

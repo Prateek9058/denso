@@ -157,10 +157,10 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   }, [open]);
 
   const onSubmit = async () => {
-    if (trolley?.length === 0 && activeStep === 1) {
-      notifyError("please select at least one trolley!");
-      return;
-    }
+    // if (trolley?.length === 0 && activeStep === 1) {
+    //   notifyError("please select at least one trolley!");
+    //   return;
+    // }
 
     handleNext();
     try {
