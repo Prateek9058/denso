@@ -196,14 +196,13 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
         xs={12}
         md={12}
         sx={{
-          height: "550px",
           width: "100%",
           position: "relative",
           bgcolor: "white",
           p: 2,
         }}
       >
-        <Box
+        {/* <Box
           sx={{ display: "flex", gap: 2, mb: 4, justifyContent: "flex-end" }}
         >
           <Button
@@ -216,7 +215,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
           <Button variant="outlined" startIcon={<FileUploadIcon />}>
             Upload standard
           </Button>
-        </Box>
+        </Box> */}
 
         <Table sx={{ minWidth: "100%" }}>
           <TableHead>

@@ -3,6 +3,7 @@ import AuthProvider from "@/app/(components)/authentication/AuthProvider";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import { NotificationProvider } from "../(context)/NotificationContext";
+import { LiveDataProvider } from "../(context)/trolleyMoving/Trolley";
 export default async function RootLayout({
   children,
 }: {
@@ -18,9 +19,11 @@ export default async function RootLayout({
         {!session ? (
           <AuthProvider>{children}</AuthProvider>
         ) : (
-          <NotificationProvider>
-            <FullLayout>{children}</FullLayout>
-          </NotificationProvider>
+          <LiveDataProvider>
+            <NotificationProvider>
+              <FullLayout>{children}</FullLayout>
+            </NotificationProvider>
+          </LiveDataProvider>
         )}
       </body>
     </html>

@@ -8,9 +8,8 @@ import {
   DialogActions,
   DialogContent,
 } from "@mui/material";
-import Step1 from "./Step1";
-import Step2 from "./Step2";
-import Step3 from "./Step3";
+import Step1 from "./assignMen";
+
 import {
   notifyError,
   notifySuccess,
@@ -44,7 +43,7 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
     formState: { errors },
     control,
   } = methods;
-  const steps = [" Department", " Section", " Line"];
+  const steps = [" Department"];
   const [activeStep, setActiveStep] = useState(0);
   const [selectedItems, setSelectedItems] = useState<SelectedItems>({
     department: null,
@@ -143,22 +142,6 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
           <DialogContent sx={{ height: "300px" }}>
             {activeStep === 0 && (
               <Step1
-                selectedItems={selectedItems}
-                handleSelectionChange={handleSelectionChange}
-              />
-            )}
-
-            {activeStep === 1 && (
-              <Step2
-                deptId={selectedItems?.department}
-                selectedItems={selectedItems}
-                handleSelectionChange={handleSelectionChange}
-              />
-            )}
-
-            {activeStep === 2 && (
-              <Step3
-                sectionIds={selectedItems?.sections}
                 selectedItems={selectedItems}
                 handleSelectionChange={handleSelectionChange}
               />

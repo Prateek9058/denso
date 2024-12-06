@@ -33,10 +33,12 @@ const ProfileDetails = () => {
     clearErrors,
     getValues,
     watch,
+    reset,
   } = useForm();
   const [adminData, setAdminData] = useState<any>(null);
   const [isEditable, setIsEditable] = useState<boolean>(false);
-  const [Forget, setForget] = useState<boolean>(false);
+  const [isPasswordChange, setIsPasswordChange] = useState(false);
+
   useEffect(() => {
     setValue("name", adminData?.fullName);
     setValue("phone", adminData?.phoneNumber);
@@ -78,36 +80,51 @@ const ProfileDetails = () => {
     localStorage.removeItem("loginId");
     signOut({ callbackUrl: "/login", redirect: true });
   };
-  console.log("forget", Forget);
+  console.log(errors, "errors");
+  console.log(getValues(), "vaue");
+
+  const handleBackToProfile = () => {
+    setIsPasswordChange(false);
+    clearErrors();
+    reset({
+      name: adminData?.fullName,
+      phone: adminData?.phoneNumber,
+      email: adminData?.email,
+    });
+  };
   const onSubmit = async () => {
     try {
-      if (Forget) {
-        const formdata = getValues();
+      if (isPasswordChange) {
+        const formData = getValues();
         const body = {
-          oldPassword: formdata?.oldPassword,
-          newPassword: formdata?.newPassword,
-          cnfimPassword: formdata?.cnfimPassword,
+          oldPassword: formData?.oldPassword,
+          newPassword: formData?.newPassword,
+          cnfimPassword: formData?.cnfimPassword,
         };
+
         const { status } = await axiosInstance.patch(
           `/auth/updatePassword/${adminData?._id}`,
           body
         );
+
         if (status === 200 || status === 201) {
-          notifySuccess("password changed successfully!");
+          notifySuccess("Password changed successfully!");
           setIsEditable(false);
-          setForget(false);
+          setIsPasswordChange(false);
           fetchData();
         }
       } else {
-        const formdata = getValues();
+        const formData = getValues();
         const body = {
-          fullName: formdata?.name,
-          phoneNumber: formdata?.phone,
+          fullName: formData?.name,
+          phoneNumber: formData?.phone,
         };
+
         const { status } = await axiosInstance.patch(
           "/auth/updateAdminProfile",
           body
         );
+
         if (status === 200 || status === 201) {
           notifySuccess("Profile updated successfully!");
           setIsEditable(false);
@@ -115,7 +132,7 @@ const ProfileDetails = () => {
         }
       }
     } catch (error: any) {
-      notifyError(error?.response?.data?.message);
+      notifyError(error?.response?.data?.message || "Something went wrong");
     }
   };
   const handleButtonClick = () => {
@@ -238,165 +255,137 @@ const ProfileDetails = () => {
                 }}
               >
                 <Grid container spacing={2}>
-                  {!Forget && (
-                    <Grid item xs={6}>
-                      <Typography variant="h6" mb={1}>
-                        Name
-                      </Typography>
-                      <CustomTextField
-                        {...register("name", {
-                          required: "Name is required",
-                        })}
-                        name="name"
-                        placeholder="Enter name"
-                        disabled={!isEditable}
-                        error={!!errors.name}
-                        helperText={errors.name?.message}
-                        onChange={handleInputChange}
-                        defaultValue={adminData ? adminData?.fullName : ""}
-                      />
-                    </Grid>
-                  )}
-                  {!Forget && (
-                    <Grid item xs={6}>
-                      <Typography variant="h6" mb={1}>
-                        Phone Number
-                      </Typography>
-                      <CustomTextField
-                        {...register("phone", {
-                          required: "Phone is required",
-                          validate: {
-                            length: (value) =>
-                              value.length === 10 ||
-                              "Phone number must be exactly 10 digits without country code",
-                          },
-                        })}
-                        field="number"
-                        name="phone"
-                        placeholder="Enter Phone Number"
-                        error={!!errors.phone}
-                        disabled={!isEditable}
-                        helperText={errors.phone?.message}
-                        onChange={handleInputChange}
-                        defaultValue={adminData ? adminData?.phoneNumber : ""}
-                      />
-                    </Grid>
-                  )}
-                  {!Forget && (
-                    <Grid item xs={6}>
-                      <Typography variant="h6" mb={1}>
-                        Email Address
-                      </Typography>
-                      <CustomTextField
-                        {...register("email")}
-                        name="email"
-                        placeholder="Enter email address"
-                        error={!!errors.email}
-                        helperText={errors.email?.message}
-                        onChange={handleInputChange}
-                        defaultValue={adminData?.email || ""}
-                        disabled={true}
-                      />
-                    </Grid>
-                  )}
-                  {Forget && (
-                    <Grid item xs={6}>
-                      <Typography variant="h6" mb={1}>
-                        Password
-                      </Typography>
-                      <CustomTextField
-                        {...register("oldPassword", {
-                          required: "oldPassword is required",
-                        })}
-                        field="password"
-                        name="oldPassword"
-                        placeholder="Enter Password"
-                        error={!!errors.oldPassword}
-                        helperText={errors.oldPassword?.message}
-                        onChange={handleInputChange}
-                        disabled={!isEditable}
-                      />
-                    </Grid>
-                  )}
-                  {Forget && (
-                    <Grid item xs={6}>
-                      <Typography variant="h6" mb={1}>
-                        New Password
-                      </Typography>
-                      <CustomTextField
-                        {...register("newPassword", {
-                          required: "newPassword is required",
-                        })}
-                        field="password"
-                        name="newPassword"
-                        placeholder="Enter new Password"
-                        error={!!errors.newPassword}
-                        helperText={errors.newPassword?.message}
-                        onChange={handleInputChange}
-                        disabled={!isEditable}
-                      />
-                    </Grid>
-                  )}
-                  {Forget && (
-                    <Grid item xs={6}>
-                      <Typography variant="h6" mb={1}>
-                        Confirm Password
-                      </Typography>
-                      <CustomTextField
-                        {...register("cnfimPassword", {
-                          required: "cnfimPassword is required",
-                          validate: (value) =>
-                            value === watch("newPassword") ||
-                            "Passwords do not match",
-                        })}
-                        field="password"
-                        name="cnfimPassword"
-                        type="password"
-                        placeholder="Enter confirm Password"
-                        error={!!errors.cnfimPassword}
-                        onChange={handleInputChange}
-                        helperText={errors.cnfimPassword?.message}
-                        disabled={!isEditable}
-                      />
-                    </Grid>
-                  )}
-                  <Grid
-                    item
-                    xs={12}
-                    display={"flex"}
-                    justifyContent={"flex-end"}
-                  >
-                    {!Forget && (
-                      <Typography
-                        color={"primary"}
-                        onClick={() => {
-                          setForget(true);
-                        }}
-                        sx={{ cursor: "pointer" }}
-                      >
-                        Change/Forgot Password
-                      </Typography>
-                    )}
-                    {Forget && (
-                      <Grid item>
-                        <Button
-                          onClick={() => {
-                            setForget(false);
-                          }}
-                          variant="outlined"
-                          startIcon={<IoIosArrowRoundBack size={"25px"} />}
-                        >
-                          {" "}
-                          Back
-                        </Button>
+                  {/* Profile Details */}
+                  {!isPasswordChange ? (
+                    <>
+                      {/* Name */}
+                      <Grid item xs={6}>
+                        <Typography variant="h6" mb={1}>
+                          Name
+                        </Typography>
+                        <CustomTextField
+                          {...register("name", {
+                            required: "Name is required",
+                          })}
+                          placeholder="Enter name"
+                          disabled={!isEditable}
+                          error={!!errors.name}
+                          helperText={errors.name?.message}
+                          onChange={handleInputChange}
+                          defaultValue={adminData?.fullName}
+                        />
                       </Grid>
+                      {/* Phone */}
+                      <Grid item xs={6}>
+                        <Typography variant="h6" mb={1}>
+                          Phone Number
+                        </Typography>
+                        <CustomTextField
+                          {...register("phone", {
+                            required: "Phone is required",
+                            validate: (value) =>
+                              value.length === 10 ||
+                              "Phone number must be exactly 10 digits",
+                          })}
+                          placeholder="Enter phone number"
+                          disabled={!isEditable}
+                          error={!!errors.phone}
+                          helperText={errors.phone?.message}
+                          onChange={handleInputChange}
+                          defaultValue={adminData?.phoneNumber}
+                        />
+                      </Grid>
+                      {/* Email */}
+                      <Grid item xs={6}>
+                        <Typography variant="h6" mb={1}>
+                          Email
+                        </Typography>
+                        <CustomTextField
+                          {...register("email")}
+                          placeholder="Enter email"
+                          disabled
+                          defaultValue={adminData?.email}
+                        />
+                      </Grid>
+                    </>
+                  ) : (
+                    <>
+                      {/* Password Change Fields */}
+                      <Grid item xs={6}>
+                        <Typography variant="h6" mb={1}>
+                          Current Password
+                        </Typography>
+                        <CustomTextField
+                          {...register("oldPassword", {
+                            required: "Current password is required",
+                          })}
+                          placeholder="Enter current password"
+                          type="password"
+                          error={!!errors.oldPassword}
+                          disabled={!isEditable}
+                          helperText={errors.oldPassword?.message}
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="h6" mb={1}>
+                          New Password
+                        </Typography>
+                        <CustomTextField
+                          {...register("newPassword", {
+                            required: "New password is required",
+                          })}
+                          placeholder="Enter new password"
+                          type="password"
+                          error={!!errors.newPassword}
+                          disabled={!isEditable}
+                          helperText={errors.newPassword?.message}
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="h6" mb={1}>
+                          Confirm Password
+                        </Typography>
+                        <CustomTextField
+                          {...register("cnfimPassword", {
+                            required: "Confirm password is required",
+                            validate: (value) =>
+                              value === watch("newPassword") ||
+                              "Passwords do not match",
+                          })}
+                          placeholder="Confirm password"
+                          type="password"
+                          error={!!errors.cnfimPassword}
+                          disabled={!isEditable}
+                          helperText={errors.cnfimPassword?.message}
+                        />
+                      </Grid>
+                    </>
+                  )}
+
+                  {/* Footer Action */}
+                  <Grid item xs={12} display="flex" justifyContent="flex-end">
+                    {!isPasswordChange ? (
+                      <Typography
+                        color="primary"
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => setIsPasswordChange(true)}
+                      >
+                        Change/Forgot Password?
+                      </Typography>
+                    ) : (
+                      <Button
+                        variant="outlined"
+                        startIcon={<IoIosArrowRoundBack />}
+                        onClick={handleBackToProfile}
+                      >
+                        Back
+                      </Button>
                     )}
                   </Grid>
                 </Grid>
               </Card>
             </Grid>
           </Grid>
-
           <Grid container mb={2}>
             <ManageSites />
           </Grid>

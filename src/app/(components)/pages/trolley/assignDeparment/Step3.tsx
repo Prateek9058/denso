@@ -31,11 +31,13 @@ interface SelectedItems {
 interface AssignProps {
   selectedItems: SelectedItems;
   handleSelectionChange: (key: keyof SelectedItems, id: string) => void;
+  sectionIds?: any;
 }
 
 export default function AssignAssessmentTabSelected({
   selectedItems,
   handleSelectionChange,
+  sectionIds,
 }: AssignProps) {
   const [lines, setLines] = useState<Lines[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -47,12 +49,12 @@ export default function AssignAssessmentTabSelected({
   const getLines = async () => {
     setLoading(true);
     try {
-      const { data, status } = await axiosInstance.get(
-        `section/getAllLines?page=${page + 1}&limit=${rowsPerPage}&search=${debouncedSearchQuery}`
+      const { data, status } = await axiosInstance.post(
+        `line/getAllLines?page=${page + 1}&limit=${rowsPerPage}&search=${debouncedSearchQuery}`,{sectionIds:sectionIds}
       );
       if (status === 200 || status === 201) {
-        setLines(data);
-        setTotalCount(data.totalCount);
+        setLines(data?.data?.data);
+        setTotalCount(data?.data?.totalCount);
       }
     } catch (error) {
       console.log(error);
@@ -115,7 +117,7 @@ export default function AssignAssessmentTabSelected({
             fontSize: "15px",
           }}
         >
-          Showing {lines.length} of {totalCount} Sections
+          Showing {lines?.length} of {totalCount} Sections
         </Box>
       </Typography>
 
@@ -124,7 +126,7 @@ export default function AssignAssessmentTabSelected({
           <SkeletonCard width={250} arrayLength={8} />
         ) : (
           <>
-            {lines.map((item) => (
+            {lines?.map((item) => (
               <Grid
                 item
                 key={item._id}
@@ -141,14 +143,14 @@ export default function AssignAssessmentTabSelected({
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={selectedItems.lines.includes(item._id)}
-                      onChange={() => handleSelectionChange("lines", item._id)}
+                      checked={selectedItems?.lines?.includes(item?._id)}
+                      onChange={() => handleSelectionChange("lines", item?._id)}
                     />
                   }
                   label={
                     <Typography className="width100">
-                      <Typography color="#000000">{`# ${item.uId}`}</Typography>
-                      <Typography color="#000000">{item.name}</Typography>
+                      <Typography color="#000000">{`# ${item?.uId}`}</Typography>
+                      <Typography color="#000000">{item?.name}</Typography>
                     </Typography>
                   }
                 />

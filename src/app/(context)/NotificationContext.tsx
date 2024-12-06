@@ -69,9 +69,10 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponse>;
-      notifyError(
-        axiosError?.response?.data?.message || "Error while marking all as read"
-      );
+      const message =
+        axiosError?.response?.data?.message ||
+        "Error while marking all as read";
+      notifyError(message);
       console.error(
         axiosError?.response?.data?.message || "Error while marking all as read"
       );

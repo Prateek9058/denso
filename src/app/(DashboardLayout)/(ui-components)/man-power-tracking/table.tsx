@@ -19,6 +19,7 @@ interface TableProps {
   searchQuery: string;
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  getEmployeeData?: any;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -29,6 +30,7 @@ const Table: React.FC<TableProps> = ({
   searchQuery,
   setSearchQuery,
   loading,
+  getEmployeeData,
 }) => {
   const columns = [
     "ID",
@@ -115,11 +117,10 @@ const Table: React.FC<TableProps> = ({
         <AssignTrolley
           open={openAssign}
           selectedDevice={selectedDevice}
-          url="trolleys/getAllTrolleys"
           setOpen={setOpenAssign}
-          title="Assign trolley"
           trolley={trolley}
           setTrolley={setTrolley}
+          getEmployeeData={getEmployeeData}
         />
       )}
       <CommonDialog

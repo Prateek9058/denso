@@ -64,6 +64,7 @@ const Page: React.FC = () => {
     {
       component: (
         <Table
+          getEmployeeData={getEmployeeData}
           deviceData={deviceData}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
@@ -78,6 +79,7 @@ const Page: React.FC = () => {
     {
       component: (
         <Table
+          getEmployeeData={getEmployeeData}
           deviceData={deviceData}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}

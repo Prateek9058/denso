@@ -30,11 +30,13 @@ interface SelectedItems {
 interface AssignProps {
   selectedItems: SelectedItems;
   handleSelectionChange: (key: keyof SelectedItems, id: string) => void;
+  deptId: any;
 }
 
 export default function AssignAssessmentTabSelected({
   selectedItems,
   handleSelectionChange,
+  deptId,
 }: AssignProps) {
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -47,11 +49,11 @@ export default function AssignAssessmentTabSelected({
     setLoading(true);
     try {
       const { data, status } = await axiosInstance.get(
-        `section/getAllSections?page=${page + 1}&limit=${rowsPerPage}&search=${debouncedSearchQuery}`
+        `section/getAllSections/${deptId}?page=${page + 1}&limit=${rowsPerPage}&search=${debouncedSearchQuery}`
       );
       if (status === 200 || status === 201) {
-        setSections(data.sections);
-        setTotalCount(data.totalCount);
+        setSections(data?.data?.data);
+        setTotalCount(data?.data?.totalCount);
       }
     } catch (error) {
       console.log(error);
@@ -61,8 +63,10 @@ export default function AssignAssessmentTabSelected({
   };
 
   useEffect(() => {
-    getSections();
-  }, [page, rowsPerPage, debouncedSearchQuery]);
+    if (deptId) {
+      getSections();
+    }
+  }, [page, rowsPerPage, debouncedSearchQuery, deptId]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -114,7 +118,7 @@ export default function AssignAssessmentTabSelected({
             fontSize: "15px",
           }}
         >
-          Showing {sections.length} of {totalCount} Sections
+          Showing {sections?.length} of {totalCount} Sections
         </Box>
       </Typography>
 
@@ -123,7 +127,7 @@ export default function AssignAssessmentTabSelected({
           <SkeletonCard width={250} arrayLength={8} />
         ) : (
           <>
-            {sections.map((item) => (
+            {sections?.map((item) => (
               <Grid
                 item
                 key={item._id}
@@ -157,7 +161,7 @@ export default function AssignAssessmentTabSelected({
             ))}
           </>
         )}
-        {sections.length === 0 && !loading && (
+        {sections?.length === 0 && !loading && (
           <Grid
             container
             direction="column"

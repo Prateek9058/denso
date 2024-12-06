@@ -6,39 +6,29 @@ import FirstTab from "./selected";
 import axiosInstance from "@/app/api/axiosInstance";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
-import {
-  notifyError,
-  notifySuccess,
-} from "@/app/(components)/mui-components/Snackbar";
+import { notifySuccess } from "@/app/(components)/mui-components/Snackbar";
 
 interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  title?: string;
-  url?: string;
-  deviceAssign?: boolean;
-  role?: any;
   setTrolley: React.Dispatch<React.SetStateAction<any>>;
   trolley: string;
   selectedDevice?: any;
+  getEmployeeData?: any;
 }
 
 export default function AssignAssessment({
   open,
   setOpen,
-  role,
   setTrolley,
   trolley,
   selectedDevice,
+  getEmployeeData,
 }: Props) {
   const methods = useForm<any>();
   const {
-    register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    clearErrors,
-    getValues,
     reset,
   } = methods;
 
@@ -47,7 +37,7 @@ export default function AssignAssessment({
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [getAllList, setGetAllList] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [value, setTabValue] = useState<number>(0);
+  const [value] = useState<number>(0);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
   const [selectIDs, setSelectedIds] = useState<any>(null);
   const [lineIds, setLineIds] = useState<any>(null);
@@ -61,7 +51,6 @@ export default function AssignAssessment({
     }
   };
 
-  console.log("sele", selectIDs, lineIds);
   const getDepartmentDropdown = async () => {
     try {
       const { data, status } = await axiosInstance.get(
@@ -85,13 +74,14 @@ export default function AssignAssessment({
         lineId: lineIds,
       };
       const { data, status } = await axiosInstance.post(
-        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&status=${false}&departmentId=${selectedDepartmentId}&search=${searchQuery}`,
+        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&departmentId=${selectedDepartmentId}&search=${searchQuery}`,
         data1
       );
       if (status === 200 || status === 201) {
         console.log("all trollley", data?.data?.data);
         if (selectIDs && lineIds) {
           setGetAllList(data?.data?.data);
+          getEmployeeData();
         }
       }
     } catch (error) {
@@ -100,7 +90,6 @@ export default function AssignAssessment({
       setLoading(false);
     }
   };
-  console.log("fdghjk", selectIDs, lineIds);
   useEffect(() => {
     if (open) {
       getDepartmentDropdown();
@@ -134,22 +123,20 @@ export default function AssignAssessment({
     );
   }, [selectedDevice]);
   const onSubmit = async () => {
-    console.log("values,values", trolley);
-    if (trolley?.length === 0) {
-      notifyError("please ");
-    }
     const body = {
       employeeId: selectedDevice?._id,
       trolleyIds: trolley,
     };
     try {
-      const { data, status } = await axiosInstance.post(
+      const { status } = await axiosInstance.post(
         `/employees/assingendTrolley?isTrolleyChange=true`,
         body
       );
       if (status === 200 || status === 201) {
-        notifySuccess("trolley assigned successfully !");
+        notifySuccess(`${trolley?.length} trolley assigned successfully !`);
+
         handleClose();
+        getEmployeeData();
       }
     } catch (error) {
       console.log(error);
@@ -179,7 +166,6 @@ export default function AssignAssessment({
             searchQuery={searchQuery}
             loading={loading}
             handleInputChange={handleInputChange}
-            role={role}
             selectedDevice={selectedDevice}
             departments={department}
             departmentList={department}

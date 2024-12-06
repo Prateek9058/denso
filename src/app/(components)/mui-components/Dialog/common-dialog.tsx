@@ -36,7 +36,7 @@ const CommonDialog: React.FC<BootstrapDialogProps> = ({
             handleCloseFirst={(event, reason) => onClose(event, reason)} // Pass onClose directly
           />
         ) : null}
-        <Typography variant="subtitle1" color="primary.contrastText">
+        <Typography variant="h6" color="primary.contrastText">
           {title}
         </Typography>
       </DialogTitle>

@@ -57,12 +57,9 @@ interface AssignProps {
   setPage: React.Dispatch<React.SetStateAction<number>>;
   getAllList: any;
   searchQuery: string;
-
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
-  role?: any;
   handleInputChange?: any;
-  zoneId?: any;
   departments?: any;
   sections?: any;
   lines?: any;
@@ -92,24 +89,12 @@ export default function AssignAssessmentTabSelected({
   handleInputChange,
   selectedDepartment,
   departmentList,
-  selectedDevice,
   setTrolley,
-  methods,
   selectIDs,
   setSelectedIds,
   setLineIds,
-  lineIds,
   selectedDepartmentId,
 }: AssignProps) {
-  // console.log("selected", select);
-  // useEffect(() => {
-  //   setTrolley(
-  //     selectedDevice?.trolley?.map((item: any) => {
-  //       return item?._id;
-  //     })
-  //   );
-  // }, [selectedDevice]);
-
   const [site, setSite] = useState<any>(null);
   const [Line, setLine] = useState<any>(null);
   const [selectedSections, setSelectedSections] = React.useState<any[]>([]);
@@ -199,11 +184,11 @@ export default function AssignAssessmentTabSelected({
     });
   };
   return (
-    <div>
+    <div style={{ height: "450px" }}>
       <form>
-        <Grid container justifyContent="space-between" alignItems={"center"}>
+        <Grid container justifyContent="space-between">
           <Grid item display={"flex"} width={"80%"} columnGap={2}>
-            <FormControl fullWidth sx={{ minWidth: "200px", }}>
+            <FormControl fullWidth sx={{ minWidth: "200px" }}>
               <InputLabel>Departments</InputLabel>
               <Select
                 value={selectedDepartment}

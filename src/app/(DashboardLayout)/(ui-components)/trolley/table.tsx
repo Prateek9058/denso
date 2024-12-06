@@ -11,17 +11,20 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Button,
 } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import moment from "moment";
 import { FaMapLocation } from "react-icons/fa6";
 import { BsEye } from "react-icons/bs";
 import { GoOrganization } from "react-icons/go";
-import Organization from "../.../../../../.././../public/Img/gg_organisation.png";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
-import AssignDepartment from "@/app/(components)/pages/trolley/assignDeparment";
+import AssignDept from "@/app/(components)/pages/trolley/assignDeparment/index";
+import Filter from "@/app/(components)/pages/trolley/filter/index";
+
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -50,6 +53,16 @@ const Table: React.FC<TableProps> = ({
   getTrolleyData,
 }) => {
   const [open, setOpenDialog] = React.useState(false);
+  const [openDept, setOpenDept] = React.useState<boolean>(false);
+  const [openFilter, setOpenFilter] = React.useState<boolean>(false);
+  const [trolleyId, setTrolleyId] = React.useState<string>("");
+  const handleOpenFilter = () => {
+    setOpenFilter(true);
+  };
+  const handleOpenDept = (id: string) => {
+    setOpenDept(true);
+    setTrolleyId(id);
+  };
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -76,7 +89,6 @@ const Table: React.FC<TableProps> = ({
   };
   const [openAssign, setOpenAssign] = React.useState<boolean>(false);
   const [selectedDevice, setSelectedDevice] = React.useState<any>(null);
-  const [trolley, setTrolley] = useState<any>([]);
 
   const handleOpenAssign = (data: any) => {
     setOpenAssign(true);
@@ -119,6 +131,18 @@ const Table: React.FC<TableProps> = ({
                   </Link>
                 </Grid>
                 <Grid item xs={3}>
+                  <Tooltip title="Assign departments">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        handleOpenDept(item?._id);
+                      }}
+                    >
+                      <GoOrganization color="#DC0032" />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={3}>
                   <Tooltip title="Animated routes">
                     <IconButton size="small">
                       <FaMapLocation color="#DC0032" />
@@ -152,9 +176,14 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <>
-      {openAssign && (
-        <AssignDepartment open={openAssign} setOpen={setOpenAssign} />
+      {openDept && (
+        <AssignDept
+          open={openDept}
+          setOpen={setOpenDept}
+          trolleyId={trolleyId}
+        />
       )}
+      {openFilter && <Filter open={openFilter} setOpen={setOpenFilter} />}
       <CommonDialog
         open={open}
         fullWidth={true}
@@ -181,20 +210,15 @@ const Table: React.FC<TableProps> = ({
             </Typography>
           </Grid>
           <Grid item xs={4}>
-            <Grid container justifyContent={"space-between"}>
-              <Grid item xs={5.5}>
-                <FormControl fullWidth>
-                  <InputLabel>Select Type</InputLabel>
-                  <Select
-                    id="demo-simple-select"
-                    value={selectedCategory}
-                    onChange={handleCategoryChange}
-                  >
-                    <MenuItem value="all">All</MenuItem>
-                    <MenuItem value="assigned">Assigned</MenuItem>
-                    <MenuItem value="not_assigned">Not Assigned</MenuItem>
-                  </Select>
-                </FormControl>
+            <Grid container justifyContent={value === 0 ? "end" : "end"}>
+              <Grid item sx={{ mr: 2 }}>
+                <Button
+                  startIcon={<FilterListIcon />}
+                  variant="contained"
+                  onClick={handleOpenFilter}
+                >
+                  Filter
+                </Button>
               </Grid>
               <Grid item xs={6}>
                 <CustomTextField
