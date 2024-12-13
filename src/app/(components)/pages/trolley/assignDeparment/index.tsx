@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Step,
   Button,
@@ -23,7 +23,8 @@ import axiosInstance from "@/app/api/axiosInstance";
 interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  trolleyId: string;
+  trolleyId: any;
+  getTrolleyData:any
 }
 
 interface SelectedItems {
@@ -32,15 +33,10 @@ interface SelectedItems {
   lines: string[];
 }
 
-export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
+export default function AssignAssessment({ open, setOpen, trolleyId,getTrolleyData }: Props) {
   const methods = useForm<any>();
   const {
-    setValue,
     handleSubmit,
-    clearErrors,
-    getValues,
-    watch,
-    reset,
     formState: { errors },
     control,
   } = methods;
@@ -51,6 +47,15 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
     sections: [],
     lines: [],
   });
+  useEffect(() => {
+    if (trolleyId) {
+      setSelectedItems({
+        department: trolleyId?.departmentId,
+        sections: trolleyId?.sectionId || [],
+        lines: trolleyId?.lineId || [],
+      });
+    }
+  }, [trolleyId]);
 
   const handleSelectionChange = (key: keyof SelectedItems, id: string) => {
     setSelectedItems((prevState) => {
@@ -59,7 +64,6 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
       }
 
       if (key === "sections" || key === "lines") {
-        console.log("section", id);
         const updatedValues = prevState[key].includes(id)
           ? prevState[key].filter((itemId) => itemId !== id)
           : [...prevState[key], id];
@@ -107,16 +111,19 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
       };
       if (activeStep === 2) {
         const { status } = await axiosInstance.post(
-          `/trolleys/assignDepartmentSectionLineToTrolley/${trolleyId}`,
+          `/trolleys/assignDepartmentSectionLineToTrolley/${trolleyId?._id}`,
           data1
         );
         if (status === 201 || status === 200) {
           notifySuccess("department assign successfully");
+          getTrolleyData()
           handleClose();
+
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      notifyError(error?.response?.data?.message);
     }
   };
 

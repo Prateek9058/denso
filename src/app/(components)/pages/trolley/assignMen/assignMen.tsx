@@ -8,6 +8,7 @@ import {
   Stack,
   Box,
   Pagination,
+  Checkbox,
 } from "@mui/material";
 
 import noData from "../../../../../../public/Img/nodata.png";
@@ -19,15 +20,15 @@ import axiosInstance from "@/app/api/axiosInstance";
 
 interface Department {
   _id: string;
-  name: string;
+  fullName: string;
   uId: string;
 }
 interface SelectedItems {
-  department: string | null;
+  sections: string[];
 }
 interface AssignProps {
   selectedItems: {
-    department: string | null;
+    sections: any | null;
   };
   handleSelectionChange: (key: keyof SelectedItems, id: string) => void;
 }
@@ -47,7 +48,7 @@ export default function AssignAssessmentTabSelected({
     setLoading(true);
     try {
       const { data, status } = await axiosInstance.get(
-        `department/getAllDepartments?page=${page + 1}&limit=${10}&search=${debouncedSearchQuery}`
+        `employees/getAllEmployees?page=${page + 1}&limit=${10}&search=${debouncedSearchQuery}`
       );
       if (status === 200 || status === 201) {
         const totalLength = data?.data?.totalCount ?? 0;
@@ -88,9 +89,9 @@ export default function AssignAssessmentTabSelected({
     <div>
       <Grid container justifyContent="space-between" alignItems={"center"}>
         <Grid item>
-          <Typography variant="h6">Select Department</Typography>
+          <Typography variant="h6">Select Men</Typography>
           <Typography variant="body2">
-            Showing {departments?.length} of {totalCount} Departments
+            Showing {departments?.length} of {totalCount} Men
           </Typography>
         </Grid>
         <Grid item>
@@ -126,10 +127,10 @@ export default function AssignAssessmentTabSelected({
                   <FormControlLabel
                     value={item._id}
                     control={
-                      <Radio
-                        checked={selectedItems.department === item._id}
+                      <Checkbox
+                        checked={selectedItems?.sections?.includes(item._id)}
                         onChange={() =>
-                          handleSelectionChange("department", item._id)
+                          handleSelectionChange("sections", item._id)
                         }
                       />
                     }
@@ -138,7 +139,9 @@ export default function AssignAssessmentTabSelected({
                         <Typography color="#000000">
                           {`# ${item.uId}`}
                         </Typography>
-                        <Typography color="#000000">{item.name}</Typography>
+                        <Typography color="#000000">
+                          {item?.fullName}
+                        </Typography>
                       </Typography>
                     }
                   />
@@ -153,7 +156,7 @@ export default function AssignAssessmentTabSelected({
             justifyContent="center"
             alignItems="center"
           >
-            <Typography variant="h5">No Department Added</Typography>
+            <Typography variant="h5">No men Added</Typography>
             <Image src={noData} alt="No Data Found" />
           </Grid>
         )}

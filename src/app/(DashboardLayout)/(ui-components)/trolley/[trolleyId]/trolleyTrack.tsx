@@ -32,6 +32,8 @@ const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({
 }) => {
   const map = useMap();
   const [marker, setMarker] = useState<L.Marker | null>(null);
+  // console.log('points1233333',points)
+  console.log("currentPointIndex233333", currentPointIndex);
 
   useEffect(() => {
     if (!marker) {
@@ -100,7 +102,8 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
   };
 
   useEffect(() => {
-    const duration = 2000;
+    console.log("trolleyCoordinateskkk", trolleyCoordinates?.length);
+    const duration = 1000;
     const intervalId = setInterval(() => {
       setCurrentPointIndex(
         (prevIndex) => (prevIndex + 1) % trolleyCoordinates?.length
@@ -108,7 +111,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
     }, duration);
 
     return () => clearInterval(intervalId);
-  }, [trolleyCoordinates?.length]);
+  }, [trolleyCoordinates]);
 
   const linePositions: [number, number][] = useMemo(
     () => trolleyCoordinates?.map((point) => [point.x, point.y]),
@@ -140,14 +143,14 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
               },
             }}
           />
-          <Polyline
+          {/* <Polyline
             positions={linePositions}
             pathOptions={{ color: "black" }}
-            weight={3}
+            weight={2}
             opacity={0.7}
             dashArray="5, 10"
-          />
-          {trolleyCoordinates?.map(
+          /> */}
+          {/* {trolleyCoordinates?.map(
             (point, index) =>
               point.showMarker && (
                 <Marker
@@ -156,7 +159,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
                   icon={getNumberedIcon(markerCounter++)}
                 />
               )
-          )}
+          )} */}
           <AnimatedMarker
             points={trolleyCoordinates}
             currentPointIndex={currentPointIndex}

@@ -65,7 +65,7 @@ const Page: React.FC = () => {
     setRowsPerPage(10);
   };
 
-  const getTrolleyData = async (status?: Category) => {
+  const getTrolleyData = async (status?: Category, dept?: Category) => {
     let statusValue = "";
     if (status === "assigned") {
       statusValue = "true";
@@ -74,6 +74,14 @@ const Page: React.FC = () => {
     } else if (status === "all") {
       statusValue = "";
     }
+    let DeptStatus = "";
+    if (dept === "assigned") {
+      DeptStatus = "true";
+    } else if (dept === "not_assigned") {
+      DeptStatus = "false";
+    } else if (dept === "all") {
+      DeptStatus = "";
+    }
     setLoading(true);
     const Url =
       value == 0
@@ -81,7 +89,7 @@ const Page: React.FC = () => {
         : "trolleyCategory/getAllTrolleyCategories";
     try {
       const res = await axiosInstance.get(
-        `${Url}?page=${page + 1}&limit=${rowsPerPage}&search=${searchQuery}&status=${statusValue}`
+        `${Url}?page=${page + 1}&limit=${rowsPerPage}&search=${searchQuery}&status=${statusValue}&departmentStatus=${DeptStatus}`
       );
       if (res?.status === 200 || res?.status === 201) {
         if (value === 0) {

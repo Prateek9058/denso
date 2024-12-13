@@ -1,17 +1,13 @@
 "use client";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import {
   DialogActions,
   Button,
   DialogContent,
   Grid,
-  Box,
-  Typography,
-  LinearProgress,
   Stack,
 } from "@mui/material";
-import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
 import {
   notifyError,
@@ -20,9 +16,6 @@ import {
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
 import { AxiosError } from "axios";
-import { useDropzone } from "react-dropzone";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -47,20 +40,12 @@ const AddShift: React.FC<AddDeviceProps> = ({
   selectedSite,
 }) => {
   const {
-    register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    clearErrors,
-    getValues,
     reset,
   } = useForm();
-  const [startTime, setStartTime] = React.useState<Dayjs | null>(
-    dayjs("")
-  );
-  const [endTime, setEndTime] = React.useState<Dayjs | null>(
-    dayjs("")
-  );
+  const [startTime, setStartTime] = React.useState<Dayjs | null>(dayjs(""));
+  const [endTime, setEndTime] = React.useState<Dayjs | null>(dayjs(""));
   const handleClose = () => {
     setOpen(false);
     reset();

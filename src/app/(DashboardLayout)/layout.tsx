@@ -21,6 +21,7 @@ export default async function RootLayout({
         ) : (
           <LiveDataProvider>
             <NotificationProvider>
+              
               <FullLayout>{children}</FullLayout>
             </NotificationProvider>
           </LiveDataProvider>

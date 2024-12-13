@@ -18,12 +18,14 @@ import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import moment from "moment";
+import { FaUserFriends } from "react-icons/fa";
 import { FaMapLocation } from "react-icons/fa6";
 import { BsEye } from "react-icons/bs";
 import { GoOrganization } from "react-icons/go";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 import AssignDept from "@/app/(components)/pages/trolley/assignDeparment/index";
 import Filter from "@/app/(components)/pages/trolley/filter/index";
+import AssgnMen from "@/app/(components)/pages/trolley/assignMen/index";
 
 interface TableProps {
   deviceData: any;
@@ -56,12 +58,19 @@ const Table: React.FC<TableProps> = ({
   const [openDept, setOpenDept] = React.useState<boolean>(false);
   const [openFilter, setOpenFilter] = React.useState<boolean>(false);
   const [trolleyId, setTrolleyId] = React.useState<string>("");
+  const [openMen, setOpenMen] = React.useState<boolean>(false);
+  const [mensData, setMensData] = React.useState<any>(null);
+
   const handleOpenFilter = () => {
     setOpenFilter(true);
   };
-  const handleOpenDept = (id: string) => {
+  const handleOpenDept = (id: any) => {
     setOpenDept(true);
     setTrolleyId(id);
+  };
+  const handleOpenMen = (data: any) => {
+    setOpenMen(true);
+    setMensData(data);
   };
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   useEffect(() => {
@@ -82,6 +91,7 @@ const Table: React.FC<TableProps> = ({
     handleCancel();
   };
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
+
   const handleCategoryChange = (event: SelectChangeEvent<Category>) => {
     const selectedValue = event.target.value as Category;
     setSelectedCategory(selectedValue);
@@ -135,10 +145,22 @@ const Table: React.FC<TableProps> = ({
                     <IconButton
                       size="small"
                       onClick={() => {
-                        handleOpenDept(item?._id);
+                        handleOpenDept(item);
                       }}
                     >
                       <GoOrganization color="#DC0032" />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={3}>
+                  <Tooltip title="Assign Men">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        handleOpenMen(item);
+                      }}
+                    >
+                      <FaUserFriends color="#DC0032" />
                     </IconButton>
                   </Tooltip>
                 </Grid>
@@ -149,16 +171,6 @@ const Table: React.FC<TableProps> = ({
                     </IconButton>
                   </Tooltip>
                 </Grid>
-                {selectedCategory === "not_assigned" && (
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      handleOpenAssign(item);
-                    }}
-                  >
-                    <GoOrganization color="#DC0032" />
-                  </IconButton>
-                )}
               </Grid>,
             ]
           : null,
@@ -181,9 +193,25 @@ const Table: React.FC<TableProps> = ({
           open={openDept}
           setOpen={setOpenDept}
           trolleyId={trolleyId}
+          getTrolleyData={getTrolleyData}
         />
       )}
-      {openFilter && <Filter open={openFilter} setOpen={setOpenFilter} />}
+      {openFilter && (
+        <Filter
+          open={openFilter}
+          setOpen={setOpenFilter}
+          getTrolleyData={getTrolleyData}
+          
+        />
+      )}
+      {openMen && (
+        <AssgnMen
+          open={openMen}
+          setOpen={setOpenMen}
+          getTrolleyData={getTrolleyData}
+          data={mensData}
+        />
+      )}
       <CommonDialog
         open={open}
         fullWidth={true}

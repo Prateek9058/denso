@@ -99,6 +99,7 @@ export default function AssignAssessmentTabSelected({
   const [Line, setLine] = useState<any>(null);
   const [selectedSections, setSelectedSections] = React.useState<any[]>([]);
   const [selectedLines, setSelectedLines] = React.useState<any[]>([]);
+
   const handleChangeAutocompleteSIte = (event: any, value: any[]) => {
     const selectedIds = value.map((item) => item._id);
     setSelectedSections(value);

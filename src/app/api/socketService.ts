@@ -65,6 +65,7 @@ class WSService {
   }
 
   close(): void {
+    // this.socket.
     this?.socket?.close();
   }
 }

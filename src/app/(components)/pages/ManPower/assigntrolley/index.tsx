@@ -78,11 +78,8 @@ export default function AssignAssessment({
         data1
       );
       if (status === 200 || status === 201) {
-        console.log("all trollley", data?.data?.data);
-        if (selectIDs && lineIds) {
-          setGetAllList(data?.data?.data);
-          getEmployeeData();
-        }
+        setGetAllList(data?.data?.data);
+        getEmployeeData();
       }
     } catch (error) {
       console.log(error);

@@ -137,6 +137,7 @@ export default function AssignAssessmentTabSelected({
                   padding: "10px",
                   borderRadius: "8px",
                   marginBottom: "15px",
+                  mr:2
                 }}
                 className="mt-20 assign-radio-grid"
               >

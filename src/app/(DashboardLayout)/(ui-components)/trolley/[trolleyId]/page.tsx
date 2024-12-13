@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, useContext } from "react";
 import { Grid, Typography } from "@mui/material";
 import AddDevice from "@/app/(components)/pages/trolley/addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
@@ -19,6 +19,11 @@ import TrolleyTrack from "./trolleyTrack";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
 import AddRepair from "@/app/(components)/pages/trolley/addRepair";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+import {
+  LiveDataContext,
+  LiveDataProvider,
+} from "@/app/(context)/trolleyMoving/Trolley";
+import SocketServices from "@/app/api/socketService";
 
 type Breadcrumb = {
   label: string;
@@ -48,6 +53,26 @@ const Page: React.FC = () => {
   const [startDate, setStartDate] = React.useState<any>(moment());
   const [endDate, setEndDate] = React.useState<any>(moment());
 
+  const { value } = useContext(LiveDataContext);
+  console.log("value", value);
+  useEffect(() => {
+    if (trolleyId) {
+      (async () => {
+        await SocketServices.initialiseWS();
+        SocketServices.emit("joinTrolley", { trolleyId });
+        SocketServices.on("trolleyData", (data) => {
+          console.log("data form ", data);
+        });
+      })();
+    } else {
+      () => {
+        SocketServices.emit("deleteTrolley", { trolleyId });
+      };
+    }
+  }, [trolleyId]);
+
+  console.log("ksjdh", value);
+
   const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
     const startDate = moment(state?.[0]?.startDate);
     const endDate = moment(state?.[0]?.endDate);
@@ -57,6 +82,7 @@ const Page: React.FC = () => {
   const [trolleyCoordinates, setTrolleyCoordinates] = useState<
     PointWithMarker[]
   >([]);
+  console.log("trollet", trolleyCoordinates);
 
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
@@ -89,10 +115,13 @@ const Page: React.FC = () => {
   }, [trolleyId]);
 
   useEffect(() => {
-    if (trolleyDetails?.pathPointers) {
-      setTrolleyCoordinates(trolleyDetails?.pathPointers);
+    if (value && Object.keys(value).length > 0) {
+      setTrolleyCoordinates((prevCoordinates) => [...prevCoordinates, value]);
     }
-  }, [trolleyDetails?.pathPointers]);
+    // if (data) {
+    //   setTrolleyCoordinates(data);
+    // }
+  }, [value]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -133,7 +162,6 @@ const Page: React.FC = () => {
       notifyError("Error deleting employee");
     }
   };
-  console.log("check trolleyDetails", trolleyDetails);
   return (
     <>
       <ToastComponent />
@@ -157,7 +185,7 @@ const Page: React.FC = () => {
         moduleName="Trolley Details"
         button="Edit Trolley"
         buttonAgent={
-          trolleyDetails?.isRepairing ? "" : "Mark trolley as repaired"
+          trolleyDetails?.isRepairing ? "" : "Mark trolley as repaire"
         }
         deleteBtn="Delete Trolley"
         handleClickOpen={handleClickOpen}

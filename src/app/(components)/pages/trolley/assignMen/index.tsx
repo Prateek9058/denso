@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Step,
   Button,
@@ -22,16 +22,20 @@ import axiosInstance from "@/app/api/axiosInstance";
 interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  trolleyId: string;
+  data: any;
+  getTrolleyData?: any;
 }
 
 interface SelectedItems {
-  department: string | null;
   sections: string[];
-  lines: string[];
 }
 
-export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
+export default function AssignAssessment({
+  open,
+  setOpen,
+  data,
+  getTrolleyData,
+}: Props) {
   const methods = useForm<any>();
   const {
     setValue,
@@ -43,22 +47,22 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
     formState: { errors },
     control,
   } = methods;
-  const steps = [" Department"];
   const [activeStep, setActiveStep] = useState(0);
   const [selectedItems, setSelectedItems] = useState<SelectedItems>({
-    department: null,
     sections: [],
-    lines: [],
   });
+
+  useEffect(() => {
+    if (data) {
+      setSelectedItems({
+        sections: data?.assingedTo?.map((item: any) => item?._id) || [],
+      });
+    }
+  }, [data]);
 
   const handleSelectionChange = (key: keyof SelectedItems, id: string) => {
     setSelectedItems((prevState) => {
-      if (key === "department") {
-        return { ...prevState, department: id };
-      }
-
-      if (key === "sections" || key === "lines") {
-        console.log("section", id);
+      if (key === "sections") {
         const updatedValues = prevState[key].includes(id)
           ? prevState[key].filter((itemId) => itemId !== id)
           : [...prevState[key], id];
@@ -80,39 +84,20 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
     setOpen(false);
   };
 
-  const handleNext = () => {
-    if (activeStep === 0 && !Boolean(selectedItems?.department)) {
-      notifyError("please select atleast one item !");
-      return;
-    } else if (activeStep === 1 && selectedItems?.sections?.length <= 0) {
-      notifyError("please select atleast one item !");
-      return;
-    } else if (activeStep === 2 && selectedItems?.lines.length <= 0) {
-      notifyError("please select atleast one item !");
-      return;
-    }
-    if (activeStep < steps.length - 1) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }
-  };
-
   const onSubmit = async () => {
-    handleNext();
     try {
       const data1 = {
-        departmentId: selectedItems?.department,
-        sectionId: selectedItems?.sections,
-        lineId: selectedItems?.lines,
+        employeeIds: selectedItems?.sections,
+        trolleyId: data?._id,
       };
-      if (activeStep === 2) {
-        const { status } = await axiosInstance.post(
-          `/trolleys/assignDepartmentSectionLineToTrolley/${trolleyId}`,
-          data1
-        );
-        if (status === 201 || status === 200) {
-          notifySuccess("department assign successfully");
-          handleClose();
-        }
+      const { status } = await axiosInstance.post(
+        `trolleys/assingeEmployee?isEmployeeChange=true`,
+        data1
+      );
+      if (status === 201 || status === 200) {
+        notifySuccess("Men assign successfully");
+        getTrolleyData();
+        handleClose();
       }
     } catch (error) {
       console.log(error);
@@ -124,28 +109,18 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
       open={open}
       maxWidth={"md"}
       fullWidth={true}
-      title={"Assign Department"}
+      title={"Assign Mens"}
       message={"Are you sure you want to cancel?"}
       titleConfirm={"Cancel"}
       onClose={handleClose}
     >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Stepper activeStep={activeStep} sx={{ mt: 2 }} alternativeLabel>
-            {steps?.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-
           <DialogContent sx={{ height: "300px" }}>
-            {activeStep === 0 && (
-              <Step1
-                selectedItems={selectedItems}
-                handleSelectionChange={handleSelectionChange}
-              />
-            )}
+            <Step1
+              selectedItems={selectedItems}
+              handleSelectionChange={handleSelectionChange}
+            />
           </DialogContent>
 
           <DialogActions className="dialog-action-btn">
@@ -165,21 +140,10 @@ export default function AssignAssessment({ open, setOpen, trolleyId }: Props) {
                 Back
               </Button>
             )}
-            {activeStep < steps.length - 1 ? (
-              <>
-                <Button
-                  variant="contained"
-                  type="submit"
-                  sx={{ width: "150px" }}
-                >
-                  Next
-                </Button>
-              </>
-            ) : (
-              <Button variant="contained" type="submit" sx={{ width: "150px" }}>
-                Submit
-              </Button>
-            )}
+
+            <Button variant="contained" type="submit" sx={{ width: "150px" }}>
+              Submit
+            </Button>
           </DialogActions>
         </form>
       </FormProvider>
