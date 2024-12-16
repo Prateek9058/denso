@@ -14,6 +14,7 @@ import UploadFile from "@/app/(components)/pages/trolley/uploadFile";
 import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";
 import AddCategory from "@/app/(components)/pages/trolley/addCategory";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+import SocketServices from "@/app/api/socketService";
 
 type Breadcrumb = {
   label: string;
@@ -52,6 +53,7 @@ const Page: React.FC = () => {
   const [categoryData, setCategoryData] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [value, setTabValue] = useState<number>(0);
+  const trolleyId = localStorage.getItem("trolleyId");
 
   useEffect(() => {
     getTrolleyData();
@@ -114,6 +116,14 @@ const Page: React.FC = () => {
     setOpenCat(true);
   };
 
+  // useEffect(() => {
+  //   return () => {
+  //     if (trolleyId) {
+  //       SocketServices.emit("disconnectTrolley", { trolleyId });
+  //     }
+  //     localStorage.removeItem("trolleyId");
+  //   };
+  // }, [trolleyId]);
   const TabPanelList = [
     {
       component: (

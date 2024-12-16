@@ -52,26 +52,32 @@ const Page: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [startDate, setStartDate] = React.useState<any>(moment());
   const [endDate, setEndDate] = React.useState<any>(moment());
-
+  const [trolleyData, setTrolleytData] = React.useState<object>({});
+  localStorage.setItem("trolleyId", trolleyId);
   const { value } = useContext(LiveDataContext);
-  console.log("value", value);
+
   useEffect(() => {
     if (trolleyId) {
       (async () => {
         await SocketServices.initialiseWS();
+
         SocketServices.emit("joinTrolley", { trolleyId });
         SocketServices.on("trolleyData", (data) => {
-          console.log("data form ", data);
+          console.log("data form ", trolleyId, data);
+          setTrolleytData(data);
         });
       })();
-    } else {
-      () => {
-        SocketServices.emit("deleteTrolley", { trolleyId });
+      return () => {
+        if (trolleyId) {
+          console.log("disconnecting.....", trolleyId);
+          SocketServices.emit("disconnectTrolley", { trolleyId });
+          SocketServices.off("trolleyData");
+        }
+        localStorage.removeItem("trolleyId");
+        setTrolleytData({});
       };
     }
   }, [trolleyId]);
-
-  console.log("ksjdh", value);
 
   const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
     const startDate = moment(state?.[0]?.startDate);
@@ -115,13 +121,13 @@ const Page: React.FC = () => {
   }, [trolleyId]);
 
   useEffect(() => {
-    if (value && Object.keys(value).length > 0) {
-      setTrolleyCoordinates((prevCoordinates) => [...prevCoordinates, value]);
+    if (trolleyData && Object.keys(trolleyData).length > 0) {
+      setTrolleyCoordinates((prevCoordinates: any) => [
+        ...prevCoordinates,
+        trolleyData,
+      ]);
     }
-    // if (data) {
-    //   setTrolleyCoordinates(data);
-    // }
-  }, [value]);
+  }, [trolleyData]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -352,7 +358,8 @@ const Page: React.FC = () => {
           </Button>
         </Grid> */}
       </Grid>
-      {trolleyCoordinates.length > 0 && (
+
+      {trolleyCoordinates?.length > 0 && (
         <TrolleyTrack
           userDetails={trolleyId}
           trolleyCoordinates={trolleyCoordinates}

@@ -64,6 +64,10 @@ class WSService {
     }
   }
 
+  off(event: string): void {
+    this.socket?.off(event)
+  }
+
   close(): void {
     // this.socket.
     this?.socket?.close();

@@ -13,9 +13,7 @@ interface LiveContextType {
   value: any;
 }
 
-export const LiveDataContext = createContext<any>(
-  undefined
-);
+export const LiveDataContext = createContext<any>(undefined);
 
 export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
