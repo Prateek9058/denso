@@ -214,7 +214,6 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
 
     return () => clearInterval(intervalId);
   }, [linePositions]);
-
   return (
     <Grid container mt={1}>
       <Grid item md={12} sx={{ height: "600px", width: "100%" }}>
