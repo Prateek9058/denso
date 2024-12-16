@@ -36,7 +36,6 @@ export default function AssignAssessment({
   const [department, setDepartment] = useState<any>(null);
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-
     if (name == "department") {
       setSelectedDepartmentId(value); 
     }
