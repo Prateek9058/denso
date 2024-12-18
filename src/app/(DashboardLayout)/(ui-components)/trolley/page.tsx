@@ -53,7 +53,6 @@ const Page: React.FC = () => {
   const [categoryData, setCategoryData] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [value, setTabValue] = useState<number>(0);
-  const trolleyId = localStorage.getItem("trolleyId");
 
   useEffect(() => {
     getTrolleyData();

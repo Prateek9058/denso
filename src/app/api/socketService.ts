@@ -1,4 +1,5 @@
 import { io, Socket } from "socket.io-client";
+// const SOCKET_URL = `http://10.122.74.130:8080`;
 const SOCKET_URL = `http://103.127.30.171:8080`;
 
 type Callback = (...args: any[]) => void;
@@ -65,7 +66,7 @@ class WSService {
   }
 
   off(event: string): void {
-    this.socket?.off(event)
+    this.socket?.off(event);
   }
 
   close(): void {

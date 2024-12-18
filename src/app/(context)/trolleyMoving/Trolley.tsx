@@ -1,6 +1,5 @@
 "use client";
 import SocketServices from "@/app/api/socketService";
-import { stringify } from "querystring";
 import React, {
   createContext,
   useState,
@@ -8,10 +7,6 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-
-interface LiveContextType {
-  value: any;
-}
 
 export const LiveDataContext = createContext<any>(undefined);
 
@@ -31,7 +26,6 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
         await SocketServices.initialiseWS();
 
         SocketServices.emit("login", { userId });
-
         SocketServices.on("notification", (data) => {
           console.log("notificaton", data);
           setValue(data);

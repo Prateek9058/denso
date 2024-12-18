@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Grid } from "@mui/material";
+<<<<<<< HEAD
 import { MapContainer, ImageOverlay, Polyline, useMap } from "react-leaflet";
+=======
+import { MapContainer, ImageOverlay, Marker, Polyline } from "react-leaflet";
+>>>>>>> 76501a798eddc66f992a8bdb5d0d39997f9d3afb
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import allowedCoordinates from "@/app/(components)/pages/trolley/addTrolley/allowedCoordinates";
-
 interface PointWithMarker {
   x: number;
   y: number;
@@ -12,9 +15,10 @@ interface PointWithMarker {
   _id: string;
 }
 interface empProps {
-  userDetails: any;
   trolleyCoordinates: PointWithMarker[];
+  trolleyPath: PointWithMarker[];
 }
+<<<<<<< HEAD
 
 interface AnimatedMarkerProps {
   polyline: [number, number][];
@@ -98,8 +102,13 @@ const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({
 
 const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
   const [currentPointIndex, setCurrentPointIndex] = useState(0);
+=======
+const EmpTrack: React.FC<empProps> = ({ trolleyCoordinates, trolleyPath }) => {
+>>>>>>> 76501a798eddc66f992a8bdb5d0d39997f9d3afb
   const [linePositions, setLinePositions] = useState<[number, number][]>([]);
-
+  const [filteredCoordinates, setFilteredCoordinates] = useState<
+    PointWithMarker[]
+  >([]);
   const bounds: [[number, number], [number, number]] = useMemo(
     () => [
       [0, 0],
@@ -107,6 +116,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
     ],
     []
   );
+<<<<<<< HEAD
 
   const getDistance = (p1: [number, number], p2: [number, number]): number => {
     return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
@@ -194,22 +204,24 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
     return path;
   };
 
+=======
+>>>>>>> 76501a798eddc66f992a8bdb5d0d39997f9d3afb
   useEffect(() => {
-    if (trolleyCoordinates.length < 2) return;
-
-    const start = getNearestAllowedPoint([
-      trolleyCoordinates[0]?.x,
-      trolleyCoordinates[0]?.y,
-    ]);
-    const end = getNearestAllowedPoint([
-      trolleyCoordinates[trolleyCoordinates.length - 1]?.x,
-      trolleyCoordinates[trolleyCoordinates.length - 1]?.y,
-    ]);
-
-    const newPolyline = findShortestPath(start, end);
-    setLinePositions(newPolyline);
+    if (trolleyCoordinates?.length > 0) {
+      const filtered = trolleyCoordinates?.filter((point) =>
+        allowedCoordinates?.some(
+          (allowed) => allowed[0] === point.y && allowed[1] === point.x
+        )
+      );
+      setFilteredCoordinates(filtered);
+      const positions = trolleyPath?.map(
+        (point) => [point?.x, point?.y] as [number, number]
+      );
+      setLinePositions(positions);
+    }
   }, [trolleyCoordinates]);
 
+<<<<<<< HEAD
   useEffect(() => {
     if (linePositions.length === 0) {
       return; 
@@ -224,6 +236,27 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
 
     return () => clearInterval(intervalId);
   }, [linePositions]);
+=======
+  
+  const customIcon = L.divIcon({
+    html: `<div style="width: 12px; height: 12px; background-color: red; border-radius: 50%; border: 1px solid white;"></div>`,
+    className: "",
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+  });
+  const startIcon = L.divIcon({
+    html: `<div style="width: 20px; height: 20px; background-color: green; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 50%; border: 2px solid white;">A</div>`,
+    className: "",
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  });
+  const endIcon = L.divIcon({
+    html: `<div style="width: 20px; height: 20px; background-color: red; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 50%; border: 2px solid white;">B</div>`,
+    className: "",
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  });
+>>>>>>> 76501a798eddc66f992a8bdb5d0d39997f9d3afb
   return (
     <Grid container mt={1}>
       <Grid item md={12} sx={{ height: "600px", width: "100%" }}>
@@ -240,6 +273,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
           ]}
           maxBoundsViscosity={1.0}
         >
+          {/* Background Image */}
           <ImageOverlay
             url="/Img/Layoutdenso.png"
             bounds={bounds}
@@ -249,18 +283,37 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
               },
             }}
           />
+          {/* Polyline */}
           <Polyline
             positions={linePositions}
             pathOptions={{ color: "black" }}
-            weight={2}
+            weight={4}
             opacity={0.7}
             dashArray="5, 10"
           />
-          <AnimatedMarker polyline={linePositions} duration={1000} />
+          {/* Render Markers for Valid Coordinates */}
+          {filteredCoordinates?.map((point) => (
+            <Marker
+              key={point._id}
+              position={[point?.y, point.x]}
+              icon={customIcon}
+            />
+          ))}
+          []
+          {/* Start Marker (A) */}
+          {linePositions?.length > 1 && (
+            <Marker position={linePositions[0]} icon={startIcon} />
+          )}
+          {/* End Marker (B) */}
+          {linePositions?.length > 1 && (
+            <Marker
+              position={linePositions[linePositions?.length - 1]}
+              icon={endIcon}
+            />
+          )}
         </MapContainer>
       </Grid>
     </Grid>
   );
 };
-
 export default EmpTrack;

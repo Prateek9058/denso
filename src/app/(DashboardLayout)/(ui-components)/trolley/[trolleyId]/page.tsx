@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, ChangeEvent, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, Typography } from "@mui/material";
 import AddDevice from "@/app/(components)/pages/trolley/addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
@@ -13,16 +13,11 @@ import ToastComponent, {
   notifyError,
   notifySuccess,
 } from "@/app/(components)/mui-components/Snackbar";
-import { AxiosError } from "axios";
 import moment from "moment";
 import TrolleyTrack from "./trolleyTrack";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
 import AddRepair from "@/app/(components)/pages/trolley/addRepair";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
-import {
-  LiveDataContext,
-  LiveDataProvider,
-} from "@/app/(context)/trolleyMoving/Trolley";
 import SocketServices from "@/app/api/socketService";
 
 type Breadcrumb = {
@@ -35,9 +30,7 @@ interface PointWithMarker {
   showMarker: boolean;
   _id: string;
 }
-interface ErrorResponse {
-  error?: string;
-}
+
 type GetDataHandler = (state: any, resultArray: any) => void;
 const Page: React.FC = () => {
   const { trolleyId } = useParams<{ trolleyId: any }>();
@@ -52,44 +45,9 @@ const Page: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [startDate, setStartDate] = React.useState<any>(moment());
   const [endDate, setEndDate] = React.useState<any>(moment());
-  const [trolleyData, setTrolleytData] = React.useState<object>({});
-  localStorage.setItem("trolleyId", trolleyId);
-  const { value } = useContext(LiveDataContext);
-
-  useEffect(() => {
-    if (trolleyId) {
-      (async () => {
-        await SocketServices.initialiseWS();
-
-        SocketServices.emit("joinTrolley", { trolleyId });
-        SocketServices.on("trolleyData", (data) => {
-          console.log("data form ", trolleyId, data);
-          setTrolleytData(data);
-        });
-      })();
-      return () => {
-        if (trolleyId) {
-          console.log("disconnecting.....", trolleyId);
-          SocketServices.emit("disconnectTrolley", { trolleyId });
-          SocketServices.off("trolleyData");
-        }
-        localStorage.removeItem("trolleyId");
-        setTrolleytData({});
-      };
-    }
-  }, [trolleyId]);
-
-  const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
-    const startDate = moment(state?.[0]?.startDate);
-    const endDate = moment(state?.[0]?.endDate);
-    setStartDate(startDate);
-    setEndDate(endDate);
-  };
   const [trolleyCoordinates, setTrolleyCoordinates] = useState<
     PointWithMarker[]
   >([]);
-  console.log("trollet", trolleyCoordinates);
-
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
     { label: "Trolley Tracking ", link: "/trolley" },
@@ -98,6 +56,33 @@ const Page: React.FC = () => {
       link: "",
     },
   ];
+  const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
+    const startDate = moment(state?.[0]?.startDate);
+    const endDate = moment(state?.[0]?.endDate);
+    setStartDate(startDate);
+    setEndDate(endDate);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClickOpenAgent = () => {
+    setOoenRepair(true);
+  };
+
+  const deleteTrolley = async () => {
+    try {
+      const res = await axiosInstance.delete(
+        `trolleys/deleteTrolley/${trolleyId}`
+      );
+      if (res?.status === 200 || res?.status === 201) {
+        notifySuccess("Trolley deleted successfully");
+        router.push("/trolley");
+      }
+    } catch (error) {
+      notifyError("Error deleting employee");
+    }
+  };
 
   const getTrolleyDetails = async () => {
     setLoading(true);
@@ -120,21 +105,6 @@ const Page: React.FC = () => {
     }
   }, [trolleyId]);
 
-  useEffect(() => {
-    if (trolleyData && Object.keys(trolleyData).length > 0) {
-      setTrolleyCoordinates((prevCoordinates: any) => [
-        ...prevCoordinates,
-        trolleyData,
-      ]);
-    }
-  }, [trolleyData]);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClickOpenAgent = () => {
-    setOoenRepair(true);
-  };
   const getTrolleyRepairData = async () => {
     setLoading(true);
     try {
@@ -155,19 +125,30 @@ const Page: React.FC = () => {
   useEffect(() => {
     getTrolleyRepairData();
   }, [page, rowsPerPage, searchQuery, trolleyId, startDate, endDate]);
-  const deleteTrolley = async () => {
-    try {
-      const res = await axiosInstance.delete(
-        `trolleys/deleteTrolley/${trolleyId}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        notifySuccess("Trolley deleted successfully");
-        router.push("/trolley");
-      }
-    } catch (error) {
-      notifyError("Error deleting employee");
+
+  // Coordinate Mapping on Layout
+  useEffect(() => {
+    if (trolleyId) {
+      (async () => {
+        await SocketServices.initialiseWS();
+        SocketServices.emit("joinTrolley", { trolleyId });
+        SocketServices.on("trolleyData", (data) => {
+          if (data && Object.keys(data).length > 0) {
+            setTrolleyCoordinates([data]);
+          }
+        });
+      })();
+      return () => {
+        if (trolleyId) {
+          console.log("disconnecting.....", trolleyId);
+          SocketServices.emit("disconnectTrolley", { trolleyId });
+          SocketServices.off("trolleyData");
+        }
+        localStorage.removeItem("trolleyId");
+        setTrolleyCoordinates([]);
+      };
     }
-  };
+  }, [trolleyId]);
   return (
     <>
       <ToastComponent />
@@ -359,10 +340,10 @@ const Page: React.FC = () => {
         </Grid> */}
       </Grid>
 
-      {trolleyCoordinates?.length > 0 && (
+      {trolleyCoordinates && Object.keys(trolleyCoordinates)?.length > 0 && (
         <TrolleyTrack
-          userDetails={trolleyId}
           trolleyCoordinates={trolleyCoordinates}
+          trolleyPath={trolleyDetails?.pathPointers}
         />
       )}
 
