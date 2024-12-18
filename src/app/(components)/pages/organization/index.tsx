@@ -37,11 +37,17 @@ const Table: React.FC<TableProps> = ({
   type,
   getFetchAllDetails,
 }) => {
-  const columns = ["Sno.", "UId", type, "Created At", "View"];
+  const columns = [
+    "Sno.",
+    "UId",
+    type,
+    "Created At",
+    type === "department" ? "Section count" : "",
+    "View",
+  ];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
-  console.log("link", type);
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -70,6 +76,7 @@ const Table: React.FC<TableProps> = ({
       uId: item?.uId ?? "N/A",
       name: item?.name ? item?.name : "N/A",
       createAt: item?.createdAt ? moment(item?.createdAt).format("lll") : "N/A",
+      count: item?.sections?.length ?? "",
       Action: [
         <Grid container justifyContent="space-between" key={index}>
           {type != "line" && (

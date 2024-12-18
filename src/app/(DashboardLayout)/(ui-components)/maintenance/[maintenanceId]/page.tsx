@@ -106,6 +106,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
       notifyError(error?.response?.data?.message);
     }
   };
+  console.log("date", moment(trolleyDetails?.createdAt).format("lll"));
   return (
     <>
       <ToastComponent />
@@ -245,7 +246,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
                   disabled
                   defaultValue={
                     trolleyDetails
-                      ? moment(trolleyDetails?.updatedAt).format("lll")
+                      ? moment(trolleyDetails?.repairDate).format("lll")
                       : ""
                   }
                 />
@@ -256,13 +257,13 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
                   fontWeight={500}
                   component="label"
                 >
-                  Date of purchase
+                  Date of createdAt
                 </Typography>
                 <CustomTextField
                   disabled
                   defaultValue={
                     trolleyDetails
-                      ? moment(trolleyDetails?.purchaseDate).format("lll")
+                      ? moment(trolleyDetails?.createdAt).format("lll")
                       : ""
                   }
                 />

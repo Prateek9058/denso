@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Grid } from "@mui/material";
-import {
-  MapContainer,
-  ImageOverlay,
-  Polyline,
-  useMap,
-} from "react-leaflet";
+import { MapContainer, ImageOverlay, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import allowedCoordinates from "@/app/(components)/pages/trolley/addTrolley/allowedCoordinates";
@@ -26,7 +21,11 @@ interface AnimatedMarkerProps {
   duration?: number;
 }
 
-const interpolatePosition = (start: [number, number], end: [number, number], t: number): [number, number] => {
+const interpolatePosition = (
+  start: [number, number],
+  end: [number, number],
+  t: number
+): [number, number] => {
   if (!start || !end || start.length !== 2 || end.length !== 2) {
     console.error("Invalid input to interpolatePosition:", { start, end });
     return [0, 0]; // Default fallback position
@@ -37,7 +36,10 @@ const interpolatePosition = (start: [number, number], end: [number, number], t: 
   ];
 };
 
-const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({ polyline, duration = 1000 }) => {
+const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({
+  polyline,
+  duration = 1000,
+}) => {
   const map = useMap();
   const [marker, setMarker] = useState<L.Marker | null>(null);
   const [currentPointIndex, setCurrentPointIndex] = useState(0);
@@ -52,28 +54,32 @@ const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({ polyline, duration = 10
         iconSize: [20, 20],
         iconAnchor: [10, 10],
       });
-  
+
       const initialMarker = L.marker(polyline[0], { icon }).addTo(map);
       setMarker(initialMarker);
     }
-  
+
     if (marker && polyline.length > 1) {
       let startTime: number | null = null;
-  
+
       const animate = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
-  
+
         const progress = Math.min(elapsed / duration, 1);
         const start = polyline[currentPointIndex];
         const end = polyline[(currentPointIndex + 1) % polyline.length];
-  
+
         // Ensure both start and end are valid before calling interpolatePosition
         if (start && end) {
-          const interpolatedPosition: [number, number] = interpolatePosition(start, end, progress);
+          const interpolatedPosition: [number, number] = interpolatePosition(
+            start,
+            end,
+            progress
+          );
           marker.setLatLng(interpolatedPosition);
         }
-  
+
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
@@ -82,7 +88,7 @@ const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({ polyline, duration = 10
           requestAnimationFrame(animate);
         }
       };
-  
+
       requestAnimationFrame(animate);
     }
   }, [map, marker, polyline, duration, currentPointIndex]);
@@ -106,7 +112,9 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
     return Math.sqrt(Math.pow(p2[0] - p1[0], 2) + Math.pow(p2[1] - p1[1], 2));
   };
 
-  const getNearestAllowedPoint = (point: [number, number]): [number, number] => {
+  const getNearestAllowedPoint = (
+    point: [number, number]
+  ): [number, number] => {
     let nearestPoint: [number, number] = allowedCoordinates[0];
     let minDistance = Infinity;
 
@@ -204,12 +212,14 @@ const EmpTrack: React.FC<empProps> = ({ userDetails, trolleyCoordinates }) => {
 
   useEffect(() => {
     if (linePositions.length === 0) {
-      return; // Stop the animation if no positions
+      return; 
     }
 
     const duration = 1000;
     const intervalId = setInterval(() => {
-      setCurrentPointIndex((prevIndex) => (prevIndex + 1) % linePositions.length);
+      setCurrentPointIndex(
+        (prevIndex) => (prevIndex + 1) % linePositions.length
+      );
     }, duration);
 
     return () => clearInterval(intervalId);
