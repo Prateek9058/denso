@@ -2,7 +2,7 @@ import axios from "axios";
 import { signOut } from "next-auth/react";
 const axiosInstance = axios.create({
   baseURL: "http://103.127.30.171:8080/api/v1/",
-  // baseURL: "http://10.5.50.82:8081",
+  // baseURL: "http://10.122.74.130:8080/api/v1/",
   // baseURL: "http://localhost:8081",
 });
 const requestInterceptor = axiosInstance.interceptors.request.use(

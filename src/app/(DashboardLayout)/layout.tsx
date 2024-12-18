@@ -19,12 +19,11 @@ export default async function RootLayout({
         {!session ? (
           <AuthProvider>{children}</AuthProvider>
         ) : (
-          <LiveDataProvider>
-            <NotificationProvider>
-              
-              <FullLayout>{children}</FullLayout>
-            </NotificationProvider>
-          </LiveDataProvider>
+          // <LiveDataProvider>
+          <NotificationProvider>
+            <FullLayout>{children}</FullLayout>
+          </NotificationProvider>
+          // </LiveDataProvider>
         )}
       </body>
     </html>

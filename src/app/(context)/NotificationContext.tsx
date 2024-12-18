@@ -33,16 +33,9 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   const [readCount, setReadCount] = useState<any>(null);
 
   const getnotification = async () => {
-    const storedSite = localStorage.getItem("selectedSite");
-    if (!storedSite) {
-      console.error("No site selected");
-      return;
-    }
     setLoading(true);
     try {
-      const res = await axiosInstance.get(
-        `api/v1/alerts/getAllAlerts/${JSON.parse(storedSite)?._id}`
-      );
+      const res = await axiosInstance.get(`api/v1/alerts/getAllAlerts`);
       if (res?.status === 200 || res?.status === 201) {
         const notifications = res?.data?.data;
         setNotification(notifications);
@@ -78,13 +71,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
       );
     }
   };
-  useEffect(() => {
-    getnotification();
-    const intervalId = setInterval(() => {
-      getnotification();
-    }, 30000);
-    return () => clearInterval(intervalId);
-  }, []);
+
   return (
     <NotificationContext.Provider
       value={{
