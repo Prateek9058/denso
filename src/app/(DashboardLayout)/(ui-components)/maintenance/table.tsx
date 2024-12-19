@@ -46,7 +46,7 @@ const Table: React.FC<TableProps> = ({
     "Trolley ID",
     "Date",
     "Issue",
-    "Av. repair time",
+    "Repair time",
     "Status",
     "View",
   ];

@@ -135,7 +135,7 @@ const Table: React.FC<TableProps> = ({
         onConfirm={handleConfirm}
       />
       <Grid container>
-        <Grid container justifyContent={"space-between"}>
+        <Grid container justifyContent={"space-between"} mb={2}>
           <Grid item>
             <Breadcrumb breadcrumbItems={breadcrumbItems} />
           </Grid>

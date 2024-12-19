@@ -456,7 +456,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                           defaultValue={
                             selectedDevice ? selectedDevice?.uId : ""
                           }
-                          
                         />
                       )}
                     />

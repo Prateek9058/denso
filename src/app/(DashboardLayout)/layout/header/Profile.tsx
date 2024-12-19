@@ -21,7 +21,7 @@ export default function AccountMenu() {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const [userData , setData] = React.useState<any>()
+  const [userData, setData] = React.useState<any>();
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -34,21 +34,20 @@ export default function AccountMenu() {
     localStorage.removeItem("loginId");
     signOut({ callbackUrl: "/login", redirect: true });
   };
-  React.useEffect(()=>{
+  React.useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get("/auth/getAdminData");
-        if(response){
-          setData(response?.data?.data)
+        if (response) {
+          setData(response?.data?.data);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
-    fetchData();
 
-  },[])
+    fetchData();
+  }, []);
   return (
     <React.Fragment>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
@@ -85,7 +84,9 @@ export default function AccountMenu() {
               />
             </Grid>
             <Grid>
-              <Typography variant="body1">{userData ? userData?.fullName :''}</Typography>
+              <Typography variant="body1">
+                {userData ? userData?.fullName : ""}
+              </Typography>
               <Typography variant="body2" color="#DC0032">
                 {"Admin"}
               </Typography>
@@ -149,7 +150,9 @@ export default function AccountMenu() {
             />
           </Grid>
           <Grid>
-            <Typography variant="body1">{userData ? userData?.fullName :''}</Typography>
+            <Typography variant="body1">
+              {userData ? userData?.fullName : ""}
+            </Typography>
             <Typography variant="body2" color="#DC0032">
               {"Admin"}
             </Typography>
@@ -158,7 +161,7 @@ export default function AccountMenu() {
         <Divider />
         <MenuItem
           onClick={() => {
-            handleClose(), router.push("/user-management");
+            handleClose(), router.push("/settings");
           }}
         >
           <ListItemIcon>

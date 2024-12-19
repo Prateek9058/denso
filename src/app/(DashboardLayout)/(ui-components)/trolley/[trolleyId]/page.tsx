@@ -18,18 +18,11 @@ import TrolleyTrack from "./trolleyTrack";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
 import AddRepair from "@/app/(components)/pages/trolley/addRepair";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
-import SocketServices from "@/app/api/socketService";
 
 type Breadcrumb = {
   label: string;
   link: string;
 };
-interface PointWithMarker {
-  x: number;
-  y: number;
-  showMarker: boolean;
-  _id: string;
-}
 
 type GetDataHandler = (state: any, resultArray: any) => void;
 const Page: React.FC = () => {
@@ -45,9 +38,7 @@ const Page: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [startDate, setStartDate] = React.useState<any>(moment());
   const [endDate, setEndDate] = React.useState<any>(moment());
-  const [trolleyCoordinates, setTrolleyCoordinates] = useState<
-    PointWithMarker[]
-  >([]);
+
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
     { label: "Trolley Tracking ", link: "/trolley" },
@@ -126,29 +117,6 @@ const Page: React.FC = () => {
     getTrolleyRepairData();
   }, [page, rowsPerPage, searchQuery, trolleyId, startDate, endDate]);
 
-  // Coordinate Mapping on Layout
-  useEffect(() => {
-    if (trolleyId) {
-      (async () => {
-        await SocketServices.initialiseWS();
-        SocketServices.emit("joinTrolley", { trolleyId });
-        SocketServices.on("trolleyData", (data) => {
-          if (data && Object.keys(data).length > 0) {
-            setTrolleyCoordinates([data]);
-          }
-        });
-      })();
-      return () => {
-        if (trolleyId) {
-          console.log("disconnecting.....", trolleyId);
-          SocketServices.emit("disconnectTrolley", { trolleyId });
-          SocketServices.off("trolleyData");
-        }
-        localStorage.removeItem("trolleyId");
-        setTrolleyCoordinates([]);
-      };
-    }
-  }, [trolleyId]);
   return (
     <>
       <ToastComponent />
@@ -324,28 +292,12 @@ const Page: React.FC = () => {
         <Grid item>
           <Typography variant="h4">Location</Typography>
         </Grid>
-        {/* <Grid item>
-          {" "}
-          <Button
-            onClick={() => handleRoute(trolleyDetails?.trolleyUid)}
-            variant="contained"
-            size="medium"
-            sx={{
-              color: "#FFFFFF",
-              backgroundColor: "#4C4C4C",
-            }}
-          >
-            Animated route
-          </Button>
-        </Grid> */}
       </Grid>
 
-      {trolleyCoordinates && Object.keys(trolleyCoordinates)?.length > 0 && (
-        <TrolleyTrack
-          trolleyCoordinates={trolleyCoordinates}
-          trolleyPath={trolleyDetails?.pathPointers}
-        />
-      )}
+      <TrolleyTrack
+        trolleyId={trolleyId}
+        trolleyPath={trolleyDetails?.pathPointers}
+      />
 
       <Table
         deviceData={deviceData}

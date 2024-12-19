@@ -44,6 +44,7 @@ export default function AssignAssessment({
 
   // my state
   const [department, setDepartment] = useState<any>(null);
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     if (name == "department") {
@@ -51,6 +52,17 @@ export default function AssignAssessment({
     }
   };
 
+  useEffect(() => {
+    setTrolley(
+      selectedDevice?.trolley?.map((item: any) => {
+        return item?._id;
+      })
+    );
+
+    setSelectedDepartmentId(
+      selectedDevice?.trolley?.[0]?.departmentId?._id || null
+    );
+  }, [selectedDevice]);
   const getDepartmentDropdown = async () => {
     try {
       const { data, status } = await axiosInstance.get(
@@ -58,8 +70,8 @@ export default function AssignAssessment({
       );
       if (status === 200 || status === 201) {
         setDepartment(data?.data?.data);
-        if (department.length > 0) {
-          setDepartment(department[0]._id);
+        if (department?.length > 0) {
+          setDepartment(department[0]?._id);
         }
       }
     } catch (error) {
@@ -94,7 +106,7 @@ export default function AssignAssessment({
   }, [open]);
 
   useEffect(() => {
-    if (selectedDepartmentId && department) {
+    if (selectedDepartmentId) {
       getAllTrolleyByDepartmentId();
     }
   }, [
@@ -105,6 +117,7 @@ export default function AssignAssessment({
     selectedDepartmentId,
     lineIds,
     selectIDs,
+    selectedDevice,
   ]);
   const handleClose = () => {
     setOpen(false);
@@ -112,13 +125,7 @@ export default function AssignAssessment({
     reset();
     setTrolley(null);
   };
-  useEffect(() => {
-    setTrolley(
-      selectedDevice?.trolley?.map((item: any) => {
-        return item;
-      })
-    );
-  }, [selectedDevice]);
+
   const onSubmit = async () => {
     const body = {
       employeeId: selectedDevice?._id,

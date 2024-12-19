@@ -52,7 +52,7 @@ const Page = ({ params }: { params: { section: string } }) => {
   return (
     <>
       <ToastComponent />
-      <Grid container justifyContent={"space-between"}>
+      <Grid container justifyContent={"space-between"} mb={2}>
         <Grid item>
           <Breadcrumb breadcrumbItems={breadcrumbItems} />
         </Grid>

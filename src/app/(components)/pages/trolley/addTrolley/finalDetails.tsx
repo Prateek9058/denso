@@ -199,7 +199,12 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
       <Grid container justifyContent="space-between">
         <Grid item xs={12}>
           <DialogContent>
-            <Grid container justifyContent="space-between" spacing={2}>
+            <Grid
+              container
+              justifyContent="space-between"
+              spacing={2}
+              zIndex={0}
+            >
               <Grid item md={5.8}>
                 <FormControl
                   fullWidth
@@ -315,7 +320,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                         <TextField
                           {...params}
                           label="Select line"
-                          placeholder="Select libne"
+                          placeholder="Select line"
                           variant="outlined"
                           fullWidth
                           error={!!error}

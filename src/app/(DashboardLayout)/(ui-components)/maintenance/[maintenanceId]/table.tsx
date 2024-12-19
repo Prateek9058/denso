@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Chip, Grid, Typography } from "@mui/material";
-import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import moment from "moment";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
@@ -24,14 +23,11 @@ const Table: React.FC<TableProps> = ({
   setRowsPerPage,
   page,
   setPage,
-  searchQuery,
-  setSearchQuery,
   loading,
   getDataFromChildHandler,
 }) => {
-  const columns = ["Sno.", "Trolley ID", "Date", "Issue", "Status"];
+  const columns = ["Sno.", "Trolley ID", "Date & Time", "Issue", "Status"];
   const [open, setOpenDialog] = React.useState(false);
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   const renderPowerStatus = (status: string) => (
     <Chip
       label={status === "not_repaired" ? "Not Repaired" : "Repaired"}
@@ -44,23 +40,6 @@ const Table: React.FC<TableProps> = ({
       }}
     />
   );
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setSearchQuery(debouncedSearchQuery);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [debouncedSearchQuery, setSearchQuery]);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDebouncedSearchQuery(event.target.value);
-  };
-
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
 
   const handleConfirm = () => {
     handleCancel();
@@ -108,14 +87,6 @@ const Table: React.FC<TableProps> = ({
           </Grid>
           <Grid item>
             <Grid container justifyContent={"space-between"}>
-              {/* <Grid item className="customSearch">
-                <CustomTextField
-                  type="search"
-                  placeholder="Search ID / Name"
-                  value={debouncedSearchQuery}
-                  onChange={handleSearchChange}
-                />
-              </Grid> */}
               <Grid ml={2}>
                 <CommonDatePicker
                   getDataFromChildHandler={getDataFromChildHandler}

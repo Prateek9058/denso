@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   DialogActions,
@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
-import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -19,6 +18,10 @@ interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   getTrolleyData?: any;
+  selectedDept?: string | null;
+  selectedMen?: string | null;
+  setSelectedMen: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedDept: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 interface TabPanelProps {
@@ -35,9 +38,7 @@ const TabItem = styled(Tab)(({ theme }) => ({
   marginBottom: "25px",
 
   "&.Mui-selected": {
-    color: "#fff",
-
-    backgroundColor: "#DC0032",
+    color: "#DC0032",
   },
 }));
 
@@ -72,11 +73,13 @@ export default function AssignAssessment({
   open,
   setOpen,
   getTrolleyData,
+  selectedDept,
+  selectedMen,
+  setSelectedDept,
+  setSelectedMen,
 }: Props) {
   const methods = useForm<any>();
   const [activeStep, setValue] = React.useState(0);
-  const [selectedMen, setSelectedMen] = useState<string | null>(null);
-  const [selectedDept, setSelectedDept] = useState<string | null>(null);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -100,6 +103,12 @@ export default function AssignAssessment({
     getTrolleyData(selectedMen, selectedDept);
     handleClose();
   };
+  const handleClear = () => {
+    setSelectedDept(null);
+    setSelectedMen(null);
+    getTrolleyData();
+    handleClose();
+  };
   return (
     <CommonDialog
       open={open}
@@ -112,7 +121,7 @@ export default function AssignAssessment({
     >
       <form onSubmit={handleSubmit}>
         <DialogContent>
-          <Grid container mt={4} sx={{}}>
+          <Grid container>
             <Tabs
               orientation="vertical"
               variant="scrollable"
@@ -186,37 +195,17 @@ export default function AssignAssessment({
         </DialogContent>
 
         <DialogActions className="dialog-action-btn">
-          {activeStep == 0 && (
-            <ConfirmationDialog
-              title={"Cancel"}
-              handleCloseFirst={handleClose}
-              message={"Are you sure you want to cancel?"}
-            />
-          )}
-          {activeStep !== 0 && (
-            <Button
-              variant="outlined"
-              sx={{ width: "150px" }}
-              onClick={() => setValue(activeStep - 1)}
-            >
-              Back
-            </Button>
-          )}
-          {activeStep < 1 ? (
-            <>
-              <Button
-                variant="contained"
-                sx={{ width: "150px" }}
-                onClick={() => setValue(activeStep + 1)}
-              >
-                Next
-              </Button>
-            </>
-          ) : (
-            <Button variant="contained" type="submit" sx={{ width: "150px" }}>
-              Submit
-            </Button>
-          )}
+          <Button
+            variant="outlined"
+            sx={{ width: "150px" }}
+            onClick={handleClear}
+          >
+            Clear All
+          </Button>
+
+          <Button variant="contained" type="submit" sx={{ width: "150px" }}>
+            Apply
+          </Button>
         </DialogActions>
       </form>
     </CommonDialog>

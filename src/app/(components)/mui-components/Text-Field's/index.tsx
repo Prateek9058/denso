@@ -25,8 +25,8 @@ interface CustomTextFieldProps {
   disabled?: boolean;
   field?: any;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  size?:any
-  onKeyDown?:any
+  size?: any;
+  onKeyDown?: any;
 }
 
 const CustomTextField: React.FC<CustomTextFieldProps> = ({
