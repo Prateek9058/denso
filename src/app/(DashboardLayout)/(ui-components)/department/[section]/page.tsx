@@ -49,7 +49,7 @@ const Page = ({ params }: { params: { section: string } }) => {
   return (
     <>
       <ToastComponent />
-      <Grid container justifyContent={"space-between"}>
+      <Grid container justifyContent={"space-between"} mb={2}>
         <Grid item>
           <Breadcrumb breadcrumbItems={breadcrumbItems} />
         </Grid>
@@ -64,7 +64,7 @@ const Page = ({ params }: { params: { section: string } }) => {
       </Grid>
       <Table
         link={`department/${params?.section}/`}
-        type={"section"}
+        type={"Section"}
         data={data}
         page={page}
         setPage={setPage}

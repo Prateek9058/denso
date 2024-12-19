@@ -4,7 +4,6 @@ import { Grid, Typography, Button } from "@mui/material";
 import Table from "./table";
 import axiosInstance from "@/app/api/axiosInstance";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import empImg from "../../../../../../public/Img/trolleyImg.png";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ToastComponent, {
@@ -23,7 +22,6 @@ type Breadcrumb = {
 };
 type GetDataHandler = (state: any, resultArray: any) => void;
 const Page = ({ params }: { params: { maintenanceId: string } }) => {
-  const router = useRouter();
   const [openRepair, setOoenRepair] = useState<boolean>(false);
   const [page, setPage] = React.useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -87,13 +85,10 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
   const handleCancel = () => {
     setOoenRepair(false);
   };
-  const handleBack = () => {
-    router.push("/maintenance");
-  };
 
   const handleConfirm = async () => {
     try {
-      const { data, status } = await axiosInstance.post(
+      const { status } = await axiosInstance.post(
         `trolleyRepairing/updateTrolleyToRepair/${params?.maintenanceId}`
       );
       if (status === 200 || status === 201) {
@@ -106,7 +101,6 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
       notifyError(error?.response?.data?.message);
     }
   };
-  console.log("date", moment(trolleyDetails?.createdAt).format("lll"));
   return (
     <>
       <ToastComponent />
@@ -129,6 +123,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
             <Button
               onClick={handleClickOpenAgent}
               startIcon={<IoMdAddCircleOutline />}
+              variant="contained"
             >
               Resolved Issue
             </Button>
@@ -245,8 +240,8 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
                 <CustomTextField
                   disabled
                   defaultValue={
-                    trolleyDetails
-                      ? moment(trolleyDetails?.repairDate).format("lll")
+                    trolleyDetails?.repairDate
+                      ? moment(trolleyDetails?.repairDate).format("llll")
                       : ""
                   }
                 />
@@ -262,8 +257,8 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
                 <CustomTextField
                   disabled
                   defaultValue={
-                    trolleyDetails
-                      ? moment(trolleyDetails?.createdAt).format("lll")
+                    trolleyDetails?.createdAt
+                      ? moment(trolleyDetails?.createdAt).format("llll")
                       : ""
                   }
                 />

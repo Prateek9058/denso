@@ -24,16 +24,14 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-
-
 const Calendar: React.FC<CalendarProps> = ({
   getDataFromChildHandler,
   height,
   empJoinedDate,
 }) => {
   const defaultDateRange: any = {
-    startDate: subDays(new Date(),0),
-    endDate: addDays(new Date(),0),
+    startDate: subDays(new Date(), 0),
+    endDate: addDays(new Date(), 0),
     key: "selection",
   };
   const [open, setOpen] = useState<boolean>(false);
@@ -135,6 +133,9 @@ const Calendar: React.FC<CalendarProps> = ({
             borderRadius: "5px",
             padding: "9px 10px",
             width: "176px",
+            height: "44px",
+            alignItems:"center",
+            justifyContent:"center",
             fontWeight: "bold",
             fontSize: "14px",
             background: "#4C4C4C",

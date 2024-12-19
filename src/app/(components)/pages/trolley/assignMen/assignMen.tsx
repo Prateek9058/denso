@@ -24,11 +24,11 @@ interface Department {
   uId: string;
 }
 interface SelectedItems {
-  sections: string[];
+  department: string | null;
 }
 interface AssignProps {
   selectedItems: {
-    sections: any | null;
+    department: string | null;
   };
   handleSelectionChange: (key: keyof SelectedItems, id: string) => void;
 }
@@ -127,10 +127,10 @@ export default function AssignAssessmentTabSelected({
                   <FormControlLabel
                     value={item._id}
                     control={
-                      <Checkbox
-                        checked={selectedItems?.sections?.includes(item._id)}
+                      <Radio
+                        checked={selectedItems.department === item._id}
                         onChange={() =>
-                          handleSelectionChange("sections", item._id)
+                          handleSelectionChange("department", item._id)
                         }
                       />
                     }

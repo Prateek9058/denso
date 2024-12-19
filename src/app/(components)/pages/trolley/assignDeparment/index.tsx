@@ -24,7 +24,7 @@ interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   trolleyId: any;
-  getTrolleyData:any
+  getTrolleyData: any;
 }
 
 interface SelectedItems {
@@ -33,7 +33,12 @@ interface SelectedItems {
   lines: string[];
 }
 
-export default function AssignAssessment({ open, setOpen, trolleyId,getTrolleyData }: Props) {
+export default function AssignAssessment({
+  open,
+  setOpen,
+  trolleyId,
+  getTrolleyData,
+}: Props) {
   const methods = useForm<any>();
   const {
     handleSubmit,
@@ -116,9 +121,8 @@ export default function AssignAssessment({ open, setOpen, trolleyId,getTrolleyDa
         );
         if (status === 201 || status === 200) {
           notifySuccess("department assign successfully");
-          getTrolleyData()
+          getTrolleyData();
           handleClose();
-
         }
       }
     } catch (error: any) {

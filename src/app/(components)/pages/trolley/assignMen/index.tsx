@@ -1,19 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  Step,
-  Button,
-  Stepper,
-  StepLabel,
-  DialogActions,
-  DialogContent,
-} from "@mui/material";
+import { Button, DialogActions, DialogContent } from "@mui/material";
 import Step1 from "./assignMen";
-
-import {
-  notifyError,
-  notifySuccess,
-} from "@/app/(components)/mui-components/Snackbar";
+import { notifySuccess } from "@/app/(components)/mui-components/Snackbar";
 import { useForm, FormProvider } from "react-hook-form";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
@@ -27,7 +16,7 @@ interface Props {
 }
 
 interface SelectedItems {
-  sections: string[];
+  department: string | null;
 }
 
 export default function AssignAssessment({
@@ -37,37 +26,24 @@ export default function AssignAssessment({
   getTrolleyData,
 }: Props) {
   const methods = useForm<any>();
-  const {
-    setValue,
-    handleSubmit,
-    clearErrors,
-    getValues,
-    watch,
-    reset,
-    formState: { errors },
-    control,
-  } = methods;
+  const { handleSubmit } = methods;
   const [activeStep, setActiveStep] = useState(0);
   const [selectedItems, setSelectedItems] = useState<SelectedItems>({
-    sections: [],
+    department: null,
   });
 
   useEffect(() => {
-    if (data) {
+    if (data?.assingedTo?.length > 0) {
       setSelectedItems({
-        sections: data?.assingedTo?.map((item: any) => item?._id) || [],
+        department: data?.assingedTo[0]?._id || null,
       });
     }
   }, [data]);
 
   const handleSelectionChange = (key: keyof SelectedItems, id: string) => {
     setSelectedItems((prevState) => {
-      if (key === "sections") {
-        const updatedValues = prevState[key].includes(id)
-          ? prevState[key].filter((itemId) => itemId !== id)
-          : [...prevState[key], id];
-
-        return { ...prevState, [key]: updatedValues };
+      if (key === "department") {
+        return { ...prevState, department: id };
       }
 
       return prevState;
@@ -87,7 +63,7 @@ export default function AssignAssessment({
   const onSubmit = async () => {
     try {
       const data1 = {
-        employeeIds: selectedItems?.sections,
+        employeeIds: [selectedItems?.department],
         trolleyId: data?._id,
       };
       const { status } = await axiosInstance.post(

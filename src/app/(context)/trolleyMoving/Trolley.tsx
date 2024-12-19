@@ -25,8 +25,8 @@ export const LiveDataProvider: React.FC<{ children: React.ReactNode }> = ({
       (async () => {
         await SocketServices.initialiseWS();
 
-        SocketServices.emit("login", { userId });
-        SocketServices.on("notification", (data) => {
+        SocketServices.emit("joinDashboardTrolley", { userId });
+        SocketServices.on("dashboardTrolleyData", (data) => {
           console.log("notificaton", data);
           setValue(data);
         });

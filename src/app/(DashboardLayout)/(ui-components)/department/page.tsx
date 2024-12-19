@@ -46,7 +46,7 @@ const Page: React.FC = () => {
   return (
     <>
       <ToastComponent />
-      <Grid container justifyContent={"space-between"}>
+      <Grid container justifyContent={"space-between"} mb={2}>
         <Grid item>
           <Breadcrumb breadcrumbItems={breadcrumbItems} />
         </Grid>
@@ -61,7 +61,7 @@ const Page: React.FC = () => {
       </Grid>
 
       <Table
-        type={"department"}
+        type={"Department"}
         link={"department/"}
         data={data}
         page={page}

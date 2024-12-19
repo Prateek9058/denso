@@ -6,12 +6,8 @@ import {
   IconButton,
   Tooltip,
   Chip,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Button,
+  Badge,
 } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
@@ -26,6 +22,7 @@ import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 import AssignDept from "@/app/(components)/pages/trolley/assignDeparment/index";
 import Filter from "@/app/(components)/pages/trolley/filter/index";
 import AssgnMen from "@/app/(components)/pages/trolley/assignMen/index";
+import AnimatedTrolley from "@/app/(components)/pages/trolley/animatedRoute/index";
 
 interface TableProps {
   deviceData: any;
@@ -39,8 +36,8 @@ interface TableProps {
   value: any;
   columns: any;
   getTrolleyData?: any;
+  statusValue?: any;
 }
-type Category = "all" | "assigned" | "not_assigned";
 const Table: React.FC<TableProps> = ({
   deviceData,
   rowsPerPage,
@@ -53,6 +50,7 @@ const Table: React.FC<TableProps> = ({
   value,
   columns,
   getTrolleyData,
+  statusValue,
 }) => {
   const [open, setOpenDialog] = React.useState(false);
   const [openDept, setOpenDept] = React.useState<boolean>(false);
@@ -60,6 +58,15 @@ const Table: React.FC<TableProps> = ({
   const [trolleyId, setTrolleyId] = React.useState<string>("");
   const [openMen, setOpenMen] = React.useState<boolean>(false);
   const [mensData, setMensData] = React.useState<any>(null);
+  const [selectedMen, setSelectedMen] = useState<string | null>(null);
+  const [selectedDept, setSelectedDept] = useState<string | null>(null);
+  const [openAnimated, setOpenAnimated] = useState<boolean>(false);
+  const [trolleyData, setTrolleyData] = useState<any>(null);
+  const handleOpenAnimatedRoute = (item: any) => {
+    setOpenAnimated(true);
+    setTrolleyData(item);
+    console.log("poe", item);
+  };
 
   const handleOpenFilter = () => {
     setOpenFilter(true);
@@ -90,20 +97,6 @@ const Table: React.FC<TableProps> = ({
   const handleConfirm = () => {
     handleCancel();
   };
-  const [selectedCategory, setSelectedCategory] = useState<Category>("all");
-
-  const handleCategoryChange = (event: SelectChangeEvent<Category>) => {
-    const selectedValue = event.target.value as Category;
-    setSelectedCategory(selectedValue);
-    getTrolleyData(selectedValue);
-  };
-  const [openAssign, setOpenAssign] = React.useState<boolean>(false);
-  const [selectedDevice, setSelectedDevice] = React.useState<any>(null);
-
-  const handleOpenAssign = (data: any) => {
-    setOpenAssign(true);
-    setSelectedDevice(data);
-  };
 
   const handleCancel = () => {
     setOpenDialog(false);
@@ -119,6 +112,8 @@ const Table: React.FC<TableProps> = ({
       }}
     />
   );
+  const badgeCount = [selectedMen, selectedDept]?.filter(Boolean)?.length;
+
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
       trolleyUid: item?.uId ?? "N/A",
@@ -140,20 +135,22 @@ const Table: React.FC<TableProps> = ({
                     </Tooltip>
                   </Link>
                 </Grid>
+                {selectedDept === "not_assigned" && (
+                  <Grid item xs={3}>
+                    <Tooltip title="Assign departments">
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          handleOpenDept(item);
+                        }}
+                      >
+                        <GoOrganization color="#DC0032" />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                )}
                 <Grid item xs={3}>
-                  <Tooltip title="Assign departments">
-                    <IconButton
-                      size="small"
-                      onClick={() => {
-                        handleOpenDept(item);
-                      }}
-                    >
-                      <GoOrganization color="#DC0032" />
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-                <Grid item xs={3}>
-                  <Tooltip title="Assign Men">
+                  <Tooltip title="Assign Menpower">
                     <IconButton
                       size="small"
                       onClick={() => {
@@ -166,7 +163,12 @@ const Table: React.FC<TableProps> = ({
                 </Grid>
                 <Grid item xs={3}>
                   <Tooltip title="Animated routes">
-                    <IconButton size="small">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        handleOpenAnimatedRoute(item);
+                      }}
+                    >
                       <FaMapLocation color="#DC0032" />
                     </IconButton>
                   </Tooltip>
@@ -188,6 +190,14 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <>
+      {openAnimated && (
+        <AnimatedTrolley
+          open={openAnimated}
+          setOpen={setOpenAnimated}
+          trolleyId={trolleyData?._id}
+          trolleyPath={trolleyData?.pathPointers}
+        />
+      )}
       {openDept && (
         <AssignDept
           open={openDept}
@@ -201,6 +211,10 @@ const Table: React.FC<TableProps> = ({
           open={openFilter}
           setOpen={setOpenFilter}
           getTrolleyData={getTrolleyData}
+          selectedMen={selectedMen}
+          selectedDept={selectedDept}
+          setSelectedDept={setSelectedDept}
+          setSelectedMen={setSelectedMen}
         />
       )}
       {openMen && (
@@ -238,15 +252,23 @@ const Table: React.FC<TableProps> = ({
           </Grid>
           <Grid item xs={4}>
             <Grid container justifyContent={value === 0 ? "end" : "end"}>
-              <Grid item sx={{ mr: 2 }}>
-                <Button
-                  startIcon={<FilterListIcon />}
-                  variant="contained"
-                  onClick={handleOpenFilter}
-                >
-                  Filter
-                </Button>
-              </Grid>
+              {value === 0 && (
+                <Grid item sx={{ mr: 2 }}>
+                  <Badge
+                    badgeContent={badgeCount}
+                    color="error"
+                    overlap="circular"
+                  >
+                    <Button
+                      startIcon={<FilterListIcon />}
+                      variant="contained"
+                      onClick={handleOpenFilter}
+                    >
+                      Filter
+                    </Button>
+                  </Badge>
+                </Grid>
+              )}
               <Grid item xs={6}>
                 <CustomTextField
                   type="search"

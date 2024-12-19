@@ -65,7 +65,6 @@ const Page: React.FC = () => {
     setPage(0);
     setRowsPerPage(10);
   };
-
   const getTrolleyData = async (status?: Category, dept?: Category) => {
     let statusValue = "";
     if (status === "assigned") {
@@ -114,15 +113,6 @@ const Page: React.FC = () => {
   const handleClickOpenCat = () => {
     setOpenCat(true);
   };
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (trolleyId) {
-  //       SocketServices.emit("disconnectTrolley", { trolleyId });
-  //     }
-  //     localStorage.removeItem("trolleyId");
-  //   };
-  // }, [trolleyId]);
   const TabPanelList = [
     {
       component: (

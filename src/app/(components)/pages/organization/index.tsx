@@ -38,11 +38,14 @@ const Table: React.FC<TableProps> = ({
   getFetchAllDetails,
 }) => {
   const columns = [
-    "Sno.",
     "UId",
     type,
     "Created At",
-    type === "department" ? "Section count" : "",
+    type === "Department"
+      ? "Section count"
+      : type === "Section"
+        ? "Line count"
+        : "",
     "View",
   ];
   const [open, setOpenDialog] = React.useState(false);
@@ -72,11 +75,16 @@ const Table: React.FC<TableProps> = ({
 
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
-      sno: index + 1,
+      // sno: index + 1,
       uId: item?.uId ?? "N/A",
       name: item?.name ? item?.name : "N/A",
       createAt: item?.createdAt ? moment(item?.createdAt).format("lll") : "N/A",
-      count: item?.sections?.length ?? "",
+      count:
+        type === "Department"
+          ? (item?.sectionCount ?? "0")
+          : type === "Section"
+            ? (item?.lineCount ?? "0")
+            : null,
       Action: [
         <Grid container justifyContent="space-between" key={index}>
           {type != "line" && (

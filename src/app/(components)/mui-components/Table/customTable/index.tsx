@@ -90,6 +90,7 @@ const index: React.FC<CustomTableProps> = ({
                       ? "center"
                       : "center"
                 }
+                sx={{ fontSize: "14px" }}
               >
                 {column == "Expiry Date" ? (
                   <TableSortLabel
@@ -127,6 +128,7 @@ const index: React.FC<CustomTableProps> = ({
                   }
                   component="th"
                   scope="row"
+                  sx={{ fontSize: "13px" }}
                 >
                   {!Array.isArray(ele) ? (
                     ele
