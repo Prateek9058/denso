@@ -26,16 +26,18 @@ export default function AssignAssessment({
   getTrolleyData,
 }: Props) {
   const methods = useForm<any>();
+
+  console.log("gettrolle");
   const { handleSubmit } = methods;
   const [activeStep, setActiveStep] = useState(0);
   const [selectedItems, setSelectedItems] = useState<SelectedItems>({
     department: null,
   });
-
+  console.log("data", data?.assignedTo);
   useEffect(() => {
-    if (data?.assingedTo?.length > 0) {
+    if (data?.assignedTo?.length > 0) {
       setSelectedItems({
-        department: data?.assingedTo[0]?._id || null,
+        department: data?.assignedTo[0]?._id || null,
       });
     }
   }, [data]);
@@ -71,7 +73,7 @@ export default function AssignAssessment({
         data1
       );
       if (status === 201 || status === 200) {
-        notifySuccess("Men assign successfully");
+        notifySuccess("Menpower assign successfully");
         getTrolleyData();
         handleClose();
       }
@@ -85,7 +87,7 @@ export default function AssignAssessment({
       open={open}
       maxWidth={"md"}
       fullWidth={true}
-      title={"Assign Mens"}
+      title={"Assign Menpower"}
       message={"Are you sure you want to cancel?"}
       titleConfirm={"Cancel"}
       onClose={handleClose}

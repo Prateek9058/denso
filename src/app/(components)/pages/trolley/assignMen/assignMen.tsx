@@ -89,9 +89,9 @@ export default function AssignAssessmentTabSelected({
     <div>
       <Grid container justifyContent="space-between" alignItems={"center"}>
         <Grid item>
-          <Typography variant="h6">Select Men</Typography>
+          <Typography variant="h6">Select Manpower</Typography>
           <Typography variant="body2">
-            Showing {departments?.length} of {totalCount} Men
+            Showing {departments?.length} of {totalCount} Manpower
           </Typography>
         </Grid>
         <Grid item>

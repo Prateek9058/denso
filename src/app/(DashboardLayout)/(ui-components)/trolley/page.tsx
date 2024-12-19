@@ -14,7 +14,6 @@ import UploadFile from "@/app/(components)/pages/trolley/uploadFile";
 import Tabs from "@/app/(components)/mui-components/Tabs/CustomTab";
 import AddCategory from "@/app/(components)/pages/trolley/addCategory";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
-import SocketServices from "@/app/api/socketService";
 
 type Breadcrumb = {
   label: string;
@@ -53,6 +52,7 @@ const Page: React.FC = () => {
   const [categoryData, setCategoryData] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [value, setTabValue] = useState<number>(0);
+  const [DeptStatus, setDeptStatus] = useState<string>("");
 
   useEffect(() => {
     getTrolleyData();
@@ -82,6 +82,7 @@ const Page: React.FC = () => {
     } else if (dept === "all") {
       DeptStatus = "";
     }
+    setDeptStatus(DeptStatus);
     setLoading(true);
     const Url =
       value == 0
@@ -128,6 +129,7 @@ const Page: React.FC = () => {
           loading={loading}
           value={value}
           getTrolleyData={getTrolleyData}
+          DeptStatus={DeptStatus}
         />
       ),
     },
