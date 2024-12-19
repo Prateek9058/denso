@@ -201,7 +201,6 @@ const Table: React.FC<TableProps> = ({
           open={openFilter}
           setOpen={setOpenFilter}
           getTrolleyData={getTrolleyData}
-          
         />
       )}
       {openMen && (
