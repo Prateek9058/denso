@@ -36,7 +36,7 @@ interface TableProps {
   value: any;
   columns: any;
   getTrolleyData?: any;
-  statusValue?: any;
+  DeptStatus?: string;
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -50,7 +50,7 @@ const Table: React.FC<TableProps> = ({
   value,
   columns,
   getTrolleyData,
-  statusValue,
+  DeptStatus,
 }) => {
   const [open, setOpenDialog] = React.useState(false);
   const [openDept, setOpenDept] = React.useState<boolean>(false);
@@ -121,7 +121,7 @@ const Table: React.FC<TableProps> = ({
       trolleyMacId: item?.macId ?? "N/A",
       runningTime: item?.runningTime ?? "N/A",
       idealTime: item?.idealTime ?? "N/A",
-      assignStatus: renderPowerStatus(item?.assingedTo?.length) ?? "",
+      assignStatus: renderPowerStatus(item?.assignedTo?.length) ?? "",
       Action:
         value == 0
           ? [
@@ -135,7 +135,7 @@ const Table: React.FC<TableProps> = ({
                     </Tooltip>
                   </Link>
                 </Grid>
-                {selectedDept === "not_assigned" && (
+                {DeptStatus === "false" && (
                   <Grid item xs={3}>
                     <Tooltip title="Assign departments">
                       <IconButton

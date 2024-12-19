@@ -170,7 +170,7 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
 
   const handleMarkerClick = (point: PointWithMarker) => {
     setPoints((prevPoints) =>
-      prevPoints.filter((p) => p.x !== point.x || p.y !== point.y)
+      prevPoints.filter((p) => p?.x !== point?.x || p?.y !== point?.y)
     );
   };
 
@@ -181,7 +181,7 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
 
   console.log("points", points);
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} zIndex={1}>
       <Grid item xs={12}>
         <Paper
           elevation={3}
