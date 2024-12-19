@@ -1,10 +1,17 @@
 "use client";
 import React from "react";
 import { Button, DialogActions, DialogContent } from "@mui/material";
+import dynamic from "next/dynamic";
 
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
-import TrolleyTrack from "@/app/(DashboardLayout)/(ui-components)/trolley/[trolleyId]/trolleyTrack";
 
+const TrolleyTrack = dynamic(
+  () =>
+    import(
+      "@/app/(DashboardLayout)/(ui-components)/trolley/[trolleyId]/trolleyTrack"
+    ),
+  { ssr: false }
+);
 interface PointWithMarker {
   x: number;
   y: number;
