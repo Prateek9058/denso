@@ -1,6 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography } from "@mui/material";
+import {
+  Grid,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
 import AddDevice from "@/app/(components)/pages/trolley/addTrolley/addTrolley";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
@@ -18,6 +24,8 @@ import TrolleyTrack from "./trolleyTrack";
 import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/detailsListingSkeleton";
 import AddRepair from "@/app/(components)/pages/trolley/addRepair";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+import AssgnMen from "@/app/(components)/pages/trolley/assignMen/index";
+import { FaUserFriends } from "react-icons/fa";
 
 type Breadcrumb = {
   label: string;
@@ -38,6 +46,7 @@ const Page: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<any>("");
   const [startDate, setStartDate] = React.useState<any>(moment());
   const [endDate, setEndDate] = React.useState<any>(moment());
+  const [openMen, setOpenMen] = React.useState<boolean>(false);
 
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
@@ -134,6 +143,14 @@ const Page: React.FC = () => {
           setOpen={setOoenRepair}
           getTrolleyData={getTrolleyDetails}
           selectedDevice={trolleyDetails}
+        />
+      )}
+      {openMen && (
+        <AssgnMen
+          open={openMen}
+          setOpen={setOpenMen}
+          getTrolleyData={getTrolleyDetails}
+          data={trolleyDetails}
         />
       )}
       <ManagementGrid
@@ -268,15 +285,42 @@ const Page: React.FC = () => {
                   fontWeight={500}
                   component="label"
                 >
-                  Date of purchase
+                  Date of createdAt
                 </Typography>
                 <CustomTextField
                   disabled
                   defaultValue={
                     trolleyDetails
-                      ? moment(trolleyDetails?.purchaseDate).format("lll")
+                      ? moment(trolleyDetails?.createdAt).format("lll")
                       : ""
                   }
+                />
+              </Grid>
+              <Grid item md={5.8} xs={12}>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight={500}
+                  component="label"
+                >
+                  Assigned menpower
+                </Typography>
+                <TextField
+                  disabled
+                  fullWidth
+                  defaultValue={
+                    trolleyDetails?.assignedTo
+                      ? trolleyDetails?.assignedTo[0]?.fullName
+                      : "NA"
+                  }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setOpenMen(true)}>
+                          <FaUserFriends color="#DC0032" size={16} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               </Grid>
             </Grid>

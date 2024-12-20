@@ -124,44 +124,50 @@ export default function RootLayout({
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Grid container justifyContent={"space-between"} alignItems={"center"}>
-          <Grid item>
+        <Container maxWidth={"xl"}>
+          <Grid
+            container
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
             <Grid item>
-              <Toolbar sx={{ position: "absolute", left: 10 }}>
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={handleDrawerOpen}
-                  edge="start"
-                  sx={
-                    open
-                      ? { display: "none", top: "0px" }
-                      : { display: "block", top: "0px" }
-                  }
-                >
-                  <MenuIcon />
-                </IconButton>
-              </Toolbar>
-              {/* <Grid item sx={{ position: "absolute", left: "100px" ,top:"15px"}}> */}
-              <Image
-                src={Logo}
-                alt="logo"
-                style={{
-                  objectFit: "contain",
-                  marginLeft: open ? "20px" : "90px",
-                  marginTop: "15px",
-                }}
-              />
-              {/* </Grid> */}
+              <Grid item>
+                <Toolbar sx={{ position: "absolute", left: 10 }}>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={handleDrawerOpen}
+                    edge="start"
+                    sx={
+                      open
+                        ? { display: "none", top: "0px" }
+                        : { display: "block", top: "0px" }
+                    }
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                </Toolbar>
+                {/* <Grid item sx={{ position: "absolute", left: "100px" ,top:"15px"}}> */}
+                <Image
+                  src={Logo}
+                  alt="logo"
+                  style={{
+                    objectFit: "contain",
+                    marginLeft: open ? "0px" : "80px",
+                    marginTop: "15px",
+                  }}
+                />
+                {/* </Grid> */}
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Grid container>
+                <Notification />
+                <Profile />
+              </Grid>
             </Grid>
           </Grid>
-          <Grid item>
-            <Grid container>
-              <Notification />
-              <Profile />
-            </Grid>
-          </Grid>
-        </Grid>
+        </Container>
       </AppBar>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
@@ -177,6 +183,7 @@ export default function RootLayout({
           <SidebarItems />
         </Box>
       </Drawer>
+
       <Box component="main" sx={{ mt: 4, flexGrow: 1, p: 0 }}>
         <Container maxWidth="xl">
           <DrawerHeader /> {children}

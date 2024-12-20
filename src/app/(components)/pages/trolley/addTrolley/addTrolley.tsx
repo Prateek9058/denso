@@ -569,7 +569,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                 </Grid>
               )}
               {activeStep === 1 && (
-                <Grid container justifyContent={"space-between"}>
+                <Grid container justifyContent={"space-between"} >
                   <TrolleyRoute points={points} setPoints={setPoints} />
                 </Grid>
               )}
