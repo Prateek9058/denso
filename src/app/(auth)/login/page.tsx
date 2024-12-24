@@ -56,8 +56,6 @@ const Login2 = () => {
               >
                 <Box
                   display="flex"
-                  // alignItems="center"
-                  // justifyContent="center"
                   mb={4}
                 >
                   <Image src={Logo} alt="Logo" />

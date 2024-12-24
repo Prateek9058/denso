@@ -1,23 +1,15 @@
-import React, {
-  useState,
-  Fragment,
-  ReactNode,
-  MouseEvent,
-  useEffect,
-} from "react";
+import React, { useState, Fragment, ReactNode, MouseEvent } from "react";
 import Box from "@mui/material/Box";
 import { Button, Typography, Badge, Grid } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import { styled, createTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import MuiAvatar from "@mui/material/Avatar";
 import MuiMenuItem from "@mui/material/MenuItem";
 import MuiMenu from "@mui/material/Menu";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import notificationImg from "../../../../../public/Img/notification.gif";
 import Image from "next/image";
 import Link from "next/link";
-import { useNotification } from "@/app/(context)/NotificationContext";
 import moment from "moment";
 
 const theme = createTheme();
@@ -50,12 +42,6 @@ const styles = {
   },
 };
 
-const Avatar = styled(MuiAvatar)`
-  width: 2.375rem;
-  height: 2.375rem;
-  font-size: 1.125rem;
-`;
-
 const MenuItemTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 600,
   flex: "1 1 100%",
@@ -65,13 +51,6 @@ const MenuItemTitle = styled(Typography)(({ theme }) => ({
   textOverflow: "ellipsis",
   marginBottom: theme.spacing(0.75),
 }));
-
-const MenuItemSubtitle = styled(Typography)`
-  flex: "1 1 100%",
-  overflow: "hidden",
-  whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
-`;
 
 interface ScrollWrapperProps {
   children: ReactNode;
@@ -93,16 +72,14 @@ const ScrollWrapper = ({ children }: ScrollWrapperProps) => {
 };
 
 const Notification: React.FC = () => {
-  const { notification, getnotification, readCount } = useNotification();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const handleDropdownOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    getnotification();
   };
   const handleDropdownClose = () => {
     setAnchorEl(null);
   };
-
+  const notification: any = [];
   return (
     <Fragment>
       <IconButton
@@ -111,7 +88,7 @@ const Notification: React.FC = () => {
         aria-controls="customized-menu"
         sx={{ marginRight: "10px" }}
       >
-        <Badge color="primary" max={5} badgeContent={readCount ? readCount : 0}>
+        <Badge color="primary" max={5} badgeContent={0}>
           <NotificationsNoneIcon color="primary" sx={{ fontSize: "30px" }} />
         </Badge>
       </IconButton>

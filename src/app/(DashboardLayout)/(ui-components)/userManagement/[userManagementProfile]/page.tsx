@@ -21,15 +21,6 @@ type cardProps = {
   value: string;
 };
 
-const RolesData: cardProps[] = [
-  { value: "Manpower tracking" },
-  { value: "Trolley tracking" },
-  { value: "Trolley  Maintenance" },
-  { value: "User Management" },
-  { value: "Department" },
-  { value: "Alerts" },
-  { value: "Setting" },
-];
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const Page = ({ params }: { params: { userManagementProfile: string } }) => {
   const router = useRouter();
