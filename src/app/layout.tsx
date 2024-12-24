@@ -3,7 +3,6 @@ import "./overrideCss.scss";
 import { ThemeProvider } from "@mui/material/styles";
 import { baselightTheme } from "@/utils/theme/DefaultColors";
 import CssBaseline from "@mui/material/CssBaseline";
-import { AuthProviderMain } from "./(context)/authContext/AuthContext";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -13,12 +12,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProviderMain>
-          <ThemeProvider theme={theme}>
-            <CssBaseline /> 
-            {children}
-          </ThemeProvider>
-        </AuthProviderMain>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

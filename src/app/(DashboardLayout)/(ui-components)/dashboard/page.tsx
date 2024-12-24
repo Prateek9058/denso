@@ -21,7 +21,6 @@ import ManpowerWaiting from "@/app/(components)/pages/dashboard/manPowerWaitingT
 import TrolleyDetails from "@/app/(components)/pages/dashboard/trolleyDetails.tsx";
 import TrolleyRepairTime from "@/app/(components)/pages/dashboard/trolleyRepairTime";
 import TotalAlerts from "@/app/(components)/pages/dashboard/totalAlerts";
-import NotificationList from "@/app/(components)/pages/dashboard/notificationList";
 import axiosInstance from "@/app/api/axiosInstance";
 
 const DynamicHeader = dynamic(
@@ -215,7 +214,7 @@ const Page = () => {
                         <LinearProgress
                           variant="determinate"
                           color="success"
-                          value={72} 
+                          value={72}
                           sx={{
                             height: 8,
                             borderRadius: 5,

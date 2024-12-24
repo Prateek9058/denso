@@ -25,6 +25,7 @@ const Menuitems = [
     icon: dashboard,
     iconActive: dasboardIcon,
     href: "/dashboard",
+    role: ["Admin", "subAdmin"],
   },
   {
     id: uniqueId(),
@@ -32,6 +33,7 @@ const Menuitems = [
     icon: manPower,
     iconActive: manPowerActive,
     href: "/man-power-tracking",
+    role: ["Admin", "subAdmin"],
   },
   {
     id: uniqueId(),
@@ -39,6 +41,7 @@ const Menuitems = [
     icon: trolly,
     iconActive: trollyActive,
     href: "/trolley",
+    role: ["Admin", "subAdmin"],
   },
   // {
   //   id: uniqueId(),
@@ -53,6 +56,7 @@ const Menuitems = [
     icon: Maintence,
     iconActive: MaintenceAct,
     href: "/maintenance",
+    role: ["Admin", "subAdmin"],
   },
   {
     id: uniqueId(),
@@ -60,6 +64,7 @@ const Menuitems = [
     icon: UserManagementIcon,
     iconActive: UserManagementActiveIcon,
     href: "/userManagement",
+    role: ["Admin", "subAdmin"],
   },
   {
     id: uniqueId(),
@@ -67,6 +72,7 @@ const Menuitems = [
     icon: Organization,
     iconActive: OrganizationAct,
     href: "/department",
+    role: ["Admin", "subAdmin"],
   },
   {
     id: uniqueId(),
@@ -74,6 +80,7 @@ const Menuitems = [
     icon: alert,
     iconActive: alertActive,
     href: "/alerts",
+    role: ["Admin", "subAdmin"],
   },
 
   {
@@ -82,6 +89,7 @@ const Menuitems = [
     icon: setting,
     iconActive: settingActive,
     href: "/settings",
+    role: ["Admin", "subAdmin"],
   },
 ];
 

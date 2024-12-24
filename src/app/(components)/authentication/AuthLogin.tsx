@@ -4,14 +4,12 @@ import { signIn } from "next-auth/react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import CustomTextField from "@/app/(components)/forms/theme-elements/CustomTextField";
 import axiosInstance from "@/app/api/axiosInstance";
-import { useAuth } from "@/app/(context)/authContext/AuthContext";
 interface loginType {
   title?: string;
   subtitle?: JSX.Element | JSX.Element[];
   subtext?: JSX.Element | JSX.Element[];
 }
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
-  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -32,14 +30,14 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       const response = await axiosInstance.post("auth/login", body);
       if (response.status) {
         console.log("response", setLoginData(response));
-        login(
-          response?.data?.data?.token,
-          response?.data?.data?.role,
-          response?.data?.data
-        );
+
+        localStorage.setItem("token", response?.data?.data?.token);
+        localStorage.setItem("profile", JSON.stringify(response?.data?.data));
+
         signIn("credentials", {
-          username: username,
+          email: username,
           password: password,
+          role: response?.data?.data?.userRole,
           callbackUrl: `/`,
           redirect: true,
         });

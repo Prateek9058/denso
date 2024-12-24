@@ -136,6 +136,7 @@ const baselightTheme = createTheme({
         },
       },
     },
+
     MuiButton: {
       styleOverrides: {
         root: {
@@ -248,7 +249,7 @@ const baselightTheme = createTheme({
           },
         },
         input: {
-          padding: "12px 14px",
+          padding: "11px 14px",
         },
         inputSizeSmall: {
           padding: "8px 14px",

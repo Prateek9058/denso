@@ -37,10 +37,14 @@ export default function AssignAssessment({
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     if (name == "department") {
-      setSelectedDepartmentId(value); 
+      setSelectedDepartmentId(value);
     }
   };
 
+  useEffect(() => {
+    setSelectedDepartmentId(selectedDevice?.trolley[0]?.departmentId?._id);
+    getAllTrolleyByDepartmentId();
+  }, [selectedDevice]);
   const getDepartmentDropdown = async () => {
     try {
       const { data, status } = await axiosInstance.get(

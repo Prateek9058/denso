@@ -250,6 +250,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                   render={({ field, fieldState: { error } }) => (
                     <Autocomplete
                       id="section"
+                      size="small"
                       multiple
                       options={site?.length > 0 ? site : []}
                       disabled={!departmentId}
@@ -274,6 +275,12 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                           fullWidth
                           error={!!error}
                           helperText={error?.message}
+                          sx={{
+                            mt: 1,
+                            "& .MuiInputBase-input::placeholder": {
+                              fontSize: "0.8rem",
+                            },
+                          }}
                         />
                       )}
                       renderOption={(props, option, { selected }) => (
@@ -287,6 +294,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                           {option?.name}
                         </li>
                       )}
+                      disableCloseOnSelect
                     />
                   )}
                 />
@@ -302,6 +310,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                     <Autocomplete
                       id="line"
                       multiple
+                      size="small"
                       options={Line || []}
                       disabled={!selectIDs}
                       getOptionLabel={(option: any) => option?.name}
@@ -325,6 +334,12 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                           fullWidth
                           error={!!error}
                           helperText={error?.message}
+                          sx={{
+                            mt: 1,
+                            "& .MuiInputBase-input::placeholder": {
+                              fontSize: "0.8rem",
+                            },
+                          }}
                         />
                       )}
                       renderOption={(props, option, { selected }) => (
@@ -338,6 +353,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                           {option?.name}
                         </li>
                       )}
+                      disableCloseOnSelect
                     />
                   )}
                 />

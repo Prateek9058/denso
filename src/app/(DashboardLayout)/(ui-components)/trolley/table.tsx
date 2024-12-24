@@ -23,6 +23,14 @@ import AssignDept from "@/app/(components)/pages/trolley/assignDeparment/index";
 import Filter from "@/app/(components)/pages/trolley/filter/index";
 import AssgnMen from "@/app/(components)/pages/trolley/assignMen/index";
 import AnimatedTrolley from "@/app/(components)/pages/trolley/animatedRoute/index";
+import { MdOutlineEdit } from "react-icons/md";
+import { AiOutlineDelete } from "react-icons/ai";
+import AddCategory from "@/app/(components)/pages/trolley/addCategory";
+import axiosInstance from "@/app/api/axiosInstance";
+import {
+  notifyError,
+  notifySuccess,
+} from "@/app/(components)/mui-components/Snackbar";
 
 interface TableProps {
   deviceData: any;
@@ -62,10 +70,13 @@ const Table: React.FC<TableProps> = ({
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
   const [openAnimated, setOpenAnimated] = useState<boolean>(false);
   const [trolleyData, setTrolleyData] = useState<any>(null);
+  const [openCat, setOpenCat] = useState<boolean>(false);
+  const [catData, setCatData] = useState<any>(null);
+  const [deleteId, setDeleteId] = useState<string>("");
+
   const handleOpenAnimatedRoute = (item: any) => {
     setOpenAnimated(true);
     setTrolleyData(item);
-    console.log("poe", item);
   };
 
   const handleOpenFilter = () => {
@@ -94,12 +105,27 @@ const Table: React.FC<TableProps> = ({
     setDebouncedSearchQuery(event.target.value);
   };
 
-  const handleConfirm = () => {
-    handleCancel();
+  const handleConfirm = async () => {
+    try {
+      const res = await axiosInstance.delete(
+        `/trolleyCategory/deleteCategory/${deleteId}`
+      );
+      if (res.status === 200 || res.status === 201) {
+        notifySuccess("trolley category deleted successfully");
+        getTrolleyData();
+        handleCancel();
+      }
+    } catch (error: any) {
+      notifyError(error?.response?.data?.message);
+    }
   };
 
   const handleCancel = () => {
     setOpenDialog(false);
+  };
+  const handleOpenDelete = (id: string) => {
+    setOpenDialog(true);
+    setDeleteId(id);
   };
   const renderPowerStatus = (status: any) => (
     <Chip
@@ -179,17 +205,47 @@ const Table: React.FC<TableProps> = ({
     }));
   };
 
+  const handleOpenCat = (data: any) => {
+    setOpenCat(true);
+    setCatData(data);
+  };
   const getFormattedDataTable2 = (data: any[]) => {
     return data?.map((item, index) => ({
       trolleyUid: item?.uId ?? "N/A",
       trolleyName: item?.name ?? "N/A",
       color: item?.color ?? "N/A",
       createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
+      Action: [
+        <Grid container justifyContent="center" key={index}>
+          <Grid item xs={3}>
+            <Tooltip title="Edit">
+              <IconButton onClick={() => handleOpenCat(item)}>
+                <MdOutlineEdit color="#DC0032" />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          {/* <Grid item xs={3}>
+            <Tooltip title="Delete">
+              <IconButton onClick={() => handleOpenDelete(item?._id)}>
+                <AiOutlineDelete />
+              </IconButton>
+            </Tooltip>
+          </Grid> */}
+        </Grid>,
+      ],
     }));
   };
 
   return (
     <>
+      {openCat && (
+        <AddCategory
+          open={openCat}
+          setOpen={setOpenCat}
+          getCategoryData={getTrolleyData}
+          selectedDevice={catData}
+        />
+      )}
       {openAnimated && (
         <AnimatedTrolley
           open={openAnimated}
@@ -263,6 +319,7 @@ const Table: React.FC<TableProps> = ({
                       startIcon={<FilterListIcon />}
                       variant="contained"
                       onClick={handleOpenFilter}
+                      size="large"
                     >
                       Filter
                     </Button>

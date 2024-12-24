@@ -113,10 +113,6 @@ const Page: React.FC = () => {
       getEmployeeData();
     }
   }, [manpowerProfile, date]);
-  const handleRoute = (name: any) => {
-    const formattedName = name?.toUpperCase().replace(/\s+/g, "-");
-    router.push(`/man-power-tracking/${manpowerProfile}/${formattedName}`);
-  };
 
   return (
     <>

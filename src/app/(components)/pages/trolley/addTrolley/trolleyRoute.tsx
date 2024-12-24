@@ -23,12 +23,17 @@ interface PointWithMarker {
 interface TrolleyRouteProps {
   points: PointWithMarker[];
   setPoints: React.Dispatch<React.SetStateAction<PointWithMarker[]>>;
+  setPointCounter: React.Dispatch<React.SetStateAction<number>>;
 }
 interface Graph {
   [key: string]: { [key: string]: number };
 }
 
-const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
+const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
+  points,
+  setPoints,
+  setPointCounter,
+}) => {
   const coordInfoRef = useRef<HTMLDivElement>(null);
   let markerCounter = 1;
   useEffect(() => {
@@ -63,7 +68,6 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
     });
     return graph;
   };
-  console.log("markerCounter", markerCounter);
   const findShortestPath = (start: Point, end: Point): Point[] => {
     const graph = buildGraph();
     const startKey = `${start[0]},${start[1]}`;
@@ -133,6 +137,7 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
           }
 
           const lastPoint = prev[prev.length - 1];
+
           const path = findShortestPath([lastPoint.x, lastPoint.y], newPoint);
           const pathWithMarkers = path.slice(1).map((point, index, array) => ({
             x: point[0],
@@ -157,21 +162,25 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
   };
 
   const getNumberedIcon = (number: number) => {
-    console.log("markerCounterjj", number);
+    setPointCounter(number);
     return L.divIcon({
       html: `<div style="display: flex; align-items: center; justify-content: center;
               width: 25px; height: 25px; background-color: red; border-radius: 50%; color: white;
               font-size: 14px;">${number}</div>`,
       className: "",
-      iconSize: [25, 25],
-      iconAnchor: [12, 12],
+      iconSize: [20, 20],
+      iconAnchor: [10, 10],
     });
   };
 
   const handleMarkerClick = (point: PointWithMarker) => {
-    setPoints((prevPoints) =>
-      prevPoints.filter((p) => p?.x !== point?.x || p?.y !== point?.y)
-    );
+    setPoints((prevPoints) => {
+      const index = prevPoints.findIndex(
+        (p) => p.x === point.x && p.y === point.y
+      );
+
+      return prevPoints.slice(0, index + 1);
+    });
   };
 
   const imageBounds: [[number, number], [number, number]] = [
@@ -214,16 +223,13 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({ points, setPoints }) => {
                     }}
                   />
                 )}
-                {index < points.length - 1 && (
+                {index < points?.length - 1 && (
                   <Polyline
                     positions={[
-                      [point.x, point.y],
-                      [points[index + 1].x, points[index + 1].y],
+                      [point?.x, point?.y],
+                      [points[index + 1]?.x, points[index + 1]?.y],
                     ]}
                     pathOptions={{ color: "black" }}
-                    // weight={3}
-                    // opacity={0.7}
-                    // dashArray="5, 10"
                   />
                 )}
               </React.Fragment>
