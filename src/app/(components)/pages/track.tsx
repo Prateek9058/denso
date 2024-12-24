@@ -7,75 +7,15 @@ import "leaflet/dist/leaflet.css";
 import axiosInstance from "@/app/api/axiosInstance";
 import Site from "../../../../public/Img/Layoutdenso.png";
 import trolleyIconSrc from "../../../../public/Img/trolleyLive.png";
-interface TabData {
-  label: string;
-  color: string;
-}
-const tabs: TabData[] = [
-  {
-    label: "All",
-    color: "",
-  },
-  {
-    label: "Zone 1",
-    color: "#00ffff",
-  },
-  {
-    label: "Zone 2",
-    color: "green",
-  },
-  {
-    label: "Zone 3",
-    color: "#ff00ff",
-  },
-];
+
 const imageBounds: [[number, number], [number, number]] = [
   [0, 0],
   [100, 200],
 ];
-const geofenceBounds: [[number, number], [number, number]] = [
-  [8, 13],
-  [39, 48],
-];
-const geofenceBounds1: [[number, number], [number, number]] = [
-  [39, 13],
-  [58, 48],
-];
-const geofenceBounds2: [[number, number], [number, number]] = [
-  [58, 13],
-  [78, 48],
-];
+
 export default function Track() {
-  const [loading, setLoading] = useState<boolean>(false);
   const [employees, setEmployees] = useState<any>(null);
-  const [value, setTabValue] = React.useState<number>(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-    console.log(newValue);
-  };
-  const getTrackData = async () => {
-    const storedSite = localStorage.getItem("selectedSite");
-    if (!storedSite) {
-      console.error("No site selected");
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await axiosInstance.get(
-        `api/v1/dashboard/getMapData/${JSON.parse(storedSite)?._id}?zone=${
-          value == 0 ? "All" : value
-        }`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        console.log(res?.data?.data);
-        setEmployees(res?.data?.data);
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-      setLoading(false);
-    }
-  };
+
   const trolleyIcon = L.icon({
     iconUrl: trolleyIconSrc.src,
     iconSize: [35, 35],
@@ -94,13 +34,6 @@ export default function Track() {
     return color;
   };
 
-  useEffect(() => {
-    getTrackData();
-    const intervalId = setInterval(() => {
-      getTrackData();
-    }, 5000);
-    return () => clearInterval(intervalId);
-  }, [value]);
   const maxY = 100;
   const getInitials = (name: string) => {
     const nameParts = name?.split(" ");
@@ -143,18 +76,6 @@ export default function Track() {
             crs={L.CRS.Simple}
           >
             <ImageOverlay url={Site.src} bounds={imageBounds} />
-            {/* <Rectangle
-              bounds={geofenceBounds}
-              pathOptions={{ color: "#ff00ff" }}
-            />
-            <Rectangle
-              bounds={geofenceBounds1}
-              pathOptions={{ color: "green" }}
-            />
-            <Rectangle
-              bounds={geofenceBounds2}
-              pathOptions={{ color: "#00ffff" }}
-            /> */}
             {employees && (
               <>
                 {employees?.employeeData?.map((employee: any, index: any) => (
@@ -203,7 +124,6 @@ export default function Track() {
               </>
             )}
           </MapContainer>
-          {/* <Tabs value={value} handleChange={handleChange} tabs={tabs} /> */}
         </Grid>
       </Grid>
     </>

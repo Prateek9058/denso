@@ -87,7 +87,6 @@ const Page = () => {
 
       if (status === 200 && data?.data) {
         const finalData = data?.data;
-        console.log("Check finalData", finalData);
         const statsData = [
           {
             title: "Manpower",
@@ -131,7 +130,6 @@ const Page = () => {
   useEffect(() => {
     fetchStatsData();
   }, []);
-  console.log("Check stats", stats);
 
   return (
     <Grid>

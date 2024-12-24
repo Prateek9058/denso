@@ -29,8 +29,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     try {
       const response = await axiosInstance.post("auth/login", body);
       if (response.status) {
-        console.log("response", setLoginData(response));
-
         localStorage.setItem("token", response?.data?.data?.token);
         localStorage.setItem("profile", JSON.stringify(response?.data?.data));
 

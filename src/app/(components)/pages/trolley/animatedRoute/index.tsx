@@ -2,7 +2,9 @@
 import React from "react";
 import { Button, DialogActions, DialogContent } from "@mui/material";
 import dynamic from "next/dynamic";
+
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
+
 const TrolleyTrack = dynamic(
   () =>
     import(
@@ -10,7 +12,6 @@ const TrolleyTrack = dynamic(
     ),
   { ssr: false }
 );
-
 interface PointWithMarker {
   x: number;
   y: number;

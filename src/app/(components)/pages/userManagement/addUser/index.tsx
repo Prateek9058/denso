@@ -141,7 +141,6 @@ const AddUser: React.FC<AddUserProps> = ({
       handleNext();
     }
     const values = getValues();
-
     const payload = {
       uId: values?.uId,
       firstName: values?.firstName,

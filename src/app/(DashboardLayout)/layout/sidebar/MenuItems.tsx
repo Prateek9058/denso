@@ -33,6 +33,7 @@ const Menuitems = [
     icon: manPower,
     iconActive: manPowerActive,
     href: "/man-power-tracking",
+    key: "trolleyTracking",
     role: ["Admin", "subAdmin"],
   },
   {
@@ -56,6 +57,7 @@ const Menuitems = [
     icon: Maintence,
     iconActive: MaintenceAct,
     href: "/maintenance",
+    key: "maintenance",
     role: ["Admin", "subAdmin"],
   },
   {
@@ -64,6 +66,7 @@ const Menuitems = [
     icon: UserManagementIcon,
     iconActive: UserManagementActiveIcon,
     href: "/userManagement",
+    key: "user",
     role: ["Admin", "subAdmin"],
   },
   {
@@ -72,6 +75,7 @@ const Menuitems = [
     icon: Organization,
     iconActive: OrganizationAct,
     href: "/department",
+    key: "department",
     role: ["Admin", "subAdmin"],
   },
   {
@@ -80,6 +84,7 @@ const Menuitems = [
     icon: alert,
     iconActive: alertActive,
     href: "/alerts",
+    key: "alerts",
     role: ["Admin", "subAdmin"],
   },
 
@@ -89,6 +94,7 @@ const Menuitems = [
     icon: setting,
     iconActive: settingActive,
     href: "/settings",
+    key: "setting",
     role: ["Admin", "subAdmin"],
   },
 ];
