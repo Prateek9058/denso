@@ -40,7 +40,13 @@ const columns1 = [
   "Assign Count",
   "Action",
 ];
-const columns2 = ["Trolley ID", "Trolley name", "Trolly color", "Date"];
+const columns2 = [
+  "Trolley ID",
+  "Trolley name",
+  "Trolly color",
+  "Date",
+  "Action",
+];
 const Page: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [openCat, setOpenCat] = useState<boolean>(false);
@@ -60,7 +66,6 @@ const Page: React.FC = () => {
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
-
     setSearchQuery("");
     setPage(0);
     setRowsPerPage(10);
@@ -146,6 +151,7 @@ const Page: React.FC = () => {
           setSearchQuery={setSearchQuery}
           loading={loading}
           value={value}
+          getTrolleyData={getTrolleyData}
         />
       ),
     },

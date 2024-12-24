@@ -59,6 +59,15 @@ const AddCategory: React.FC<AddDeviceProps> = ({
     setOpen(false);
     reset();
   };
+
+  useEffect(() => {
+    if (selectedDevice) {
+      setValue("macId", setcategoryUid(selectedDevice?.uId));
+      setValue("name", selectedDevice?.name);
+      setValue("color", selectedDevice?.color);
+    }
+  }, [selectedDevice]);
+
   const [categoryUid, setcategoryUid] = useState<string>("");
   const handleCategoryUid = async () => {
     try {
@@ -85,21 +94,31 @@ const AddCategory: React.FC<AddDeviceProps> = ({
       color: formData?.color,
     };
     try {
-      const res = await axiosInstance.post(
-        `trolleyCategory/addTrolleyCategory`,
-        body
-      );
+      let res;
+      if (selectedDevice) {
+        res = await axiosInstance.patch(
+          `/trolleyCategory/updateTrolleyCategory/${selectedDevice?._id}`,
+          body
+        );
+      } else {
+        res = await axiosInstance.post(
+          `trolleyCategory/addTrolleyCategory`,
+          body
+        );
+      }
+
       if (res?.status === 200 || res?.status === 201) {
-        notifySuccess(`Category added successfully`);
+        notifySuccess(
+          selectedDevice
+            ? `Category updated successfully`
+            : `Category added successfully`
+        );
+        console.log("sdfkjsd");
         getCategoryData();
         handleClose();
       }
-    } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
-      notifyError(
-        axiosError?.response?.data?.message || "Error creating category"
-      );
-      console.log(error);
+    } catch (error: any) {
+      notifyError(error?.response?.data?.message);
       // handleClose();
     }
   };
@@ -139,7 +158,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                   error={!!errors.macId}
                   helperText={errors.macId?.message}
                   onChange={handleInputChange}
-                  defaultValue={categoryUid ? categoryUid : ""}
+                  defaultValue={categoryUid ? categoryUid : selectedDevice?.uId}
                 />
               </Grid>
               <Grid item md={5.8}>
@@ -153,6 +172,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                   error={!!errors.name}
                   helperText={errors.name?.message}
                   onChange={handleInputChange}
+                  defaultValue={selectedDevice ? selectedDevice?.name : ""}
                 />
               </Grid>
               <Grid item md={5.8}>
@@ -174,7 +194,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                         defaultValue={
                           selectedDevice
                             ? selectedDevice?.trolleyCategoryId?.name
-                            : ""
+                            : selectedDevice?.color
                         }
                       >
                         {selectColor &&
@@ -190,17 +210,6 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                     {(errors as any) && errors?.color?.message}
                   </FormHelperText>
                 </FormControl>
-                {/* <CustomTextField
-                  {...register("color", {
-                    required: "Trolley color is required",
-                  })}
-                  name="color"
-                  label="Trolley Color"
-                  placeholder="Enter trolley color"
-                  error={!!errors.color}
-                  helperText={errors.color?.message}
-                  onChange={handleInputChange}
-                /> */}
               </Grid>
             </Grid>
           </DialogContent>

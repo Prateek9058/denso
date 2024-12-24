@@ -86,7 +86,7 @@ const AddDepartment: React.FC<AddDeviceProps> = ({
       console.log(error);
     }
   };
-
+  console.log("sshl", type);
   const getUid = useCallback(async () => {
     setLoading(true);
     try {

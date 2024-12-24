@@ -29,9 +29,13 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     try {
       const response = await axiosInstance.post("auth/login", body);
       if (response.status) {
+        localStorage.setItem("token", response?.data?.data?.token);
+        localStorage.setItem("profile", JSON.stringify(response?.data?.data));
+
         signIn("credentials", {
-          username: username,
+          email: username,
           password: password,
+          role: response?.data?.data?.userRole,
           callbackUrl: `/`,
           redirect: true,
         });

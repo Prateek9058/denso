@@ -85,6 +85,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     FinalSectionDropDownDataProps[]
   >([]);
 
+  const [pointCounter, setPointCounter] = useState<number>(0);
+
   const methods = useForm<any>();
 
   const {
@@ -250,7 +252,6 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     handleNext();
 
     const formData = getValues();
-    console.log("form", formData);
     const body = {
       uId: formData?.trolleyId,
       macId: formData?.macId,
@@ -569,13 +570,21 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                 </Grid>
               )}
               {activeStep === 1 && (
-                <Grid container justifyContent={"space-between"} >
-                  <TrolleyRoute points={points} setPoints={setPoints} />
+                <Grid container justifyContent={"space-between"}>
+                  <TrolleyRoute
+                    points={points}
+                    setPoints={setPoints}
+                    setPointCounter={setPointCounter}
+                  />
                 </Grid>
               )}
               {activeStep === 2 && open && (
                 <Grid container justifyContent={"space-between"}>
-                  <SelectRoute rows={rows} setRows={setRows} />
+                  <SelectRoute
+                    rows={rows}
+                    setRows={setRows}
+                    pointCounter={pointCounter}
+                  />
                 </Grid>
               )}
               {activeStep === 3 && (

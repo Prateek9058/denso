@@ -24,7 +24,6 @@ import SkeletonLoader from "../../../../(components)/mui-components/Skeleton/ske
 import Image from "next/image";
 import { Controller, useForm } from "react-hook-form";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
-import Autocomplete from "@/app/(components)/mui-components/Text-Field's/Autocomplete";
 import axiosInstance from "@/app/api/axiosInstance";
 import Autocomplete1 from "@mui/material/Autocomplete";
 
@@ -138,10 +137,7 @@ export default function AssignAssessmentTabSelected({
   const {
     formState: { errors },
     setValue,
-    clearErrors,
     control,
-    watch,
-    getValues,
   } = methods;
   const handleSection = async () => {
     try {
@@ -265,6 +261,7 @@ export default function AssignAssessmentTabSelected({
                     <Autocomplete1
                       id="section"
                       multiple
+                      size="small"
                       options={site?.length > 0 ? site : []}
                       // disabled={!departmentId}
                       getOptionLabel={(option: any) => option?.name}
@@ -316,6 +313,7 @@ export default function AssignAssessmentTabSelected({
                     <Autocomplete1
                       id="line"
                       multiple
+                      size="small"
                       options={Line || []}
                       // disabled={!selectIDs}
                       getOptionLabel={(option: any) => option?.name}

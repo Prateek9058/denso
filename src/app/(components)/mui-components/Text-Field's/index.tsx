@@ -74,7 +74,8 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         InputLabelProps={{ shrink: true }}
         sx={{
           borderRadius: "8px",
-          mb: 2,
+          mb: 3,
+          // mt:2
         }}
         InputProps={{
           startAdornment: (field === "email" || field === "search") && (

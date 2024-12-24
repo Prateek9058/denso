@@ -9,7 +9,7 @@ import axiosInstance from "@/app/api/axiosInstance";
 import { AiOutlineDelete } from "react-icons/ai";
 
 interface ParentComponentProps {
-  type: "department" | "section" | "line";
+  type: "Department" | "Section" | "line";
   getFetchAllDetails: any;
   id: string;
 }
@@ -25,9 +25,9 @@ const ParentComponent: React.FC<ParentComponentProps> = ({
     try {
       let apiPath = "";
 
-      if (type === "department") {
+      if (type === "Department") {
         apiPath = `department/deleteDepartment/${id}`;
-      } else if (type === "section") {
+      } else if (type === "Section") {
         apiPath = `section/deleteSection/${id}`;
       } else if (type === "line") {
         apiPath = `line/deleteLine/${id}`;

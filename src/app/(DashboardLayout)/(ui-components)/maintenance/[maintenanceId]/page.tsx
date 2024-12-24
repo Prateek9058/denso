@@ -225,7 +225,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
                 <CustomTextField
                   disabled
                   defaultValue={
-                    trolleyDetails ? trolleyDetails?.runningTime || 0 : "0"
+                    trolleyDetails ? trolleyDetails?.runningTime : "0"
                   }
                 />
               </Grid>

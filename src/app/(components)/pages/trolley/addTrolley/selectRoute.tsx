@@ -14,7 +14,6 @@ import {
   TableBody,
   FormControl,
   InputLabel,
-  DialogContent,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -41,9 +40,10 @@ interface ProcessFormRow {
 interface empProps {
   rows: ProcessFormRow[];
   setRows: React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
+  pointCounter: number;
 }
 
-const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
+const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
   const CurrDate = new Date();
   const formatTimeForTextField = (time: string | null) => {
     if (!time) return "";
@@ -60,24 +60,25 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     return date.toISOString();
   };
   const handleAddRow = () => {
-    setRows([
-      ...rows,
-      {
-        process: "",
-        activityName: "",
-        jobRole: "Permanent",
-        jobNature: "",
-        startTime: "",
-        endTime: "",
-        totalTime: {
-          time: 0,
-          unit: "min",
+    if (rows.length < pointCounter) {
+      setRows([
+        ...rows,
+        {
+          process: "",
+          activityName: "",
+          jobRole: "Permanent",
+          jobNature: "",
+          startTime: "",
+          endTime: "",
+          totalTime: {
+            time: 0,
+            unit: "min",
+          },
+          remarks: "Neutral",
         },
-        remarks: "Neutral",
-      },
-    ]);
+      ]);
+    }
   };
-
   const handleRemoveRow = (index: number) => {
     const newRows = rows.filter((_, idx) => idx !== index);
     setRows(newRows);
@@ -114,7 +115,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
 
         newRows[index].totalTime.time = totalMinutes;
       } else {
-        newRows[index].totalTime.time = 0; // Reset if invalid
+        newRows[index].totalTime.time = 0;
       }
     }
 
@@ -128,7 +129,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
       reader.onload = (event: any) => {
         const binaryStr = event.target.result;
         const wb = XLSX.read(binaryStr, { type: "binary" });
-        const ws = wb.Sheets[wb.SheetNames[0]]; // Use the first sheet
+        const ws = wb.Sheets[wb.SheetNames[0]];
         const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
         const processedData = data.slice(1).map((row: any) => ({
           process: row[0] || "",
@@ -146,7 +147,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
     }
   };
 
-  // Handle file download
   const handleDownload = () => {
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
@@ -202,21 +202,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
           p: 2,
         }}
       >
-        {/* <Box
-          sx={{ display: "flex", gap: 2, mb: 4, justifyContent: "flex-end" }}
-        >
-          <Button
-            variant="contained"
-            startIcon={<FileDownloadIcon />}
-            onClick={() => (window.location.href = "/sample.csv")}
-          >
-            Download sample csv
-          </Button>
-          <Button variant="outlined" startIcon={<FileUploadIcon />}>
-            Upload standard
-          </Button>
-        </Box> */}
-
         <Table sx={{ minWidth: "100%" }}>
           <TableHead>
             <TableRow>
@@ -381,7 +366,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows }) => {
                     >
                       <RemoveIcon />
                     </IconButton>
-                    {index === rows.length - 1 && (
+                    {rows.length < pointCounter && (
                       <IconButton
                         color="primary"
                         onClick={handleAddRow}

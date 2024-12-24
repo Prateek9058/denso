@@ -21,7 +21,7 @@ import { MdOutlineEdit } from "react-icons/md";
 interface EditEntityProps {
   getFetchAllDetails: () => void;
   item: any;
-  type: "department" | "section" | "line"; 
+  type: "Department" | "Section" | "line";
 }
 
 interface ErrorResponse {
@@ -55,11 +55,11 @@ const EditEntity: React.FC<EditEntityProps> = ({
       uId: uid,
     };
 
-    if (type === "department") {
+    if (type === "Department") {
       body = {
         ...body,
       };
-    } else if (type === "section") {
+    } else if (type === "Section") {
       body = {
         ...body,
       };
@@ -71,9 +71,9 @@ const EditEntity: React.FC<EditEntityProps> = ({
 
     try {
       let apiPath = "";
-      if (type === "department") {
+      if (type === "Department") {
         apiPath = `department/updateDepartment/${item?._id}`;
-      } else if (type === "section") {
+      } else if (type === "Section") {
         apiPath = `section/updateSection/${item?._id}`;
       } else if (type === "line") {
         apiPath = `line/updateLine/${item?._id}`;
