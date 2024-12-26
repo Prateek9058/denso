@@ -127,7 +127,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
   useEffect(() => {
     if (selectedDevice) {
       setValue("trolleyCategoryId", selectedDevice?.trolleyCategoryId?._id);
-      setValue("trolleyId", selectedDevice?.uId);
+      setValue("trolleyId", setcategoryUid(selectedDevice?.uId));
       setValue("macId", selectedDevice?.macId);
       setValue("name", selectedDevice?.name);
       setValue("trolleyColor", selectedDevice?.trolleyColor);
@@ -198,6 +198,24 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     }
   }, [open, selectedDevice]);
 
+  const [categoryUid, setcategoryUid] = useState<string>("");
+  const handleCategoryUid = async () => {
+    try {
+      const { data, status } = await axiosInstance.get("/trolleys/getUid");
+      if (status === 200 || status === 201) {
+        setcategoryUid(data?.data);
+      }
+    } catch (error) {
+      notifyError((error as any)?.response?.data?.message);
+    }
+  };
+  useEffect(() => {
+    if (open) {
+      handleCategoryUid();
+    }
+    setValue("trolleyId", categoryUid);
+  }, [categoryUid, open]);
+
   const handleClose = () => {
     setOpen(false);
     getTrolleyData();
@@ -242,7 +260,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     onDrop,
     maxSize: 10485760,
   });
-
+  console.log("formData", categoryUid);
   const onSubmit = async () => {
     setValue("trolleyCategoryId", selectedCategory);
     setValue("trolleyColor", color);
@@ -252,8 +270,9 @@ const AddDevice: React.FC<AddDeviceProps> = ({
     handleNext();
 
     const formData = getValues();
+
     const body = {
-      uId: formData?.trolleyId,
+      uId: categoryUid,
       macId: formData?.macId,
       name: formData?.name,
       trolleyCategoryId: formData?.trolleyCategoryId,
@@ -440,11 +459,11 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                       control={control}
                       rules={{
                         required: "Trolley ID is required",
-                        pattern: {
-                          value: /^[a-zA-Z0-9]{3,}$/,
-                          message:
-                            "Trolley ID must be at least 3 alphanumeric characters",
-                        },
+                        // pattern: {
+                        //   value: /^[a-zA-Z0-9]{6,}$/,
+                        //   message:
+                        //     "Trolley ID must be at least 6 alphanumeric characters",
+                        // },
                       }}
                       render={({ field }) => (
                         <CustomTextField
@@ -455,7 +474,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                           helperText={errors.trolleyId?.message}
                           onChange={handleInputChange}
                           defaultValue={
-                            selectedDevice ? selectedDevice?.uId : ""
+                            categoryUid ? categoryUid : selectedDevice?.uId
                           }
                         />
                       )}

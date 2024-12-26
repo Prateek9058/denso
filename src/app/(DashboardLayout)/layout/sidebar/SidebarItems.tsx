@@ -9,15 +9,19 @@ const SidebarItems = ({ toggleMobileSidebar }: any) => {
   const pathname = usePathname();
   const pathDirect = pathname;
   const [allowedPermissions] = PermissionUtils();
+  const profile = localStorage.getItem("profile")
+    ? JSON.parse(localStorage.getItem("profile") as string)
+    : null;
+
   const filteredMenuItems = Menuitems.filter((item: any) => {
-    return allowedPermissions.some((permission: any) => permission[item.key]);
+    return allowedPermissions?.some((permission: any) => permission[item?.key]);
   });
 
   return (
     <>
       <Box sx={{ px: 0 }}>
         <List sx={{ pt: 0 }} className="sidebarNav" component="div">
-          {filteredMenuItems.map((item) => {
+          {(profile?.role === 1 ? Menuitems : filteredMenuItems).map((item) => {
             return (
               <NavItem
                 item={item}

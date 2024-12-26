@@ -25,7 +25,7 @@ const Menuitems = [
     icon: dashboard,
     iconActive: dasboardIcon,
     href: "/dashboard",
-    key: "Dashboard",
+    key: "dashboard",
     role: ["Admin", "subAdmin"],
   },
   {

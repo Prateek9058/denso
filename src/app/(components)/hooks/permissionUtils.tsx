@@ -26,20 +26,22 @@ const PermissionUtils = (): [Permission[]] => {
       console.log("Error fetching permissions:", err);
     }
   }, []);
-
   useEffect(() => {
+    const handlePermissionUpdate = (data: any) => {
+      setState({ accessPermission: data });
+    };
+
     try {
-      SocketServices.on("userPermissionUpdated", (data) => {
-        setState({ accessPermission: data.data });
-      });
+      SocketServices.initialiseWS();
+      SocketServices.on("userPermissionUpdated", handlePermissionUpdate);
     } catch (error) {
       console.error("Error initializing socket:", error);
     }
   }, [SocketServices]);
 
   const allowedPermissions = useMemo(
-    () => state.accessPermission.filter((item) => item),
-    [state.accessPermission]
+    () => state?.accessPermission?.filter((item) => item),
+    [state?.accessPermission]
   );
 
   useEffect(() => {

@@ -9,7 +9,13 @@ class WSService {
 
   initialiseWS = async (): Promise<void> => {
     try {
-      this.socket = io(SOCKET_URL);
+      const profile = localStorage.getItem("profile")
+        ? JSON.parse(localStorage.getItem("profile") as string)
+        : null;
+      this.socket = io(SOCKET_URL, {
+        extraHeaders:
+          profile && profile.role === 2 ? { userId: profile._id } : {},
+      });
 
       this.socket.on("connect", () => {
         console.log(
