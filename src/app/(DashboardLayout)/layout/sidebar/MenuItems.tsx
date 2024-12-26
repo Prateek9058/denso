@@ -25,6 +25,7 @@ const Menuitems = [
     icon: dashboard,
     iconActive: dasboardIcon,
     href: "/dashboard",
+    key: "Dashboard",
     role: ["Admin", "subAdmin"],
   },
   {
@@ -33,7 +34,7 @@ const Menuitems = [
     icon: manPower,
     iconActive: manPowerActive,
     href: "/man-power-tracking",
-    key: "trolleyTracking",
+    key: "manpowerTracking",
     role: ["Admin", "subAdmin"],
   },
   {
@@ -42,6 +43,7 @@ const Menuitems = [
     icon: trolly,
     iconActive: trollyActive,
     href: "/trolley",
+    key: "trolleyTracking",
     role: ["Admin", "subAdmin"],
   },
   // {
