@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import axiosInstance from "@/app/api/axiosInstance";
 import SocketServices from "@/app/api/socketService";

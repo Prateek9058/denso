@@ -34,7 +34,7 @@ const Menuitems = [
     icon: manPower,
     iconActive: manPowerActive,
     href: "/man-power-tracking",
-    key: "trolleyTracking",
+    key: "manpowerTracking",
     role: ["Admin", "subAdmin"],
   },
   {

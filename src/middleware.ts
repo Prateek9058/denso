@@ -1,5 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import Menuitems from "@/app/(DashboardLayout)/layout/sidebar/MenuItems";
+import PermissionUtils from "@/app/(components)/hooks/permissionUtils";
 
 type ProtectedRoutes = {
   [key: string]: string[];
@@ -7,15 +9,13 @@ type ProtectedRoutes = {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  // console.log("pathname", pathname);
+  console.log("Check Menuitems", Menuitems);
 
   if (pathname.startsWith("/_next/") || pathname.includes(".map")) {
     return NextResponse.next();
   }
 
   const token = await getToken({ req: request });
-  // console.log("token", token?.role);
-
   type UserRole = "Admin" | "subAdmin";
 
   const protectedRoutes: ProtectedRoutes = {
