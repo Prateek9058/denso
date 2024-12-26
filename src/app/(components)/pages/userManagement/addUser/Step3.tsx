@@ -12,6 +12,10 @@ type cardProps = {
 
 const RolesData: cardProps[] = [
   {
+    value: "Dashboard",
+    permission: { dashboard: true },
+  },
+  {
     value: "Manpower tracking",
     permission: { manpowerTracking: true },
   },

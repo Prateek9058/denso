@@ -20,7 +20,6 @@ import {
 } from "@/app/(components)/mui-components/Snackbar";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
-import axios, { AxiosError } from "axios";
 
 type selectDropDownData = {
   label: string;
@@ -71,9 +70,12 @@ const AddCategory: React.FC<AddDeviceProps> = ({
   const [categoryUid, setcategoryUid] = useState<string>("");
   const handleCategoryUid = async () => {
     try {
-      const { data, status } = await axiosInstance.get("");
+      const { data, status } = await axiosInstance.get(
+        "/trolleyCategory/getUid"
+      );
       if (status === 200 || status === 201) {
-        setcategoryUid(data?.data?.data);
+        setcategoryUid(data?.data);
+        console.log("data", data?.data);
       }
     } catch (error) {
       notifyError((error as any)?.response?.data?.message);
@@ -156,6 +158,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                   label="Trolley category Uid "
                   placeholder="Enter trolley uid"
                   error={!!errors.macId}
+                  disabled={selectedDevice}
                   helperText={errors.macId?.message}
                   onChange={handleInputChange}
                   defaultValue={categoryUid ? categoryUid : selectedDevice?.uId}

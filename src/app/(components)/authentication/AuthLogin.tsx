@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import CustomTextField from "@/app/(components)/forms/theme-elements/CustomTextField";
 import axiosInstance from "@/app/api/axiosInstance";
+import SocketServices from "@/app/api/socketService";
 interface loginType {
   title?: string;
   subtitle?: JSX.Element | JSX.Element[];
@@ -39,6 +40,8 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           callbackUrl: `/`,
           redirect: true,
         });
+        
+        // SocketServices.initialiseWS(response?.data?.data?.role===2?response?.data?.data?._id:"");
       }
     } catch (error: any) {
       console.log("Catch Block Work", error);
