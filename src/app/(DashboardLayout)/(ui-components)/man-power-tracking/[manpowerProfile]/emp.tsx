@@ -146,7 +146,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails }) => {
           crs={L.CRS.Simple}
         >
           <ImageOverlay url={Site.src} bounds={imageBounds} />
-          <Rectangle
+          {/* <Rectangle
             bounds={geofenceBounds}
             pathOptions={{ color: "#ff00ff" }}
           />
@@ -157,7 +157,7 @@ const EmpTrack: React.FC<empProps> = ({ userDetails }) => {
           <Rectangle
             bounds={geofenceBounds2}
             pathOptions={{ color: "#00ffff" }}
-          />
+          /> */}
           {employees && (
             <Marker
               position={[

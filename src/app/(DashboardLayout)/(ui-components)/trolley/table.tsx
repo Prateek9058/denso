@@ -175,7 +175,7 @@ const Table: React.FC<TableProps> = ({
                     </Tooltip>
                   </Grid>
                 )}
-                <Grid item xs={3}>
+                {/* <Grid item xs={3}>
                   <Tooltip title="Assign Menpower">
                     <IconButton
                       size="small"
@@ -186,7 +186,7 @@ const Table: React.FC<TableProps> = ({
                       <FaUserFriends color="#DC0032" />
                     </IconButton>
                   </Tooltip>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={3}>
                   <Tooltip title="Animated routes">
                     <IconButton
@@ -273,14 +273,14 @@ const Table: React.FC<TableProps> = ({
           setSelectedMen={setSelectedMen}
         />
       )}
-      {openMen && (
+      {/* {openMen && (
         <AssgnMen
           open={openMen}
           setOpen={setOpenMen}
           getTrolleyData={getTrolleyData}
           data={mensData}
         />
-      )}
+      )} */}
       <CommonDialog
         open={open}
         fullWidth={true}

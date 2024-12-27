@@ -358,7 +358,7 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                   )}
                 />
               </Grid>
-              <Grid item md={2.7}>
+              <Grid item md={5.8}>
                 <Controller
                   name="totalDistance"
                   control={control}
@@ -386,58 +386,40 @@ const FinalDetails = forwardRef<HTMLDivElement, FinalDetailsProps>(
                   )}
                 />
               </Grid>
-              <Grid item md={2.7}>
-                <Controller
-                  name="totalTime"
-                  control={control}
-                  rules={{
-                    required: "Total Time is required",
-                    max: {
-                      value: 60,
-                      message: "Total Time cannot exceed 60 second",
-                    },
-                  }}
-                  render={({ field }) => (
-                    <CustomTextField
-                      {...field}
-                      field="number"
-                      label="Total Time"
-                      placeholder="Time in seconds"
-                      error={!!errors.totalTime}
-                      helperText={errors.totalTime?.message}
-                      defaultValue={
-                        selectedDevice ? selectedDevice?.totalTime?.time : ""
-                      }
-                    />
-                  )}
-                />
-              </Grid>
+
               <Grid item md={5.8}>
-                <Controller
-                  name="repetedCycles"
-                  control={control}
-                  rules={{
-                    required: "Repeated Cycle is required",
-                    pattern: {
-                      value: /^(?:[1-9]\d*|0)$/,
-                      message: "Enter a valid number",
-                    },
-                  }}
-                  render={({ field }) => (
-                    <CustomTextField
-                      {...field}
-                      field="number"
-                      label="Repeated Cycle"
-                      placeholder="Enter Repeated Cycles"
-                      error={!!errors.repetedCycles}
-                      helperText={errors.repetedCycles?.message}
-                      onChange={handleInputChange}
-                      defaultValue={
-                        selectedDevice ? selectedDevice?.repetedCycles : ""
-                      }
-                    />
-                  )}
-                />
+                <FormControl fullWidth error={!!errors?.repetedCycles}>
+                  <Controller
+                    name="repetedCycles"
+                    control={control}
+                    defaultValue={selectedDevice?.repetedCycles || null}
+                    rules={{
+                      required: "At least one repetedCycle must be selected",
+                    }}
+                    render={({ field }) => (
+                      <Autocomplete
+                        {...field}
+                        size="small"
+                        options={Array.from(
+                          { length: 60 },
+                          (_, index) => index + 1
+                        )}
+                        getOptionLabel={(option) => option.toString()}
+                        onChange={(_, value) => field.onChange(value)}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Repeted Cycles"
+                            error={!!errors?.repetedCycles}
+                          />
+                        )}
+                      />
+                    )}
+                  />
+                  <FormHelperText>
+                    {(errors as any)?.repetedCycles?.message}
+                  </FormHelperText>
+                </FormControl>
               </Grid>
             </Grid>
           </DialogContent>

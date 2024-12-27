@@ -24,6 +24,7 @@ interface TrolleyRouteProps {
   points: PointWithMarker[];
   setPoints: React.Dispatch<React.SetStateAction<PointWithMarker[]>>;
   setPointCounter: React.Dispatch<React.SetStateAction<number>>;
+  color1: string;
 }
 interface Graph {
   [key: string]: { [key: string]: number };
@@ -33,6 +34,7 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
   points,
   setPoints,
   setPointCounter,
+  color1,
 }) => {
   const coordInfoRef = useRef<HTMLDivElement>(null);
   let markerCounter = 1;
@@ -165,7 +167,7 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
     setPointCounter(number);
     return L.divIcon({
       html: `<div style="display: flex; align-items: center; justify-content: center;
-              width: 25px; height: 25px; background-color: red; border-radius: 50%; color: white;
+              width: 25px; height: 25px; background-color: ${color1}; border-radius: 50%; color: white;
               font-size: 14px;">${number}</div>`,
       className: "",
       iconSize: [20, 20],
@@ -188,7 +190,6 @@ const TrolleyRoute: React.FC<TrolleyRouteProps> = ({
     [100, 220],
   ];
 
-  console.log("points", points);
   return (
     <Grid container spacing={2} zIndex={1}>
       <Grid item xs={12}>

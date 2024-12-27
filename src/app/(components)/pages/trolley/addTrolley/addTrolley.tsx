@@ -15,6 +15,7 @@ import {
   MenuItem,
   Select,
   InputLabel,
+  TextField,
 } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
@@ -105,7 +106,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       process: "",
       activityName: "",
       jobRole: "Permanent",
-      jobNature: "",
+      jobNature: "regular",
       startTime: "",
       endTime: "",
       totalTime: {
@@ -227,7 +228,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
         process: "",
         activityName: "",
         jobRole: "Permanent",
-        jobNature: "",
+        jobNature: "regular",
         startTime: "",
         endTime: "",
         totalTime: {
@@ -371,6 +372,16 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }
   };
+  const [color1, setColor1] = useState<string>("");
+  useEffect(() => {
+    if (values?.trolleyCategoryId) {
+      const selectedItem = selectDropDownData?.find(
+        (item: any) => item?._id === values?.trolleyCategoryId
+      );
+      setColor1(selectedItem?.color || "");
+    }
+  }, [selectDropDownData, values?.trolleyCategoryId]);
+
   return (
     <>
       <CommonDialog
@@ -575,15 +586,35 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                     </FormControl>
                   </Grid>
                   <Grid item md={5.8}>
-                    <CustomTextField
+                    <TextField
                       name="trolleyColor"
                       label="Trolley color"
+                      fullWidth
                       value={
                         selectDropDownData?.find(
-                          (item: any) => item._id === values?.trolleyCategoryId
+                          (item: any) => item?._id === values?.trolleyCategoryId
                         )?.color
                       }
                       disabled
+                      InputProps={{
+                        endAdornment: (
+                          <Box
+                            sx={{
+                              width: 45,
+                              height: 20,
+                              borderRadius: 1,
+                              backgroundColor:
+                                selectDropDownData?.find(
+                                  (item: any) =>
+                                    item?._id === values?.trolleyCategoryId
+                                )?.color || "transparent",
+                            }}
+                          />
+                        ),
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                   </Grid>
                 </Grid>
@@ -594,6 +625,7 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                     points={points}
                     setPoints={setPoints}
                     setPointCounter={setPointCounter}
+                    color1={color1}
                   />
                 </Grid>
               )}

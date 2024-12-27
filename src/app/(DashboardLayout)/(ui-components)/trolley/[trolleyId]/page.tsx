@@ -302,7 +302,7 @@ const Page: React.FC = () => {
                   fontWeight={500}
                   component="label"
                 >
-                  Assigned menpower
+                  Assigned manpower
                 </Typography>
                 <TextField
                   disabled
@@ -312,15 +312,6 @@ const Page: React.FC = () => {
                       ? trolleyDetails?.assignedTo[0]?.fullName
                       : "NA"
                   }
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setOpenMen(true)}>
-                          <FaUserFriends color="#DC0032" size={16} />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
                 />
               </Grid>
             </Grid>

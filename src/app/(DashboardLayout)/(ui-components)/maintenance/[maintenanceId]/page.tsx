@@ -15,6 +15,7 @@ import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/d
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
 import { IoMdAddCircleOutline } from "react-icons/io";
+import Feedback from "./feedback";
 
 type Breadcrumb = {
   label: string;
@@ -103,8 +104,17 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
   };
   return (
     <>
+      {openRepair && (
+        <Feedback
+          open={openRepair}
+          setOpen={setOoenRepair}
+          getTrolleyDetails={getTrolleyDetails}
+          getAllTrolleyRepairings={getAllTrolleyRepairings}
+          id={params?.maintenanceId}
+        />
+      )}
       <ToastComponent />
-      <CommonDialog
+      {/* <CommonDialog
         open={openRepair}
         fullWidth={true}
         maxWidth={"xs"}
@@ -113,7 +123,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
         color="error"
         onClose={handleCancel}
         onConfirm={handleConfirm}
-      />
+      /> */}
       <Grid container justifyContent={"space-between"}>
         <Grid item>
           <Breadcrumb breadcrumbItems={breadcrumbItems} />

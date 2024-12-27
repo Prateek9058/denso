@@ -27,6 +27,7 @@ interface CustomTextFieldProps {
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   size?: any;
   onKeyDown?: any;
+  multiline?: boolean;
 }
 
 const CustomTextField: React.FC<CustomTextFieldProps> = ({
@@ -45,6 +46,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
   field,
   size,
   onKeyDown,
+  multiline,
   ...restProps
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -57,6 +59,7 @@ const CustomTextField: React.FC<CustomTextFieldProps> = ({
         {...restProps}
         name={name}
         label={label}
+        multiline={multiline}
         error={error}
         onKeyDown={onKeyDown}
         value={value}

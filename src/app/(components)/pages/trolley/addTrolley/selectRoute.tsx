@@ -1,4 +1,13 @@
 import React from "react";
+
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import "leaflet/dist/leaflet.css";
+import CustomAccordian from "@/app/(components)/mui-components/Accordion";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import {
   Grid,
   Box,
@@ -14,14 +23,13 @@ import {
   TableBody,
   FormControl,
   InputLabel,
+  Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import "leaflet/dist/leaflet.css";
+import styled from "styled-components";
+
+const CustomTableCell = styled(TableCell)(({ theme }) => ({
+  borderBottom: "none",
+}));
 
 interface ProcessFormRow {
   process: string;
@@ -44,6 +52,39 @@ interface empProps {
 }
 
 const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event: any) => {
+        const binaryStr = event.target.result;
+        const wb = XLSX.read(binaryStr, { type: "binary" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        const processedData = data.slice(1).map((row: any) => ({
+          process: row[0] || "",
+          activityName: row[1] || "",
+          jobRole: row[2] || "",
+          jobNature: row[3] || "",
+          startTime: row[4] || "",
+          endTime: row[5] || "",
+          totalTime: { time: row[6] || 0, unit: "min" },
+          remarks: row[7] || "",
+        }));
+        setRows(processedData);
+      };
+      reader.readAsBinaryString(file);
+    }
+  };
+
+  const handleDownload = () => {
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    const excelFile = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    saveAs(new Blob([excelFile]), "download.xlsx");
+  };
+
   const CurrDate = new Date();
   const formatTimeForTextField = (time: string | null) => {
     if (!time) return "";
@@ -67,7 +108,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
           process: "",
           activityName: "",
           jobRole: "Permanent",
-          jobNature: "",
+          jobNature: "regular",
           startTime: "",
           endTime: "",
           totalTime: {
@@ -121,47 +162,13 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
 
     setRows(newRows);
   };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event: any) => {
-        const binaryStr = event.target.result;
-        const wb = XLSX.read(binaryStr, { type: "binary" });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        const processedData = data.slice(1).map((row: any) => ({
-          process: row[0] || "",
-          activityName: row[1] || "",
-          jobRole: row[2] || "",
-          jobNature: row[3] || "",
-          startTime: row[4] || "",
-          endTime: row[5] || "",
-          totalTime: { time: row[6] || 0, unit: "min" },
-          remarks: row[7] || "",
-        }));
-        setRows(processedData);
-      };
-      reader.readAsBinaryString(file);
-    }
-  };
-
-  const handleDownload = () => {
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-    const excelFile = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    saveAs(new Blob([excelFile]), "download.xlsx");
-  };
-
   return (
     <Grid
       item
       xs={12}
       md={12}
       sx={{
-        height: "550px",
+        height: "380px",
         width: "200%",
         position: "relative",
         bgcolor: "white",
@@ -191,6 +198,22 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
         </Button>
       </Box>
 
+      {Array.from({ length: pointCounter }).map((_, index) => (
+        <Grid container key={index} mb={2}>
+          <CustomAccordian
+            rows={rows}
+            index={index}
+            setRows={setRows}
+            pointCounter={pointCounter}
+          />
+        </Grid>
+      ))}
+      {/* <CustomAccordian
+        rows={rows}
+        index={1}
+        setRows={setRows}
+        pointCounter={pointCounter}
+      /> */}
       <Grid
         item
         xs={12}
@@ -199,33 +222,45 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
           width: "100%",
           position: "relative",
           bgcolor: "white",
-          p: 2,
+          border: "1px solid #e5e5e5",
+          padding: 1,
+          borderRadius: 1,
+          boxShadow: 1,
+          marginBottom: 1,
         }}
       >
+        <Typography mt={1} fontWeight={500}>
+          Ideal waiting time :
+        </Typography>
         <Table sx={{ minWidth: "100%" }}>
           <TableHead>
             <TableRow>
-              <TableCell>Process</TableCell>
-              <TableCell>Activity</TableCell>
-              <TableCell>Job Type</TableCell>
-              <TableCell>Job Nature</TableCell>
-              <TableCell>Time (From)</TableCell>
-              <TableCell>Time (To)</TableCell>
-              <TableCell>Total Time</TableCell>
-              <TableCell>Remarks</TableCell>
-              <TableCell>Action</TableCell>
+              <CustomTableCell>Process</CustomTableCell>
+              <CustomTableCell>Activity</CustomTableCell>
+              <CustomTableCell>Job Type</CustomTableCell>
+              <CustomTableCell>Job Nature</CustomTableCell>
+              <CustomTableCell>Time (From)</CustomTableCell>
+              <CustomTableCell>Time (To)</CustomTableCell>
+              <CustomTableCell>Total Time</CustomTableCell>
+              <CustomTableCell>Remarks</CustomTableCell>
+              {/* <CustomTableCell>Action</CustomTableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
-              <TableRow key={index}>
+              <TableRow
+                key={index}
+                sx={{
+                  "& .MuiTableCell-root": { py: 0.5 },
+                }}
+              >
                 <TableCell>
                   <TextField
                     placeholder="Enter process"
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    label="Process"
+                    //   label="Process"
                     sx={{ minWidth: "100px" }}
                     value={row.process}
                     onChange={(e) =>
@@ -238,7 +273,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                 <TableCell>
                   <TextField
                     placeholder="Enter activity name"
-                    label="Activity Name"
+                    //   label="Activity Name"
                     sx={{ minWidth: "100px" }}
                     InputLabelProps={{
                       shrink: true,
@@ -253,13 +288,13 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                 </TableCell>
                 <TableCell>
                   <FormControl size="small" fullWidth>
-                    <InputLabel>Job Role</InputLabel>
+                    {/* <InputLabel>Job Role</InputLabel> */}
                     <Select
                       value={row.jobRole}
                       onChange={(e) =>
                         handleChange(index, "jobRole", e.target.value)
                       }
-                      label="Job Role"
+                      // label="Job Role"
                     >
                       <MenuItem value="Permanent">Permanent</MenuItem>
                       <MenuItem value="Contractual">Contractual</MenuItem>
@@ -268,9 +303,22 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                   </FormControl>
                 </TableCell>
                 <TableCell>
-                  <TextField
+                  <FormControl size="small" fullWidth>
+                    {/* <InputLabel>Job Role</InputLabel> */}
+                    <Select
+                      value={row.jobNature}
+                      onChange={(e) =>
+                        handleChange(index, "jobNature", e.target.value)
+                      }
+                      // label="Job Role"
+                    >
+                      <MenuItem value="regular">regular</MenuItem>
+                      <MenuItem value="nonRegular">nonRegular</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {/* <TextField
                     placeholder="Enter job nature"
-                    label="Job Nature"
+                    //   label="Job Nature"
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -281,12 +329,13 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                     }
                     size="small"
                     fullWidth
-                  />
+                  /> */}
                 </TableCell>
                 <TableCell>
                   <TextField
                     type="time"
-                    label="Start Time"
+                    //   label="Start Time"
+
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -305,7 +354,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                 <TableCell>
                   <TextField
                     type="time"
-                    label="End Time"
+                    //   label="End Time"
                     value={formatTimeForTextField(row.endTime)}
                     onChange={(e) =>
                       handleChange(
@@ -325,7 +374,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                   <TextField
                     type="number"
                     sx={{ minWidth: "100px" }}
-                    label="Total Time "
+                    //   label="Total Time "
                     value={row.totalTime.time}
                     onChange={(e) =>
                       handleChange(
@@ -342,13 +391,13 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                 </TableCell>
                 <TableCell>
                   <FormControl size="small" fullWidth>
-                    <InputLabel>Remarks</InputLabel>
+                    {/* <InputLabel>Remarks</InputLabel> */}
                     <Select
                       value={row.remarks}
                       onChange={(e) =>
                         handleChange(index, "remarks", e.target.value)
                       }
-                      label="Remarks"
+                      // label="Remarks"
                     >
                       <MenuItem value="Positive">Positive</MenuItem>
                       <MenuItem value="Neutral">Neutral</MenuItem>
@@ -356,7 +405,8 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                     </Select>
                   </FormControl>
                 </TableCell>
-                <TableCell>
+
+                {/* <TableCell>
                   <Box sx={{ display: "flex", gap: 1 }}>
                     <IconButton
                       color="error"
@@ -376,7 +426,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                       </IconButton>
                     )}
                   </Box>
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

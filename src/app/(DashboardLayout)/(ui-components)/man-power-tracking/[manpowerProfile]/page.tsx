@@ -1,6 +1,14 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { Grid, Typography, Button } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  Autocomplete,
+} from "@mui/material";
 import AddDevice from "@/app/(components)/pages/ManPower/addManpower/index";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
@@ -37,6 +45,8 @@ const Page: React.FC = () => {
   const [date, setDate] = useState<any>(null);
   const [empJoinedDate, setEmpJoinedDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
+
+  const trolleys = ["Trolley 1", "Trolley 2", "Trolley 3"];
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
     { label: "Manpower Tracking ", link: "/man-power-tracking" },
@@ -252,6 +262,26 @@ const Page: React.FC = () => {
                 <CustomTextField
                   disabled
                   value={userDetails ? userDetails?.shift?.shiftName : ""}
+                />
+              </Grid>
+              <Grid item md={5.8} xs={12}>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight={500}
+                  component="label"
+                >
+                  Assigned Trolley's
+                </Typography>
+                <Autocomplete
+                  options={trolleys}
+                  multiple
+                  fullWidth
+                  size="small"
+                  disableClearable
+                  renderInput={(params) => (
+                    <TextField {...params} variant="outlined" />
+                  )}
+                  disableCloseOnSelect
                 />
               </Grid>
             </Grid>

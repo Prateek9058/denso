@@ -361,11 +361,31 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                     </Grid>
                     <Grid item md={5.8} mt={2}>
                       <Controller
+                        name="empNumber"
+                        control={control}
+                        render={({ field }) => (
+                          <CustomTextField
+                            {...field}
+                            name="empNumber"
+                            label="Employee number"
+                            placeholder="Enter Employee Number"
+                            error={!!errors.empNumber}
+                            helperText={errors.empNumber?.message}
+                            onChange={handleInputChange}
+                            defaultValue={
+                              selectedDevice ? selectedDevice?.empNumber : ""
+                            }
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item md={5.8} mt={2}>
+                      <Controller
                         name="name"
                         control={control}
-                        rules={{
-                          required: "Name is required",
-                        }}
+                        // rules={{
+                        //   required: "Name is required",
+                        // }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
@@ -386,14 +406,14 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       <Controller
                         name="phone"
                         control={control}
-                        rules={{
-                          required: "Phone is required",
-                          validate: {
-                            length: (value) =>
-                              value.length === 10 ||
-                              "Phone number must be exactly 10 digits without country code",
-                          },
-                        }}
+                        // rules={{
+                        //   required: "Phone is required",
+                        //   validate: {
+                        //     length: (value) =>
+                        //       value.length === 10 ||
+                        //       "Phone number must be exactly 10 digits without country code",
+                        //   },
+                        // }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
@@ -415,14 +435,14 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       <Controller
                         name="email"
                         control={control}
-                        rules={{
-                          required: "email is required",
-                          pattern: {
-                            value:
-                              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                            message: "Enter a valid email address",
-                          },
-                        }}
+                        // rules={{
+                        //   required: "email is required",
+                        //   pattern: {
+                        //     value:
+                        //       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                        //     message: "Enter a valid email address",
+                        //   },
+                        // }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
@@ -443,9 +463,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       <Controller
                         name="jobRole"
                         control={control}
-                        rules={{
-                          required: "Job role is required",
-                        }}
+                        // rules={{
+                        //   required: "Job role is required",
+                        // }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
@@ -466,24 +486,24 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       <Controller
                         name="age"
                         control={control}
-                        rules={{
-                          required: "Age is required",
-                          min: {
-                            value: 18,
-                            message: "Age must be at least 18",
-                          },
-                          max: {
-                            value: 99,
-                            message: "Age must be a two-digit number",
-                          },
-                          validate: {
-                            isNotNegative: (value) =>
-                              value >= 0 || "Age cannot be negative",
-                            isTwoDigit: (value) =>
-                              /^[1-9][0-9]$/.test(value) ||
-                              "Age must be a two-digit number",
-                          },
-                        }}
+                        // rules={{
+                        //   required: "Age is required",
+                        //   min: {
+                        //     value: 18,
+                        //     message: "Age must be at least 18",
+                        //   },
+                        //   max: {
+                        //     value: 99,
+                        //     message: "Age must be a two-digit number",
+                        //   },
+                        //   validate: {
+                        //     isNotNegative: (value) =>
+                        //       value >= 0 || "Age cannot be negative",
+                        //     isTwoDigit: (value) =>
+                        //       /^[1-9][0-9]$/.test(value) ||
+                        //       "Age must be a two-digit number",
+                        //   },
+                        // }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
@@ -505,13 +525,13 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       <Controller
                         name="salary"
                         control={control}
-                        rules={{
-                          required: "Salary is required",
-                          validate: {
-                            isNotNegative: (value) =>
-                              value >= 0 || "Salary cannot be negative",
-                          },
-                        }}
+                        // rules={{
+                        //   required: "Salary is required",
+                        //   validate: {
+                        //     isNotNegative: (value) =>
+                        //       value >= 0 || "Salary cannot be negative",
+                        //   },
+                        // }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
@@ -535,9 +555,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         <Controller
                           name="category"
                           control={control}
-                          rules={{
-                            required: "category is required",
-                          }}
+                          // rules={{
+                          //   required: "category is required",
+                          // }}
                           render={({ field }) => (
                             <Select
                               {...field}
@@ -571,9 +591,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         <Controller
                           name="shift"
                           control={control}
-                          rules={{
-                            required: "shift is required",
-                          }}
+                          // rules={{
+                          //   required: "shift is required",
+                          // }}
                           render={({ field }) => (
                             <Select
                               {...field}
@@ -601,13 +621,13 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       <Controller
                         name="shiftRange"
                         control={control}
-                        rules={{
-                          required: "ShiftRange is required",
-                          pattern: {
-                            value: /^[1-7]$/,
-                            message: "Shift must be a number between 1 and 7",
-                          },
-                        }}
+                        // rules={{
+                        //   required: "ShiftRange is required",
+                        //   pattern: {
+                        //     value: /^[1-7]$/,
+                        //     message: "Shift must be a number between 1 and 7",
+                        //   },
+                        // }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}

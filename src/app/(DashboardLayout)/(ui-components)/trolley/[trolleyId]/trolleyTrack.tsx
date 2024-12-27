@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Grid } from "@mui/material";
-import { MapContainer, ImageOverlay, Marker, Polyline } from "react-leaflet";
+import { Grid, Typography } from "@mui/material";
+import {
+  MapContainer,
+  ImageOverlay,
+  Marker,
+  Polyline,
+  Popup,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import allowedCoordinates from "@/app/(components)/pages/trolley/addTrolley/allowedCoordinates";
@@ -24,7 +30,6 @@ const EmpTrack: React.FC<empProps> = ({ trolleyPath = [], trolleyId }) => {
   const [trolleyCoordinates, setTrolleyCoordinates] = useState<
     PointWithMarker[]
   >([]);
-  // Coordinate Mapping on Layout
 
   useEffect(() => {
     if (trolleyId) {
@@ -149,7 +154,37 @@ const EmpTrack: React.FC<empProps> = ({ trolleyPath = [], trolleyId }) => {
                 key={point._id}
                 position={[point?.y, point?.x]}
                 icon={customIcon}
-              />
+              >
+                <Popup>
+                  <div
+                    style={{
+                      padding: "3px",
+                      height: "100px",
+                      width: "250px",
+                      overflowY: "auto",
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      style={{
+                        fontWeight: "bold",
+                        color: "#333",
+                      }}
+                    >
+                      Trolley Details
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>ID:</strong> {point?._id}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Location:</strong> {point?.x}, {point?.y}
+                    </Typography>
+                    <Typography variant="body2" style={{ color: "green" }}>
+                      <strong>Status:</strong> Active
+                    </Typography>
+                  </div>
+                </Popup>
+              </Marker>
             ))}
           {linePositions?.length > 0 &&
             (() => {

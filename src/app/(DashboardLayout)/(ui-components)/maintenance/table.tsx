@@ -1,6 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, IconButton, Tooltip, Chip } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  Tooltip,
+  Chip,
+  Button,
+  Badge,
+} from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
@@ -10,6 +18,8 @@ import { BsEye } from "react-icons/bs";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import Filter from "@/app/(components)/pages/filter";
 
 interface TableProps {
   deviceData: any;
@@ -117,9 +127,26 @@ const Table: React.FC<TableProps> = ({
       ],
     }));
   };
-
+  const [selectedMen, setSelectedMen] = useState<string | null>(null);
+  const [openFilter, setOpenFilter] = React.useState<boolean>(false);
+  const [selectedDept, setSelectedDept] = useState<string | null>(null);
+  const badgeCount = [selectedMen, selectedDept]?.filter(Boolean)?.length;
+  const handleOpenFilter = () => {
+    setOpenFilter(true);
+  };
   return (
     <>
+      {openFilter && (
+        <Filter
+          open={openFilter}
+          setOpen={setOpenFilter}
+          // getTrolleyData={getTrolleyData}
+          selectedMen={selectedMen}
+          selectedDept={selectedDept}
+          setSelectedDept={setSelectedDept}
+          setSelectedMen={setSelectedMen}
+        />
+      )}
       <CommonDialog
         open={open}
         fullWidth={true}
@@ -150,6 +177,22 @@ const Table: React.FC<TableProps> = ({
           </Grid>
           <Grid item>
             <Grid container justifyContent={"space-between"}>
+              <Grid item className="customSearch" mr={2}>
+                <Badge
+                  badgeContent={badgeCount}
+                  color="error"
+                  overlap="circular"
+                >
+                  <Button
+                    startIcon={<FilterListIcon />}
+                    variant="contained"
+                    onClick={handleOpenFilter}
+                    size="large"
+                  >
+                    Filter
+                  </Button>
+                </Badge>
+              </Grid>
               <Grid item className="customSearch">
                 <CustomTextField
                   type="search"

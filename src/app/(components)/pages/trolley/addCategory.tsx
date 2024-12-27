@@ -11,6 +11,8 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  Box,
+  Typography,
 } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import ConfirmationDialog from "@/app/(components)/mui-components/Dialog/confirmation-dialog";
@@ -20,6 +22,7 @@ import {
 } from "@/app/(components)/mui-components/Snackbar";
 import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog";
 import axiosInstance from "@/app/api/axiosInstance";
+import { BlockPicker, SketchPicker } from "react-color";
 
 type selectDropDownData = {
   label: string;
@@ -56,9 +59,10 @@ const AddCategory: React.FC<AddDeviceProps> = ({
   } = useForm();
   const handleClose = () => {
     setOpen(false);
+    setColor("");
     reset();
   };
-
+  const [color, setColor] = useState("");
   useEffect(() => {
     if (selectedDevice) {
       setValue("macId", setcategoryUid(selectedDevice?.uId));
@@ -93,7 +97,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
     const body = {
       name: formData?.name,
       uId: formData?.macId,
-      color: formData?.color,
+      color: color,
     };
     try {
       let res;
@@ -115,7 +119,6 @@ const AddCategory: React.FC<AddDeviceProps> = ({
             ? `Category updated successfully`
             : `Category added successfully`
         );
-        console.log("sdfkjsd");
         getCategoryData();
         handleClose();
       }
@@ -126,10 +129,15 @@ const AddCategory: React.FC<AddDeviceProps> = ({
   };
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+
     setValue(name, value);
     if (errors[name]) {
       clearErrors(name);
     }
+  };
+
+  const handleChange = (color: any) => {
+    setColor(color?.hex);
   };
   return (
     <>
@@ -145,74 +153,84 @@ const AddCategory: React.FC<AddDeviceProps> = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogContent>
             <Grid container justifyContent={"space-between"}>
-              <Grid item md={12}>
-                <CustomTextField
-                  {...register("macId", {
-                    required: "Trolley Uid is required",
-                    pattern: {
-                      value: /^[a-zA-Z0-9]/,
-                      message: "Trolley Uid must be alphanumeric characters",
-                    },
-                  })}
-                  name="macId"
-                  label="Trolley category Uid "
-                  placeholder="Enter trolley uid"
-                  error={!!errors.macId}
-                  disabled={selectedDevice}
-                  helperText={errors.macId?.message}
-                  onChange={handleInputChange}
-                  defaultValue={categoryUid ? categoryUid : selectedDevice?.uId}
-                />
-              </Grid>
-              <Grid item md={5.8}>
-                <CustomTextField
-                  {...register("name", {
-                    required: "Trolley name is required",
-                  })}
-                  name="name"
-                  label="Trolley Name"
-                  placeholder="Enter trolley name"
-                  error={!!errors.name}
-                  helperText={errors.name?.message}
-                  onChange={handleInputChange}
-                  defaultValue={selectedDevice ? selectedDevice?.name : ""}
-                />
-              </Grid>
-              <Grid item md={5.8}>
-                <FormControl fullWidth error={!!errors?.color}>
-                  <InputLabel>Trolley Color </InputLabel>
-                  <Controller
-                    name="color"
-                    control={control}
-                    rules={{
-                      required: "Trolley color is required",
-                    }}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        placeholder="Select Trolley type"
-                        label={"Trolley type"}
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        defaultValue={
-                          selectedDevice
-                            ? selectedDevice?.trolleyCategoryId?.name
-                            : selectedDevice?.color
-                        }
-                      >
-                        {selectColor &&
-                          selectColor?.map((item: any, index: number) => (
-                            <MenuItem key={index} value={item?.value}>
-                              {item?.label}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    )}
+              <Grid item xs={5.8}>
+                <Grid item md={12}>
+                  <CustomTextField
+                    {...register("macId", {
+                      required: "Trolley Uid is required",
+                      pattern: {
+                        value: /^[a-zA-Z0-9]/,
+                        message: "Trolley Uid must be alphanumeric characters",
+                      },
+                    })}
+                    name="macId"
+                    label="Trolley category Uid "
+                    placeholder="Enter trolley uid"
+                    error={!!errors.macId}
+                    disabled={selectedDevice}
+                    helperText={errors.macId?.message}
+                    onChange={handleInputChange}
+                    defaultValue={
+                      categoryUid ? categoryUid : selectedDevice?.uId
+                    }
                   />
-                  <FormHelperText>
-                    {(errors as any) && errors?.color?.message}
-                  </FormHelperText>
-                </FormControl>
+                </Grid>
+                <Grid item md={12}>
+                  <CustomTextField
+                    {...register("name", {
+                      required: "Trolley type is required",
+                    })}
+                    name="name"
+                    label="Trolley type"
+                    placeholder="Enter type category"
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                    onChange={handleInputChange}
+                    defaultValue={selectedDevice ? selectedDevice?.name : ""}
+                  />
+                </Grid>
+                <Grid item md={12}>
+                  <CustomTextField
+                    disabled
+                    label="Trolley color"
+                    placeholder="Enter trolley color"
+                    defaultValue={
+                      selectedDevice ? selectedDevice?.color : color
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid item md={5.8}>
+                <Typography variant="subtitle2" gutterBottom mb={2}>
+                  Trolley Color
+                </Typography>
+                <BlockPicker
+                  color={color}
+                  onChange={handleChange}
+                  colors={[
+                    "#FF6900",
+                    "#FCB900",
+                    "#00D084",
+                    "#8ED1FC",
+                    "#0693E3",
+                    "#0693E3",
+                    "#0693E3",
+                    "#ABB8C3",
+                  ]}
+                  styles={{
+                    default: {
+                      card: {
+                        width: "100%",
+                      },
+                      head: {
+                        display: "none",
+                      },
+                      input: {
+                        display: "none",
+                      },
+                    },
+                  }}
+                />
               </Grid>
             </Grid>
           </DialogContent>
