@@ -1,4 +1,3 @@
-import { uniqueId } from "lodash";
 import dashboard from "../../../../../public/Img/dashboardActive.png";
 import manPower from "../../../../../public/Img/manpower.png";
 import manPowerActive from "../../../../../public/Img/manpowwerActive.png";
@@ -17,10 +16,9 @@ import Maintence from "../.../../../../.././../public/Img/maintenceT.png";
 import MaintenceAct from "../.../../../../.././../public/Img/maintenaceAct.png";
 import UserManagementIcon from "../.../../../../.././../public/Img/userManagementIcon.png";
 import UserManagementActiveIcon from "../.../../../../.././../public/Img/userManagementActiveIcon.png";
-
 const Menuitems = [
   {
-    id: uniqueId(),
+    id: "dashboard", // Use 'key' as 'id'
     title: "Dashboard",
     icon: dashboard,
     iconActive: dasboardIcon,
@@ -29,7 +27,7 @@ const Menuitems = [
     role: ["Admin", "subAdmin"],
   },
   {
-    id: uniqueId(),
+    id: "manpowerTracking",
     title: "Manpower Tracking",
     icon: manPower,
     iconActive: manPowerActive,
@@ -38,7 +36,7 @@ const Menuitems = [
     role: ["Admin", "subAdmin"],
   },
   {
-    id: uniqueId(),
+    id: "trolleyTracking",
     title: "Trolley Tracking",
     icon: trolly,
     iconActive: trollyActive,
@@ -46,15 +44,8 @@ const Menuitems = [
     key: "trolleyTracking",
     role: ["Admin", "subAdmin"],
   },
-  // {
-  //   id: uniqueId(),
-  //   title: "Trolley history",
-  //   icon: trolleyIcon,
-  //   iconActive: activeTrolleyIcon,
-  //   href: "/attendance",
-  // },
   {
-    id: uniqueId(),
+    id: "maintenance",
     title: "Trolley maintenance",
     icon: Maintence,
     iconActive: MaintenceAct,
@@ -63,7 +54,7 @@ const Menuitems = [
     role: ["Admin", "subAdmin"],
   },
   {
-    id: uniqueId(),
+    id: "user",
     title: "User management",
     icon: UserManagementIcon,
     iconActive: UserManagementActiveIcon,
@@ -72,7 +63,7 @@ const Menuitems = [
     role: ["Admin", "subAdmin"],
   },
   {
-    id: uniqueId(),
+    id: "department",
     title: "Department",
     icon: Organization,
     iconActive: OrganizationAct,
@@ -81,7 +72,7 @@ const Menuitems = [
     role: ["Admin", "subAdmin"],
   },
   {
-    id: uniqueId(),
+    id: "alerts",
     title: "Alerts",
     icon: alert,
     iconActive: alertActive,
@@ -89,9 +80,8 @@ const Menuitems = [
     key: "alerts",
     role: ["Admin", "subAdmin"],
   },
-
   {
-    id: uniqueId(),
+    id: "setting",
     title: "Setting",
     icon: setting,
     iconActive: settingActive,
