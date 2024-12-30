@@ -270,7 +270,7 @@ const Page: React.FC = () => {
                   fontWeight={500}
                   component="label"
                 >
-                  Assigned Trolley's
+                  Assigned Trolleys
                 </Typography>
                 <Autocomplete
                   options={trolleys}
