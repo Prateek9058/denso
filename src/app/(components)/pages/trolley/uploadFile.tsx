@@ -66,7 +66,6 @@ const UploadFile: React.FC<AddUserProps> = ({
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const token = localStorage.getItem("token");
       const response = await axiosInstanceImg.post(
         "/api/device/bulk-add",
         formData,

@@ -44,7 +44,6 @@ interface AddDeviceProps {
 const AddManPower: React.FC<AddDeviceProps> = ({
   open,
   setOpen,
-  getEmployeeData,
   selectedDevice,
 }) => {
   const [selectData, setSelectData] = useState<any>(null);
@@ -95,7 +94,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   }, [setValue, reset, selectedDevice]);
   const handleClose = () => {
     setOpen(false);
-    getEmployeeData();
     reset();
     setTrolley(null);
     setActiveStep(0);
@@ -160,11 +158,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   }, [open]);
 
   const onSubmit = async () => {
-    // if (trolley?.length === 0 && activeStep === 1) {
-    //   notifyError("please select at least one trolley!");
-    //   return;
-    // }
-
     handleNext();
     try {
       const formData = getValues();
@@ -199,7 +192,6 @@ const AddManPower: React.FC<AddDeviceProps> = ({
         notifySuccess(
           `Employee ${selectedDevice ? "Edit" : "created"} successfully`
         );
-        getEmployeeData();
         handleClose();
       }
     } catch (error: any) {

@@ -12,7 +12,7 @@ import "react-date-range/dist/theme/default.css";
 interface CalendarProps {
   getDataFromChildHandler: Function;
   height?: any;
-  empJoinedDate?: any;
+  routeJoinedDate?: any;
 }
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -27,7 +27,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 const Calendar: React.FC<CalendarProps> = ({
   getDataFromChildHandler,
   height,
-  empJoinedDate,
+  routeJoinedDate,
 }) => {
   const defaultDateRange: any = {
     startDate: subDays(new Date(), 0),
@@ -110,8 +110,8 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   const isBeforeEmpJoinedDate = (date: Date) => {
-    if (!empJoinedDate) return false;
-    const joinedDate = new Date(empJoinedDate);
+    if (!routeJoinedDate) return false;
+    const joinedDate = new Date(routeJoinedDate);
     joinedDate.setHours(0, 0, 0, 0);
     return date < joinedDate;
   };
@@ -134,8 +134,8 @@ const Calendar: React.FC<CalendarProps> = ({
             padding: "9px 10px",
             width: "176px",
             height: "44px",
-            alignItems:"center",
-            justifyContent:"center",
+            alignItems: "center",
+            justifyContent: "center",
             fontWeight: "bold",
             fontSize: "14px",
             background: "#4C4C4C",

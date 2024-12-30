@@ -39,18 +39,12 @@ const AddRepair: React.FC<AddDeviceProps> = ({
     reset,
     control,
   } = useForm();
-  const [selectedSite, setSelectedSite] = useState<any>(null);
   const handleClose = () => {
     setOpen(false);
     getTrolleyData();
     reset();
   };
-  useEffect(() => {
-    const storedSite = localStorage.getItem("selectedSite");
-    if (storedSite) {
-      setSelectedSite(JSON.parse(storedSite));
-    }
-  }, []);
+
   const dropDownData = [
     {
       _id: "671645b6740b31a416f231c1",
