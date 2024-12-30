@@ -9,8 +9,6 @@ type ProtectedRoutes = {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  console.log("Check Menuitems", Menuitems);
-
   if (pathname.startsWith("/_next/") || pathname.includes(".map")) {
     return NextResponse.next();
   }
