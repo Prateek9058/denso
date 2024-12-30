@@ -1,14 +1,6 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  Grid,
-  Typography,
-  Button,
-  TextField,
-  Select,
-  MenuItem,
-  Autocomplete,
-} from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Grid, Typography, TextField, Autocomplete } from "@mui/material";
 import AddDevice from "@/app/(components)/pages/ManPower/addManpower/index";
 import ManagementGrid from "@/app/(components)/mui-components/Card";
 import Table from "./table";
@@ -20,8 +12,6 @@ import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Dat
 import empImg from "../../../../../../public/Img/empImg.png";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import { useParams, useRouter } from "next/navigation";
-import { AxiosError } from "axios";
-import moment from "moment";
 import EmpTrack from "./emp";
 import ToastComponent, {
   notifyError,
@@ -32,9 +22,7 @@ type Breadcrumb = {
   label: string;
   link: string;
 };
-interface ErrorResponse {
-  error?: string;
-}
+
 const Page: React.FC = () => {
   const { manpowerProfile } = useParams<{ manpowerProfile: string }>();
   const router = useRouter();
@@ -43,7 +31,7 @@ const Page: React.FC = () => {
   const [deviceData, setDeviceData] = useState<any>([]);
   const [userDetails, setUserDetails] = useState<any>([]);
   const [date, setDate] = useState<any>(null);
-  const [empJoinedDate, setEmpJoinedDate] = useState<any>(null);
+  const [routeJoinedDate, setRouteJoinedDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
 
   const trolleys = ["Trolley 1", "Trolley 2", "Trolley 3"];
@@ -93,36 +81,9 @@ const Page: React.FC = () => {
         router.push("/man-power-tracking");
       }
     } catch (error) {
-      const axiosError = error as AxiosError<ErrorResponse>;
       notifyError("Error deleting employee");
     }
   };
-  const getEmployeeData = async () => {
-    if (!manpowerProfile) return;
-    setLoading(true);
-    try {
-      const res = await axiosInstance.get(
-        `employees/employeeAttendanceDayMonthGraphData/${manpowerProfile}?startDate=${moment(
-          date?.[0]?.startDate
-        ).format("YYYY-MM-DD")}&endDate=${moment(date?.[0]?.endDate).format(
-          "YYYY-MM-DD"
-        )}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        setDeviceData(res?.data?.data?.data);
-      }
-    } catch (err) {
-      setLoading(false);
-      console.error("Error fetching device data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (date) {
-      getEmployeeData();
-    }
-  }, [manpowerProfile, date]);
 
   return (
     <>
@@ -298,8 +259,8 @@ const Page: React.FC = () => {
           <Typography variant="h4">Location</Typography>
         </Grid>
       </Grid>
-      <EmpTrack userDetails={manpowerProfile} />{" "}
-      <Table deviceId={manpowerProfile} empJoinedDate={empJoinedDate} />
+      <EmpTrack />
+      <Table deviceId={manpowerProfile} routeJoinedDate={routeJoinedDate} />
       <Grid container justifyContent={"space-between"}>
         <Grid mt={3} item md={12} sm={12} xs={12}>
           <Grid sx={{ backgroundColor: "white", borderRadius: "10px" }} p={2}>
@@ -311,7 +272,7 @@ const Page: React.FC = () => {
               </Grid>
               <Grid item>
                 <CommonDatePicker
-                  empJoinedDate={empJoinedDate}
+                  routeJoinedDate={routeJoinedDate}
                   getDataFromChildHandler={getDataFromChildHandler}
                 />
               </Grid>
