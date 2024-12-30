@@ -40,9 +40,6 @@ interface AddDeviceProps {
   getEmployeeData: () => void;
   selectedDevice?: any;
 }
-interface ErrorResponse {
-  message?: string;
-}
 
 const AddManPower: React.FC<AddDeviceProps> = ({
   open,
@@ -617,7 +614,7 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         </FormHelperText>
                       </FormControl>
                     </Grid>
-                    <Grid item md={5.8} mt={2}>
+                    <Grid item md={5.8} mt={4}>
                       <Controller
                         name="shiftRange"
                         control={control}

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   DialogActions,
@@ -13,7 +13,15 @@ import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
+import Step1 from "../trolley/assignDeparment/Step1";
+import Step2 from "../trolley/assignDeparment/Step2";
+import Step3 from "../trolley/assignDeparment/Step3";
 
+interface SelectedItems {
+  department: string | null;
+  sections: string[];
+  lines: string[];
+}
 interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,6 +30,8 @@ interface Props {
   selectedMen?: string | null;
   setSelectedMen: React.Dispatch<React.SetStateAction<string | null>>;
   setSelectedDept: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedItems: React.Dispatch<React.SetStateAction<SelectedItems>>;
+  selectedItems: SelectedItems;
 }
 
 interface TabPanelProps {
@@ -52,9 +62,10 @@ function TabPanel(props: TabPanelProps) {
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
       {...other}
+      style={{ width: "75%" }}
     >
       {value === index && (
-        <Box sx={{ pl: 6 }}>
+        <Box sx={{ pl: 2 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -77,10 +88,29 @@ export default function AssignAssessment({
   selectedMen,
   setSelectedDept,
   setSelectedMen,
+  selectedItems,
+  setSelectedItems,
 }: Props) {
   const methods = useForm<any>();
   const [activeStep, setValue] = React.useState(0);
 
+  const handleSelectionChange = (key: keyof SelectedItems, id: string) => {
+    setSelectedItems((prevState: any) => {
+      if (key === "department") {
+        return { ...prevState, department: id };
+      }
+
+      if (key === "sections" || key === "lines") {
+        const updatedValues = prevState[key].includes(id)
+          ? prevState[key].filter((itemId: any) => itemId !== id)
+          : [...prevState[key], id];
+
+        return { ...prevState, [key]: updatedValues };
+      }
+
+      return prevState;
+    });
+  };
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -106,7 +136,8 @@ export default function AssignAssessment({
   const handleClear = () => {
     setSelectedDept(null);
     setSelectedMen(null);
-    getTrolleyData();
+    setSelectedItems({ department: null, sections: [], lines: [] });
+    // getTrolleyData();
     handleClose();
   };
   return (
@@ -121,7 +152,7 @@ export default function AssignAssessment({
     >
       <form onSubmit={handleSubmit}>
         <DialogContent>
-          <Grid container>
+          <Grid container sx={{ height: "300px" }}>
             <Tabs
               orientation="vertical"
               variant="scrollable"
@@ -132,6 +163,17 @@ export default function AssignAssessment({
             >
               <TabItem label="Department" {...a11yProps(0)} />
               <TabItem label="Manpower" {...a11yProps(1)} />
+              <TabItem label="Department" {...a11yProps(2)} />
+              <TabItem
+                label="Section"
+                {...a11yProps(3)}
+                disabled={selectedItems?.department == null && true}
+              />
+              <TabItem
+                label="Line"
+                {...a11yProps(4)}
+                disabled={selectedItems?.sections?.length === 0 && true}
+              />
             </Tabs>
             <TabPanel value={activeStep} index={0}>
               <Grid container rowGap={2}>
@@ -190,6 +232,32 @@ export default function AssignAssessment({
                   </Button>
                 </Grid>
               </Grid>
+            </TabPanel>
+            <TabPanel value={activeStep} index={2}>
+              {activeStep === 2 && (
+                <Step1
+                  selectedItems={selectedItems}
+                  handleSelectionChange={handleSelectionChange}
+                />
+              )}
+            </TabPanel>
+            <TabPanel value={activeStep} index={3}>
+              {activeStep === 3 && (
+                <Step2
+                  deptId={selectedItems?.department}
+                  selectedItems={selectedItems}
+                  handleSelectionChange={handleSelectionChange}
+                />
+              )}
+            </TabPanel>
+            <TabPanel value={activeStep} index={4}>
+              {activeStep === 4 && (
+                <Step3
+                  sectionIds={selectedItems?.sections}
+                  selectedItems={selectedItems}
+                  handleSelectionChange={handleSelectionChange}
+                />
+              )}
             </TabPanel>
           </Grid>
         </DialogContent>

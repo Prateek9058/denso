@@ -4,7 +4,6 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
@@ -14,14 +13,12 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Button,
   Table,
   TableHead,
   TableRow,
   TableCell,
   TableBody,
   FormControl,
-  InputLabel,
 } from "@mui/material";
 import styled from "styled-components";
 
@@ -42,8 +39,10 @@ interface ProcessFormRow {
 interface empProps {
   rows: ProcessFormRow[];
   setRows: React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
+  subStandard: ProcessFormRow[];
+  setSubStandard: React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
   pointCounter: number;
-  index: number;
+  accordianIndex: number;
 }
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
@@ -54,9 +53,12 @@ export default function AccordionUsage({
   rows,
   setRows,
   pointCounter,
-  index,
+  accordianIndex,
+  subStandard,
+  setSubStandard,
 }: empProps) {
   const CurrDate = new Date();
+
   const formatTimeForTextField = (time: string | null) => {
     if (!time) return "";
     const date = new Date(time);
@@ -71,29 +73,27 @@ export default function AccordionUsage({
     date.setHours(hours, minutes, 0, 0);
     return date.toISOString();
   };
-  const handleAddRow = () => {
-    if (rows.length < pointCounter) {
-      setRows([
-        ...rows,
-        {
-          process: "",
-          activityName: "",
-          jobRole: "Permanent",
-          jobNature: "regular",
-          startTime: "",
-          endTime: "",
-          totalTime: {
-            time: 0,
-            unit: "min",
-          },
-          remarks: "Neutral",
-        },
-      ]);
-    }
+  const handleAddRow1 = (index: number) => {
+    const newRow = {
+      process: "",
+      activityName: "",
+      jobRole: "Permanent",
+      jobNature: "regular",
+      startTime: "",
+      endTime: "",
+      totalTime: {
+        time: 0,
+        unit: "min",
+      },
+      remarks: "Neutral",
+    };
+    const newRowsSubstandard: ProcessFormRow[] = [...subStandard];
+    newRowsSubstandard.splice(index, 0, newRow);
+    setSubStandard(newRowsSubstandard);
   };
   const handleRemoveRow = (index: number) => {
-    const newRows = rows.filter((_, idx) => idx !== index);
-    setRows(newRows);
+    const newRows = subStandard.filter((_, idx) => idx !== index);
+    setSubStandard(newRows);
   };
   const handleChange = (
     index: number,
@@ -133,6 +133,44 @@ export default function AccordionUsage({
 
     setRows(newRows);
   };
+  const handleChangeSubstandard = (
+    index: number,
+    field: keyof ProcessFormRow,
+    value: string | number | { time: number; unit: string },
+    nestedField?: keyof ProcessFormRow["totalTime"]
+  ) => {
+    const newRows = [...subStandard];
+
+    if (field === "totalTime" && nestedField) {
+      newRows[index] = {
+        ...newRows[index],
+        totalTime: {
+          ...newRows[index].totalTime,
+          [nestedField]: value,
+        },
+      };
+    } else {
+      newRows[index] = {
+        ...newRows[index],
+        [field]: value,
+      };
+    }
+
+    if (field === "startTime" || field === "endTime") {
+      const startTime = new Date(newRows[index].startTime).getTime();
+      const endTime = new Date(newRows[index].endTime).getTime();
+
+      if (!isNaN(startTime) && !isNaN(endTime) && endTime > startTime) {
+        const totalMinutes = Math.floor((endTime - startTime) / (1000 * 60));
+
+        newRows[index].totalTime.time = totalMinutes;
+      } else {
+        newRows[index].totalTime.time = 0;
+      }
+    }
+
+    setSubStandard(newRows);
+  };
 
   return (
     <div>
@@ -143,11 +181,11 @@ export default function AccordionUsage({
           id="panel1-header"
         >
           <Typography component="span" variant="h6">
-            Point {index + 1}
+            Point {accordianIndex + 1}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          {Array.from({ length: pointCounter }).map((_, index) => (
+          {Array?.from({ length: pointCounter }).map((_, processIndex) => (
             <>
               <Grid
                 item
@@ -158,13 +196,14 @@ export default function AccordionUsage({
                   position: "relative",
                   bgcolor: "white",
                 }}
+                key={processIndex}
               >
-                <Typography mt={1} fontWeight={500}>
-                  {index === 0
+                <Typography fontWeight={500}>
+                  {processIndex === 0
                     ? "Process 1 :"
-                    : `Process ${index} to ${index + 1} :`}
+                    : `Process ${processIndex} to ${processIndex + 1} :`}
                 </Typography>
-                <Table sx={{ minWidth: "100%" }}>
+                <Table sx={{ minWidth: "100%" }} key={processIndex}>
                   <TableHead>
                     <TableRow>
                       <CustomTableCell>Process</CustomTableCell>
@@ -179,7 +218,7 @@ export default function AccordionUsage({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {rows.map((row, index) => (
+                    {rows?.map((row, index) => (
                       <TableRow
                         key={index}
                         sx={{
@@ -236,7 +275,7 @@ export default function AccordionUsage({
                               <MenuItem value="Contractual">
                                 Contractual
                               </MenuItem>
-                              <MenuItem value="Internship">Internship</MenuItem>
+                              <MenuItem value="Temperory">Temperory</MenuItem>
                             </Select>
                           </FormControl>
                         </TableCell>
@@ -328,28 +367,6 @@ export default function AccordionUsage({
                             </Select>
                           </FormControl>
                         </TableCell>
-
-                        {/* <TableCell>
-                          <Box sx={{ display: "flex", gap: 1 }}>
-                            <IconButton
-                              color="error"
-                              onClick={() => handleRemoveRow(index)}
-                              disabled={rows.length === 1}
-                              size="small"
-                            >
-                              <RemoveIcon />
-                            </IconButton>
-                            {rows.length < pointCounter && (
-                              <IconButton
-                                color="primary"
-                                onClick={handleAddRow}
-                                size="small"
-                              >
-                                <AddIcon />
-                              </IconButton>
-                            )}
-                          </Box>
-                        </TableCell> */}
                       </TableRow>
                     ))}
                   </TableBody>
@@ -357,6 +374,7 @@ export default function AccordionUsage({
               </Grid>
             </>
           ))}
+
           <Grid
             item
             xs={12}
@@ -366,6 +384,7 @@ export default function AccordionUsage({
               position: "relative",
               bgcolor: "white",
             }}
+            key={accordianIndex}
           >
             <Typography mt={1} fontWeight={500}>
               SubStandard
@@ -385,7 +404,7 @@ export default function AccordionUsage({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row, index) => (
+                {subStandard?.map((row, index) => (
                   <TableRow
                     key={index}
                     sx={{
@@ -402,7 +421,11 @@ export default function AccordionUsage({
                         sx={{ minWidth: "100px" }}
                         value={row.process}
                         onChange={(e) =>
-                          handleChange(index, "process", e.target.value)
+                          handleChangeSubstandard(
+                            index,
+                            "process",
+                            e.target.value
+                          )
                         }
                         size="small"
                         fullWidth
@@ -418,7 +441,11 @@ export default function AccordionUsage({
                         }}
                         value={row.activityName}
                         onChange={(e) =>
-                          handleChange(index, "activityName", e.target.value)
+                          handleChangeSubstandard(
+                            index,
+                            "activityName",
+                            e.target.value
+                          )
                         }
                         size="small"
                         fullWidth
@@ -430,7 +457,11 @@ export default function AccordionUsage({
                         <Select
                           value={row.jobRole}
                           onChange={(e) =>
-                            handleChange(index, "jobRole", e.target.value)
+                            handleChangeSubstandard(
+                              index,
+                              "jobRole",
+                              e.target.value
+                            )
                           }
                           // label="Job Role"
                         >
@@ -450,7 +481,11 @@ export default function AccordionUsage({
                         sx={{ minWidth: "100px" }}
                         value={row.jobNature || ""}
                         onChange={(e) =>
-                          handleChange(index, "jobNature", e.target.value)
+                          handleChangeSubstandard(
+                            index,
+                            "jobNature",
+                            e.target.value
+                          )
                         }
                         size="small"
                         fullWidth
@@ -465,7 +500,7 @@ export default function AccordionUsage({
                         }}
                         value={formatTimeForTextField(row.startTime)}
                         onChange={(e) =>
-                          handleChange(
+                          handleChangeSubstandard(
                             index,
                             "startTime",
                             formatTimeToISO(e.target.value)
@@ -481,7 +516,7 @@ export default function AccordionUsage({
                         //   label="End Time"
                         value={formatTimeForTextField(row.endTime)}
                         onChange={(e) =>
-                          handleChange(
+                          handleChangeSubstandard(
                             index,
                             "endTime",
                             formatTimeToISO(e.target.value)
@@ -501,7 +536,7 @@ export default function AccordionUsage({
                         //   label="Total Time "
                         value={row.totalTime.time}
                         onChange={(e) =>
-                          handleChange(
+                          handleChangeSubstandard(
                             index,
                             "totalTime",
                             Number(e.target.value),
@@ -519,7 +554,11 @@ export default function AccordionUsage({
                         <Select
                           value={row.remarks}
                           onChange={(e) =>
-                            handleChange(index, "remarks", e.target.value)
+                            handleChangeSubstandard(
+                              index,
+                              "remarks",
+                              e.target.value
+                            )
                           }
                           // label="Remarks"
                         >
@@ -535,15 +574,17 @@ export default function AccordionUsage({
                         <IconButton
                           color="error"
                           onClick={() => handleRemoveRow(index)}
-                          disabled={rows.length === 1}
+                          disabled={index === 0 || subStandard?.length === 1}
                           size="small"
                         >
                           <RemoveIcon />
                         </IconButton>
-                        {rows.length < pointCounter && (
+                        {subStandard?.length < pointCounter && (
                           <IconButton
                             color="primary"
-                            onClick={handleAddRow}
+                            onClick={() => {
+                              handleAddRow1(accordianIndex);
+                            }}
                             size="small"
                           >
                             <AddIcon />

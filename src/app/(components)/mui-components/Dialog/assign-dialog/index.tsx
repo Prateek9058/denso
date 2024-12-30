@@ -32,6 +32,8 @@ export default function AssignAssessment({
   const [loading, setLoading] = useState<boolean>(true);
   const [value] = useState<number>(0);
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
+  const [selectIDs, setSelectedIds] = useState<any>(null);
+  const [lineIds, setLineIds] = useState<any>(null);
 
   const [department, setDepartment] = useState<any>(null);
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +44,6 @@ export default function AssignAssessment({
   };
 
   useEffect(() => {
-    setSelectedDepartmentId(selectedDevice?.trolley[0]?.departmentId?._id);
     getAllTrolleyByDepartmentId();
   }, [selectedDevice]);
   const getDepartmentDropdown = async () => {
@@ -63,9 +64,13 @@ export default function AssignAssessment({
   const getAllTrolleyByDepartmentId = async () => {
     try {
       setLoading(true);
-
+      const data1 = {
+        sectionId: selectIDs,
+        lineId: lineIds,
+      };
       const { data, status } = await axiosInstance.post(
-        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&departmentId=${selectedDepartmentId}&search=${searchQuery}`
+        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&departmentId=${selectedDepartmentId}&search=${searchQuery}`,
+        data1
       );
       if (status === 200 || status === 201) {
         setGetAllList(data?.data?.data);
@@ -83,10 +88,19 @@ export default function AssignAssessment({
   }, [open]);
 
   useEffect(() => {
-    if (selectedDepartmentId && department) {
+    if (selectedDepartmentId) {
       getAllTrolleyByDepartmentId();
     }
-  }, [value, page, rowsPerPage, searchQuery, selectedDepartmentId]);
+  }, [
+    value,
+    page,
+    rowsPerPage,
+    searchQuery,
+    selectedDepartmentId,
+    lineIds,
+    selectIDs,
+    selectedDevice,
+  ]);
   useEffect(() => {
     setTrolley(
       selectedDevice?.trolley?.map((item: any) => {
@@ -114,6 +128,10 @@ export default function AssignAssessment({
         departmentList={department}
         selectedDepartment={selectedDepartmentId}
         setTrolley={setTrolley}
+        setSelectedIds={setSelectedIds}
+        selectIDs={selectIDs}
+        lineIds={lineIds}
+        setLineIds={setLineIds}
       />
     </Grid>
   );

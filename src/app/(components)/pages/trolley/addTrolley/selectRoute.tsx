@@ -6,15 +6,14 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import "leaflet/dist/leaflet.css";
 import CustomAccordian from "@/app/(components)/mui-components/Accordion";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
+
 import {
   Grid,
   Box,
   TextField,
   Select,
   MenuItem,
-  IconButton,
+
   Button,
   Table,
   TableHead,
@@ -48,10 +47,18 @@ interface ProcessFormRow {
 interface empProps {
   rows: ProcessFormRow[];
   setRows: React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
+  subStandard: ProcessFormRow[];
+  setSubStandard: React.Dispatch<React.SetStateAction<ProcessFormRow[]>>;
   pointCounter: number;
 }
 
-const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
+const SelectRoute: React.FC<empProps> = ({
+  rows,
+  setRows,
+  pointCounter,
+  subStandard,
+  setSubStandard,
+}) => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -100,30 +107,7 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
     date.setHours(hours, minutes, 0, 0);
     return date.toISOString();
   };
-  const handleAddRow = () => {
-    if (rows.length < pointCounter) {
-      setRows([
-        ...rows,
-        {
-          process: "",
-          activityName: "",
-          jobRole: "Permanent",
-          jobNature: "regular",
-          startTime: "",
-          endTime: "",
-          totalTime: {
-            time: 0,
-            unit: "min",
-          },
-          remarks: "Neutral",
-        },
-      ]);
-    }
-  };
-  const handleRemoveRow = (index: number) => {
-    const newRows = rows.filter((_, idx) => idx !== index);
-    setRows(newRows);
-  };
+
   const handleChange = (
     index: number,
     field: keyof ProcessFormRow,
@@ -202,8 +186,10 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
         <Grid container key={index} mb={2}>
           <CustomAccordian
             rows={rows}
-            index={index}
+            accordianIndex={index}
             setRows={setRows}
+            subStandard={subStandard}
+            setSubStandard={setSubStandard}
             pointCounter={pointCounter}
           />
         </Grid>
@@ -316,20 +302,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                       <MenuItem value="nonRegular">nonRegular</MenuItem>
                     </Select>
                   </FormControl>
-                  {/* <TextField
-                    placeholder="Enter job nature"
-                    //   label="Job Nature"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    sx={{ minWidth: "100px" }}
-                    value={row.jobNature || ""}
-                    onChange={(e) =>
-                      handleChange(index, "jobNature", e.target.value)
-                    }
-                    size="small"
-                    fullWidth
-                  /> */}
                 </TableCell>
                 <TableCell>
                   <TextField
@@ -391,7 +363,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                 </TableCell>
                 <TableCell>
                   <FormControl size="small" fullWidth>
-                    {/* <InputLabel>Remarks</InputLabel> */}
                     <Select
                       value={row.remarks}
                       onChange={(e) =>
@@ -405,28 +376,6 @@ const SelectRoute: React.FC<empProps> = ({ rows, setRows, pointCounter }) => {
                     </Select>
                   </FormControl>
                 </TableCell>
-
-                {/* <TableCell>
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <IconButton
-                      color="error"
-                      onClick={() => handleRemoveRow(index)}
-                      disabled={rows.length === 1}
-                      size="small"
-                    >
-                      <RemoveIcon />
-                    </IconButton>
-                    {rows.length < pointCounter && (
-                      <IconButton
-                        color="primary"
-                        onClick={handleAddRow}
-                        size="small"
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    )}
-                  </Box>
-                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

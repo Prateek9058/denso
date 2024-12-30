@@ -97,7 +97,7 @@ export default function AssignAssessmentTabSelected({
   };
 
   return (
-    <div>
+    <>
       <Grid container justifyContent="space-between" alignItems={"center"}>
         <Grid item>
           <CustomTextField
@@ -145,9 +145,9 @@ export default function AssignAssessmentTabSelected({
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={selectedItems.sections.includes(item._id)}
+                      checked={selectedItems.sections.includes(item?._id)}
                       onChange={() =>
-                        handleSelectionChange("sections", item._id)
+                        handleSelectionChange("sections", item?._id)
                       }
                     />
                   }
@@ -189,6 +189,6 @@ export default function AssignAssessmentTabSelected({
           </Stack>
         </Grid>
       )}
-    </div>
+    </>
   );
 }

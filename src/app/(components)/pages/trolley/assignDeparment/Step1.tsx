@@ -85,7 +85,7 @@ export default function AssignAssessmentTabSelected({
   };
 
   return (
-    <div>
+    <>
       <Grid container justifyContent="space-between" alignItems={"center"}>
         <Grid item>
           <Typography variant="h6">Select Department</Typography>
@@ -127,9 +127,9 @@ export default function AssignAssessmentTabSelected({
                     value={item._id}
                     control={
                       <Radio
-                        checked={selectedItems.department === item._id}
+                        checked={selectedItems?.department === item?._id}
                         onChange={() =>
-                          handleSelectionChange("department", item._id)
+                          handleSelectionChange("department", item?._id)
                         }
                       />
                     }
@@ -178,6 +178,6 @@ export default function AssignAssessmentTabSelected({
           </Stack>
         </Grid>
       )}
-    </div>
+    </>
   );
 }

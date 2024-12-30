@@ -116,6 +116,21 @@ const AddDevice: React.FC<AddDeviceProps> = ({
       remarks: "Neutral",
     },
   ]);
+  const [subStandard, setSubStandard] = useState<ProcessFormRow[]>([
+    {
+      process: "",
+      activityName: "",
+      jobRole: "Permanent",
+      jobNature: "regular",
+      startTime: "",
+      endTime: "",
+      totalTime: {
+        time: 0,
+        unit: "min",
+      },
+      remarks: "Neutral",
+    },
+  ]);
   const steps = [
     "Add trolley",
     "Mark pointers",
@@ -634,6 +649,8 @@ const AddDevice: React.FC<AddDeviceProps> = ({
                   <SelectRoute
                     rows={rows}
                     setRows={setRows}
+                    subStandard={subStandard}
+                    setSubStandard={setSubStandard}
                     pointCounter={pointCounter}
                   />
                 </Grid>

@@ -15,6 +15,7 @@ import {
   FormControl,
   Checkbox,
   InputLabel,
+  TextField,
 } from "@mui/material";
 
 import noData from "../../../../../../public/Img/nodata.png";
@@ -22,7 +23,15 @@ import SkeletonCard from "../../Skeleton/assign-radio-card";
 import SkeletonLoader from "../../Skeleton/skeleton-loader";
 import Image from "next/image";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
+import axiosInstance from "@/app/api/axiosInstance";
+import Autocomplete1 from "@mui/material/Autocomplete";
+import { Controller, useForm } from "react-hook-form";
 
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 interface StyledFormControlLabelProps extends FormControlLabelProps {
   checked: boolean;
 }
@@ -68,6 +77,10 @@ interface AssignProps {
   selectedLine?: string;
   setTrolley: React.Dispatch<React.SetStateAction<string[]>>;
   selectedDevice?: any;
+  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
+  selectIDs?: any;
+  lineIds?: any;
+  setLineIds: React.Dispatch<React.SetStateAction<any>>;
 }
 export default function AssignAssessmentTabSelected({
   select,
@@ -83,8 +96,64 @@ export default function AssignAssessmentTabSelected({
   selectedDepartment,
   departmentList,
   setTrolley,
+  selectIDs,
+  setSelectedIds,
+  setLineIds,
 }: AssignProps) {
+  const methods = useForm<any>();
+  const {
+    formState: { errors },
+    setValue,
+    control,
+  } = methods;
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+  const [site, setSite] = useState<any>(null);
+  const [Line, setLine] = useState<any>(null);
+
+  const handleChangeAutocompleteSIte = (event: any, value: any[]) => {
+    const selectedIds = value.map((item) => item?._id);
+
+    setSelectedIds(selectedIds);
+  };
+  const handleChangeAutocompleteLine = (event: any, value: any[]) => {
+    const selectedIds = value.map((item) => item?._id);
+
+    setLineIds(selectedIds);
+  };
+
+  const handleSection = async () => {
+    try {
+      const { data, status } = await axiosInstance.get(
+        `/section/departmentBaseSections/${selectedDepartment}`
+      );
+      if (status === 200 || status === 201) {
+        setSite(data?.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+  const handleLine = async () => {
+    try {
+      const { data, status } = await axiosInstance.post(`/line/getAllLines/`, {
+        sectionIds: selectIDs,
+      });
+      if (status === 200 || status === 201) {
+        setLine(data?.data?.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    handleSection();
+  }, [selectedDepartment]);
+  useEffect(() => {
+    if (selectIDs) {
+      handleLine();
+    }
+  }, [selectIDs]);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -121,18 +190,14 @@ export default function AssignAssessmentTabSelected({
       }
     });
   };
+
   return (
     <div>
-      <Grid container justifyContent="space-between" alignItems={"center"}>
-        <Grid item>
-          <Grid
-            container
-            justifyContent="space-between"
-            gap={1}
-            alignItems={"center"}
-          >
-            <Grid item>
-              <FormControl fullWidth sx={{ minWidth: "270px", mb: 1, mt: 1 }}>
+      <Grid container justifyContent="space-between" alignItems={"center"} mb={2}>
+        <Grid item xs={9}>
+          <Grid container xs={12} spacing={2}>
+            <Grid item xs={4}>
+              <FormControl fullWidth size="small">
                 <InputLabel>Departments</InputLabel>
                 <Select
                   value={selectedDepartment}
@@ -160,11 +225,113 @@ export default function AssignAssessmentTabSelected({
                 </Select>
               </FormControl>
             </Grid>
+            <Grid item xs={4}>
+              <Controller
+                name="section"
+                control={control}
+                rules={{
+                  required: "Section is required",
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <Autocomplete1
+                    id="section"
+                    multiple
+                    size="small"
+                    options={site?.length > 0 ? site : []}
+                    // disabled={!departmentId}
+                    getOptionLabel={(option: any) => option?.name}
+                    onChange={(event, value) => {
+                      handleChangeAutocompleteSIte(event, value);
+                      field.onChange(value?.map((option: any) => option?._id));
+                    }}
+                    value={
+                      site?.filter((section: any) =>
+                        field.value?.includes(section?._id)
+                      ) || []
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Select Section"
+                        placeholder="Select section"
+                        variant="outlined"
+                        fullWidth
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
+                    renderOption={(props, option, { selected }) => (
+                      <li {...props}>
+                        <Checkbox
+                          icon={icon}
+                          checkedIcon={checkedIcon}
+                          style={{ marginRight: 8 }}
+                          checked={selected}
+                        />
+                        {option?.name}
+                      </li>
+                    )}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Controller
+                name="line"
+                control={control}
+                rules={{
+                  required: "line is required",
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <Autocomplete1
+                    id="line"
+                    multiple
+                    size="small"
+                    options={Line || []}
+                    // disabled={!selectIDs}
+                    getOptionLabel={(option: any) => option?.name}
+                    onChange={(event, value) => {
+                      handleChangeAutocompleteLine(event, value);
+                      field.onChange(value?.map((option: any) => option?._id));
+                    }}
+                    value={
+                      Line?.filter((section: any) =>
+                        field?.value?.includes(section?._id)
+                      ) || []
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Select line"
+                        placeholder="Select line"
+                        variant="outlined"
+                        fullWidth
+                        error={!!error}
+                        helperText={error?.message}
+                      />
+                    )}
+                    renderOption={(props, option, { selected }) => (
+                      <li {...props}>
+                        <Checkbox
+                          icon={icon}
+                          checkedIcon={checkedIcon}
+                          style={{ marginRight: 8 }}
+                          checked={selected}
+                        />
+                        {option?.name}
+                      </li>
+                    )}
+                  />
+                )}
+              />
+            </Grid>
           </Grid>
         </Grid>
-        <Grid item>
-          <CustomTextField
+        <Grid item xs={3}>
+          <TextField
             type="search"
+            fullWidth
+            size="small"
             placeholder="Search ID / Name"
             value={debouncedSearchQuery}
             onChange={handleSearchChange}

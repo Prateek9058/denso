@@ -36,6 +36,11 @@ type Breadcrumb = {
   label: string;
   link: string;
 };
+interface SelectedItems {
+  department: string | null;
+  sections: string[];
+  lines: string[];
+}
 const breadcrumbItems: Breadcrumb[] = [
   { label: "Dashboard", link: "/" },
   { label: "Maintenance ", link: "" },
@@ -62,6 +67,14 @@ const Table: React.FC<TableProps> = ({
   ];
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+  const [openFilter, setOpenFilter] = React.useState<boolean>(false);
+  const [selectedMen, setSelectedMen] = useState<string | null>(null);
+  const [selectedDept, setSelectedDept] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<SelectedItems>({
+    department: null,
+    sections: [],
+    lines: [],
+  });
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -127,10 +140,15 @@ const Table: React.FC<TableProps> = ({
       ],
     }));
   };
-  const [selectedMen, setSelectedMen] = useState<string | null>(null);
-  const [openFilter, setOpenFilter] = React.useState<boolean>(false);
-  const [selectedDept, setSelectedDept] = useState<string | null>(null);
-  const badgeCount = [selectedMen, selectedDept]?.filter(Boolean)?.length;
+
+  const badgeCount = [
+    selectedMen,
+    selectedDept,
+    selectedItems?.department,
+    selectedItems?.sections.length > 0 ? 1 : null,
+    selectedItems?.lines.length > 0 ? 1 : null,
+  ].filter(Boolean)?.length;
+
   const handleOpenFilter = () => {
     setOpenFilter(true);
   };
@@ -145,6 +163,8 @@ const Table: React.FC<TableProps> = ({
           selectedDept={selectedDept}
           setSelectedDept={setSelectedDept}
           setSelectedMen={setSelectedMen}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
         />
       )}
       <CommonDialog
