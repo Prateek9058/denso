@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import MultiBarChart from "@/app/(components)/mui-components/CustomGraph/MultiBarChart";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import Filter from "./filterbymen";
 const WaitingTime = () => {
   const [date, setDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => {
+    setOpen(true);
+  };
   const getDataFromChildHandler = (date: any, dataArr: any) => {
     setDate(date);
     setAnalyticsDate(dataArr);
@@ -43,6 +49,7 @@ const WaitingTime = () => {
   ];
   return (
     <Grid mt={2} item md={6} sm={12} xs={12} sx={{ height: "100%" }}>
+      {open && <Filter open={open} setOpen={setOpen} />}
       <Grid
         sx={{
           backgroundColor: "white",
@@ -58,9 +65,14 @@ const WaitingTime = () => {
             </Typography>
           </Grid>
           <Grid item>
-            <CommonDatePicker
-              getDataFromChildHandler={getDataFromChildHandler}
-            />
+            <Button
+              variant="contained"
+              size="medium"
+              startIcon={<FilterListIcon sx={{ color: "white" }} />}
+              onClick={handleOpen}
+            >
+              Filter
+            </Button>
           </Grid>
         </Grid>
         <Grid pt={2}>

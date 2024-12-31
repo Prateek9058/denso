@@ -8,6 +8,7 @@ import {
   Stack,
   Box,
   TablePagination,
+  Pagination,
 } from "@mui/material";
 
 import noData from "../../../../../../public/Img/nodata.png";
@@ -44,6 +45,7 @@ export default function AssignAssessmentTabSelected({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [totalCount, setTotalCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const getSections = async () => {
     setLoading(true);
@@ -94,6 +96,9 @@ export default function AssignAssessmentTabSelected({
   ) => {
     setRowsPerPage(+event.target.value);
     setPage(0); // Reset page when rows per page is changed
+  };
+  const handlePagination = (page: number) => {
+    setPage(page);
   };
 
   return (
@@ -176,15 +181,20 @@ export default function AssignAssessmentTabSelected({
       </Grid>
 
       {!loading && (
-        <Grid container mt={1} justifyContent="end">
-          <Stack spacing={2}>
-            <TablePagination
+        <Grid container mt={4} justifyContent="center">
+          <Stack
+            spacing={2}
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+            sx={{ position: "absolute", bottom: 60 }}
+          >
+            <Pagination
+              count={totalPages}
               page={page}
-              count={totalCount}
-              rowsPerPage={rowsPerPage}
-              rowsPerPageOptions={[5, 10, 25]}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              onChange={(event, page) => handlePagination(page)}
+              showFirstButton
+              showLastButton
             />
           </Stack>
         </Grid>

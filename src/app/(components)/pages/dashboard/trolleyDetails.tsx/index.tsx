@@ -1,10 +1,19 @@
-import React from "react";
-import { Card, CardContent, Typography, Grid, IconButton } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Grid,
+  IconButton,
+  Button,
+} from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from "chart.js";
 import Image from "next/image";
 import Trolley from "../../../../../../public/Img/trolleyDashboard.png";
+import Filter from "./filter";
+
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 const chartData = [
@@ -25,25 +34,41 @@ const chartData = [
   },
 ];
 const TrolleyDetails = () => {
+  const [open, setOpen] = React.useState(false);
+  const [trolley, setTrolley] = useState<any>([]);
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
   return (
     <Grid mt={2} item md={6} sm={12} xs={12} sx={{ height: "100%" }}>
-      <Grid sx={{ backgroundColor: "white", borderRadius: "10px" ,minHeight:'470px'}} p={2}>
+      {open && (
+        <Filter
+          open={open}
+          setOpen={setOpen}
+          setTrolley={setTrolley}
+          trolley={trolley}
+        />
+      )}
+      <Grid
+        sx={{
+          backgroundColor: "white",
+          borderRadius: "10px",
+          minHeight: "470px",
+        }}
+        p={2}
+      >
         <Grid container justifyContent="space-between" alignItems="center">
           <Typography variant="h5">Trolley details</Typography>
           <Grid>
-            <Grid
-              container
-              alignItems={"center"}
-              bgcolor={"#4C4C4C"}
-              sx={{ borderRadius: "6px", padding: "0px 8px" }}
+            <Button
+              variant="contained"
+              size="medium"
+              startIcon={<FilterListIcon sx={{ color: "white" }} />}
+              onClick={handleOpen}
             >
-              <Typography variant="h6" color={"white"}>
-                Filter
-              </Typography>
-              <IconButton>
-                <FilterListIcon sx={{ color: "white" }} />
-              </IconButton>
-            </Grid>
+              Filter
+            </Button>
           </Grid>
         </Grid>
         <Grid container mt={1} spacing={2} justifyContent="center">
@@ -107,7 +132,7 @@ const TrolleyDetails = () => {
                   <Typography variant="body2">
                     {item.name.includes("time") ? "minutes" : "trolleys"}
                   </Typography> */}
-                  <Image src={Trolley} alt="Trolley"  width={40}/>
+                  <Image src={Trolley} alt="Trolley" width={40} />
                 </div>
               </div>
             </Grid>

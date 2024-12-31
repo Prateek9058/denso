@@ -102,6 +102,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
       notifyError(error?.response?.data?.message);
     }
   };
+  console.log("issue", trolleyDetails);
   return (
     <>
       {openRepair && (
@@ -111,19 +112,11 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
           getTrolleyDetails={getTrolleyDetails}
           getAllTrolleyRepairings={getAllTrolleyRepairings}
           id={params?.maintenanceId}
+          issue={trolleyDetails?.issue}
         />
       )}
       <ToastComponent />
-      {/* <CommonDialog
-        open={openRepair}
-        fullWidth={true}
-        maxWidth={"xs"}
-        title="Confirmation"
-        message="Are you sure you want to Marked trolley as repaired?"
-        color="error"
-        onClose={handleCancel}
-        onConfirm={handleConfirm}
-      /> */}
+
       <Grid container justifyContent={"space-between"}>
         <Grid item>
           <Breadcrumb breadcrumbItems={breadcrumbItems} />

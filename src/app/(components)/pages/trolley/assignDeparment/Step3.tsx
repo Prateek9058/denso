@@ -9,6 +9,7 @@ import {
   Stack,
   Box,
   TablePagination,
+  Pagination,
 } from "@mui/material";
 
 import noData from "../../../../../../public/Img/nodata.png";
@@ -45,12 +46,14 @@ export default function AssignAssessmentTabSelected({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
   const [totalCount, setTotalCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const getLines = async () => {
     setLoading(true);
     try {
       const { data, status } = await axiosInstance.post(
-        `line/getAllLines?page=${page + 1}&limit=${rowsPerPage}&search=${debouncedSearchQuery}`,{sectionIds:sectionIds}
+        `line/getAllLines?page=${page + 1}&limit=${rowsPerPage}&search=${debouncedSearchQuery}`,
+        { sectionIds: sectionIds }
       );
       if (status === 200 || status === 201) {
         setLines(data?.data?.data);
@@ -93,6 +96,9 @@ export default function AssignAssessmentTabSelected({
   ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+  const handlePagination = (page: number) => {
+    setPage(page);
   };
 
   return (
@@ -137,7 +143,7 @@ export default function AssignAssessmentTabSelected({
                   padding: "10px",
                   borderRadius: "8px",
                   marginBottom: "15px",
-                  mr:2
+                  mr: 2,
                 }}
                 className="mt-20 assign-radio-grid"
               >
@@ -173,15 +179,20 @@ export default function AssignAssessmentTabSelected({
       </Grid>
 
       {!loading && (
-        <Grid container mt={1} justifyContent="end">
-          <Stack spacing={2}>
-            <TablePagination
+        <Grid container mt={4} justifyContent="center">
+          <Stack
+            spacing={2}
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+            sx={{ position: "absolute", bottom: 60 }}
+          >
+            <Pagination
+              count={totalPages}
               page={page}
-              count={totalCount}
-              rowsPerPage={rowsPerPage}
-              rowsPerPageOptions={[5, 10, 25]}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              onChange={(event, page) => handlePagination(page)}
+              showFirstButton
+              showLastButton
             />
           </Stack>
         </Grid>

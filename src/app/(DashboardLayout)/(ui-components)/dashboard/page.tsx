@@ -8,6 +8,7 @@ import {
   Grid,
   Box,
   LinearProgress,
+  Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import salesIcon from "../../../../../public/Img/sales.png";
@@ -43,6 +44,7 @@ const Page = () => {
   const [selectedGraph, setSelectedGraph] = useState<string | null>(
     "Total Registered Devices"
   );
+
   const [stats, setStats] = useState([
     {
       title: "Manpower",
@@ -320,6 +322,19 @@ const Page = () => {
         <TrolleyDetails />
       </Grid>
 
+      <Grid
+        container
+        mt={2}
+        p={1}
+        sx={{ backgroundColor: "#fff", borderRadius: "8px" }}
+      >
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Typography variant="h6">Showing trolley | 25 out of 25</Typography>
+          <Button variant="contained" size="large">
+            filter
+          </Button>
+        </Grid>
+      </Grid>
       <DynamicHeader />
       <Grid container spacing={2}>
         <TrolleyRepairTime />

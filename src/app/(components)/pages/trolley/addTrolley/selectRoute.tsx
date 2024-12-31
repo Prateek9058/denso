@@ -13,7 +13,6 @@ import {
   TextField,
   Select,
   MenuItem,
-
   Button,
   Table,
   TableHead,
@@ -194,12 +193,7 @@ const SelectRoute: React.FC<empProps> = ({
           />
         </Grid>
       ))}
-      {/* <CustomAccordian
-        rows={rows}
-        index={1}
-        setRows={setRows}
-        pointCounter={pointCounter}
-      /> */}
+
       <Grid
         item
         xs={12}

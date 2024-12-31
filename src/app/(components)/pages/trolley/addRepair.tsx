@@ -39,38 +39,61 @@ const AddRepair: React.FC<AddDeviceProps> = ({
     reset,
     control,
   } = useForm();
+  const [dropDownData, setDropDownData] = useState<any[]>([]);
   const handleClose = () => {
     setOpen(false);
     getTrolleyData();
     reset();
   };
 
-  const dropDownData = [
-    {
-      _id: "671645b6740b31a416f231c1",
-      label: "break",
-    },
-    {
-      _id: "67177d3bb5491ed7dad99c75",
-      label: "short",
-    },
-    {
-      _id: "671f552da5ec829121b895de",
-      label: "1stK",
-    },
-    {
-      _id: "672870361e4a8366fba338e7",
-      label: "TEST5",
-    },
-    {
-      _id: "672892d91e4a8366fba33a1f",
-      label: "rohit",
-    },
-    {
-      _id: "67358445ee949f08984414e1",
-      label: "test",
-    },
-  ];
+  // const dropDownData = [
+  //   {
+  //     _id: "671645b6740b31a416f231c1",
+  //     label: "break",
+  //   },
+  //   {
+  //     _id: "67177d3bb5491ed7dad99c75",
+  //     label: "short",
+  //   },
+  //   {
+  //     _id: "671f552da5ec829121b895de",
+  //     label: "1stK",
+  //   },
+  //   {
+  //     _id: "672870361e4a8366fba338e7",
+  //     label: "TEST5",
+  //   },
+  //   {
+  //     _id: "672892d91e4a8366fba33a1f",
+  //     label: "rohit",
+  //   },
+  //   {
+  //     _id: "67358445ee949f08984414e1",
+  //     label: "test",
+  //   },
+  // ];
+  const getAllIssues = async () => {
+    try {
+      const { data, status } = await axiosInstance.get(
+        `/trolleyRepairing/getTrolleyIssues`
+      );
+      if (status === 200 || status === 201) {
+        const issuesArray = Object.entries(data?.data).map(
+          ([value], index) => ({
+            label: value,
+            _id: index,
+          })
+        );
+        setDropDownData(issuesArray);
+        console.log(issuesArray);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (open) getAllIssues();
+  }, [open]);
 
   const onSubmit = async () => {
     if (!selectedDevice?._id) return;

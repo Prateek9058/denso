@@ -33,7 +33,7 @@ const Page: React.FC = () => {
   const [date, setDate] = useState<any>(null);
   const [routeJoinedDate, setRouteJoinedDate] = useState<any>(null);
   const [analyticsDate, setAnalyticsDate] = useState<any>(null);
-
+  const [trolleyId, setTrolleyId] = useState<string>("");
   const trolleys = ["Trolley 1", "Trolley 2", "Trolley 3"];
   const breadcrumbItems: Breadcrumb[] = [
     { label: "Dashboard", link: "/" },
@@ -55,6 +55,7 @@ const Page: React.FC = () => {
       );
       if (res?.status === 200 || res?.status === 201) {
         setUserDetails(res?.data?.data);
+
         setLoading(false);
       }
     } catch (err) {
@@ -85,6 +86,7 @@ const Page: React.FC = () => {
     }
   };
 
+  console.log("trolleyList", trolleyId);
   return (
     <>
       <ToastComponent />
@@ -234,11 +236,18 @@ const Page: React.FC = () => {
                   Assigned Trolleys
                 </Typography>
                 <Autocomplete
-                  options={trolleys}
-                  multiple
+                  options={userDetails?.trolley || []}
                   fullWidth
                   size="small"
                   disableClearable
+                  onChange={(event, newValue: any) => {
+                    if (newValue) {
+                      setTrolleyId(newValue?._id);
+                    } else {
+                      setTrolleyId("");
+                    }
+                  }}
+                  getOptionLabel={(option) => option.name}
                   renderInput={(params) => (
                     <TextField {...params} variant="outlined" />
                   )}

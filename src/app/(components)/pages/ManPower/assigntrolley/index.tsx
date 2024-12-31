@@ -41,6 +41,7 @@ export default function AssignAssessment({
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
   const [selectIDs, setSelectedIds] = useState<any>(null);
   const [lineIds, setLineIds] = useState<any>(null);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   // my state
   const [department, setDepartment] = useState<any>(null);
@@ -90,7 +91,9 @@ export default function AssignAssessment({
         data1
       );
       if (status === 200 || status === 201) {
+        const totalLength = data?.data?.totalCount ?? 0;
         setGetAllList(data?.data?.data);
+        setTotalPages(Math.ceil(totalLength / 10));
         getEmployeeData();
       }
     } catch (error) {
@@ -165,6 +168,8 @@ export default function AssignAssessment({
             setRowsPerPage={setRowsPerPage}
             page={page}
             setPage={setPage}
+            setTotalPages={setTotalPages}
+            totalPages={totalPages}
             getAllList={getAllList}
             setSearchQuery={setSearchQuery}
             searchQuery={searchQuery}

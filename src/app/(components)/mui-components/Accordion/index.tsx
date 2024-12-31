@@ -214,7 +214,6 @@ export default function AccordionUsage({
                       <CustomTableCell>Time (To)</CustomTableCell>
                       <CustomTableCell>Total Time</CustomTableCell>
                       <CustomTableCell>Remarks</CustomTableCell>
-                      {/* <CustomTableCell>Action</CustomTableCell> */}
                     </TableRow>
                   </TableHead>
                   <TableBody>

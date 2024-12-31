@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { styled } from "@mui/material/styles";
 import {
   Grid,
@@ -9,7 +9,6 @@ import {
   FormControlLabelProps,
   Stack,
   Box,
-  TablePagination,
   MenuItem,
   Select,
   FormControl,
@@ -57,86 +56,40 @@ function MyFormControlLabel(props: FormControlLabelProps) {
 }
 
 interface AssignProps {
-  select: any;
-  rowsPerPage: number;
-  setRowsPerPage: React.Dispatch<React.SetStateAction<number>>;
-  page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-  getAllList: any;
-  searchQuery: string;
-  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-  loading: boolean;
-  handleInputChange?: any;
-  departments?: any;
-  sections?: any;
-  lines?: any;
-  selectedDepartment?: string;
-  departmentList?: any;
-  selectedSection?: string;
-  selectedLine?: string;
+  trolley: any;
+
   setTrolley: React.Dispatch<React.SetStateAction<string[]>>;
-  selectedDevice?: any;
-  methods: ReturnType<typeof useForm>;
-  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
-  selectIDs?: any;
-  lineIds?: any;
-  setLineIds: React.Dispatch<React.SetStateAction<any>>;
-  selectedDepartmentId?: any;
-  setTotalPages: React.Dispatch<React.SetStateAction<number>>;
-  totalPages?: number;
 }
 export default function AssignAssessmentTabSelected({
-  select,
-  rowsPerPage,
-  getAllList,
-  setRowsPerPage,
-  page,
-  setPage,
-  setSearchQuery,
-  searchQuery,
-  loading,
-  handleInputChange,
-  selectedDepartment,
-  departmentList,
+  trolley,
   setTrolley,
-  selectIDs,
-  setSelectedIds,
-  setLineIds,
-  selectedDepartmentId,
-  selectedDevice,
-  setTotalPages,
-  totalPages,
 }: AssignProps) {
-  useEffect(() => {
-    if (selectedDevice) {
-      const sectionIds = selectedDevice?.trolley
-        ?.flatMap((item: any) => item?.sectionId || [])
-        .map((section: any) => section?._id);
-
-      const lineIds = selectedDevice?.trolley
-        ?.flatMap((item: any) => item?.lineId || [])
-        .map((line: any) => line?._id);
-
-      setValue("section", sectionIds || []);
-      setValue("line", lineIds || []);
-      setSelectedIds(sectionIds || []);
-      setLineIds(lineIds || []);
-    }
-  }, [selectedDevice]);
+  const [department, setDepartment] = useState<any>(null);
+  const [selectIDs, setSelectedIds] = useState<any>(null);
+  const [lineIds, setLineIds] = useState<any>(null);
   const [site, setSite] = useState<any>(null);
   const [Line, setLine] = useState<any>(null);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
+  const [page, setPage] = React.useState<number>(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
+  const [searchQuery, setSearchQuery] = useState<any>("");
+  const [getAllList, setGetAllList] = useState<any>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
 
-  const [selectedSections, setSelectedSections] = React.useState<any[]>([]);
-  const [selectedLines, setSelectedLines] = React.useState<any[]>([]);
-
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (name == "department") {
+      setSelectedDepartmentId(value);
+    }
+  };
   const handleChangeAutocompleteSIte = (event: any, value: any[]) => {
     const selectedIds = value.map((item) => item?._id);
-    setSelectedSections(value);
     setSelectedIds(selectedIds);
   };
   const handleChangeAutocompleteLine = (event: any, value: any[]) => {
     const selectedIds = value.map((item) => item?._id);
-    setSelectedLines(value);
     setLineIds(selectedIds);
   };
   const methods = useForm<any>();
@@ -171,18 +124,65 @@ export default function AssignAssessmentTabSelected({
   };
   useEffect(() => {
     handleSection();
-    setSelectedSections([]);
-    setSelectedLines([]);
   }, [selectedDepartmentId]);
   useEffect(() => {
     if (selectIDs) {
       handleLine();
-    } else {
-      setSelectedLines([]);
     }
   }, [selectIDs]);
+  const getDepartmentDropdown = async () => {
+    try {
+      const { data, status } = await axiosInstance.get(
+        `department/getAllDepartments?page=1&limit=1000`
+      );
+      if (status === 200 || status === 201) {
+        setDepartment(data?.data?.data);
+        if (department?.length > 0) {
+          setDepartment(department[0]?._id);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getAllTrolleyByDepartmentId = async () => {
+    try {
+      setLoading(true);
+      const data1 = {
+        sectionId: selectIDs,
+        lineId: lineIds,
+      };
+      const { data, status } = await axiosInstance.post(
+        `/trolleys/getAssignedNotAssingedTrolley?page=${page + 1}&limit=${rowsPerPage}&departmentId=${selectedDepartmentId}&search=${searchQuery}`,
+        data1
+      );
+      if (status === 200 || status === 201) {
+        const totalLength = data?.data?.totalCount ?? 0;
+        setGetAllList(data?.data?.data);
+        setTotalPages(Math.ceil(totalLength / 10));
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getDepartmentDropdown();
+  }, []);
+  useEffect(() => {
+    if (selectedDepartmentId) {
+      getAllTrolleyByDepartmentId();
+    }
+  }, [
+    page,
+    rowsPerPage,
+    searchQuery,
+    selectedDepartmentId,
+    lineIds,
+    selectIDs,
+  ]);
 
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(debouncedSearchQuery);
@@ -196,18 +196,7 @@ export default function AssignAssessmentTabSelected({
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDebouncedSearchQuery(event?.target?.value);
   };
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
-    setPage(newPage);
-  };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-  };
   const getAllAssignAssessments: any = getAllList;
 
   const toggleTrolley = (id: string) => {
@@ -222,19 +211,20 @@ export default function AssignAssessmentTabSelected({
   const handlePagination = (page: number) => {
     setPage(page);
   };
+
   return (
-    <div style={{ height: "450px" }}>
+    <div style={{ width: "100%" }}>
       <form>
-        <Grid container justifyContent="space-between" spacing={2}>
-          <Grid item xs={10}>
-            <Grid container columnGap={2}>
-              <Grid item xs={3.9}>
+        <Grid container justifyContent="space-between">
+          <Grid item xs={9} mb={2}>
+            <Grid container xs={12} spacing={2}>
+              <Grid item xs={4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Departments</InputLabel>
                   <Select
-                    value={selectedDepartment}
+                    value={selectedDepartmentId}
                     onChange={(event) => {
-                      const modifiedEvent = {
+                      const modifiedEvent: any = {
                         ...event,
                         target: {
                           ...event.target,
@@ -248,8 +238,8 @@ export default function AssignAssessmentTabSelected({
                     <MenuItem disabled value="">
                       <em>Select Department</em>
                     </MenuItem>
-                    {departmentList &&
-                      departmentList?.map((item: any, index: any) => (
+                    {department &&
+                      department?.map((item: any, index: any) => (
                         <MenuItem key={index} value={item?._id}>
                           {item?.name}
                         </MenuItem>
@@ -257,7 +247,7 @@ export default function AssignAssessmentTabSelected({
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid xs={3.9}>
+              <Grid item xs={4}>
                 <Controller
                   name="section"
                   control={control}
@@ -270,7 +260,6 @@ export default function AssignAssessmentTabSelected({
                       multiple
                       size="small"
                       options={site?.length > 0 ? site : []}
-                      // disabled={!departmentId}
                       getOptionLabel={(option: any) => option?.name}
                       onChange={(event, value) => {
                         handleChangeAutocompleteSIte(event, value);
@@ -309,7 +298,7 @@ export default function AssignAssessmentTabSelected({
                   )}
                 />
               </Grid>
-              <Grid item xs={3.8}>
+              <Grid item xs={4}>
                 <Controller
                   name="line"
                   control={control}
@@ -363,11 +352,11 @@ export default function AssignAssessmentTabSelected({
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             <TextField
               size="small"
               type="search"
-              placeholder="Search ID / Name"
+              placeholder="Search "
               value={debouncedSearchQuery}
               onChange={handleSearchChange}
             />
@@ -412,7 +401,7 @@ export default function AssignAssessmentTabSelected({
         </Typography>
 
         <Grid container direction="row" mt={3}>
-          {!departmentList ? (
+          {!department ? (
             loading && <SkeletonCard width={250} arrayLength={8} />
           ) : (
             <>
@@ -448,7 +437,7 @@ export default function AssignAssessmentTabSelected({
                         }
                         control={
                           <Checkbox
-                            checked={select?.includes(item?._id)}
+                            checked={trolley?.includes(item?._id)}
                             onChange={() => toggleTrolley(item?._id)}
                           />
                         }

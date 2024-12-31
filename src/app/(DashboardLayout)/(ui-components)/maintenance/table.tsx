@@ -119,8 +119,7 @@ const Table: React.FC<TableProps> = ({
       sno: index + 1,
       uId: item?.uId ?? "N/A",
       createdAt: moment(item?.createdAt).format("lll") ?? "N/A",
-      trolleyMacId: item?.trolleyMacId ? item?.trolleyMacId : "N/A",
-
+      issue: item?.issue ? item?.issue : "N/A",
       avgRepairTime: item?.avgRepairTime
         ? `${item?.avgRepairTime} ${item?.unit}`
         : "0 ",

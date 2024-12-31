@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { DialogActions, Button, DialogContent, Grid } from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
@@ -17,6 +17,7 @@ interface AddDeviceProps {
   getAllTrolleyRepairings: () => void;
   getTrolleyDetails: () => void;
   id: string;
+  issue: string;
 }
 
 const AddCategory: React.FC<AddDeviceProps> = ({
@@ -25,6 +26,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
   getAllTrolleyRepairings,
   getTrolleyDetails,
   id,
+  issue,
 }) => {
   const {
     register,
@@ -41,11 +43,18 @@ const AddCategory: React.FC<AddDeviceProps> = ({
     reset();
   };
 
+  useEffect(() => {
+    setValue("issue", issue);
+  }, [issue]);
   const onSubmit = async (data: any) => {
     try {
+      const payload = {
+        cost: data?.cost,
+        decriprion: data?.decriprion,
+      };
       const { status } = await axiosInstance.post(
         `trolleyRepairing/updateTrolleyToRepair/${id}`,
-        { data }
+        { payload }
       );
       if (status === 200 || status === 201) {
         getTrolleyDetails();
@@ -85,10 +94,12 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                   {...register("issue")}
                   name="issue"
                   label="Trolley issue "
+                  disabled
                   placeholder="Enter trolley issue"
                   error={!!errors.issue}
                   helperText={errors.issue?.message}
                   onChange={handleInputChange}
+                  defaultValue={issue ? issue : ""}
                 />
               </Grid>
               <Grid item md={12}>
