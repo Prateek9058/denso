@@ -284,7 +284,7 @@ const Page = () => {
                       <LinearProgress
                         variant="determinate"
                         color="success"
-                        value={72} // You can replace 72 with actual progress calculation logic
+                        value={72}
                         sx={{
                           height: 8,
                           borderRadius: 5,

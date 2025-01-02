@@ -16,6 +16,12 @@ interface Props {
   setTrolley: React.Dispatch<React.SetStateAction<string[]>>;
   trolley: string;
   selectedDevice?: any;
+  selectedDepartmentId?: any;
+  setSelectedDepartmentId: React.Dispatch<React.SetStateAction<any>>;
+  selectIDs: any;
+  setSelectedIds: React.Dispatch<React.SetStateAction<any>>;
+  lineIds: any;
+  setLineIds: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export default function AssignAssessment({
@@ -24,6 +30,12 @@ export default function AssignAssessment({
   setTrolley,
   trolley,
   selectedDevice,
+  selectedDepartmentId,
+  setSelectedDepartmentId,
+  selectIDs,
+  setSelectedIds,
+  lineIds,
+  setLineIds,
 }: Props) {
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<any>(10);
@@ -31,9 +43,9 @@ export default function AssignAssessment({
   const [getAllList, setGetAllList] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [value] = useState<number>(0);
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
-  const [selectIDs, setSelectedIds] = useState<any>(null);
-  const [lineIds, setLineIds] = useState<any>(null);
+  // const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
+  // const [selectIDs, setSelectedIds] = useState<any>(null);
+  // const [lineIds, setLineIds] = useState<any>(null);
 
   const [department, setDepartment] = useState<any>(null);
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +56,11 @@ export default function AssignAssessment({
   };
 
   useEffect(() => {
-    getAllTrolleyByDepartmentId();
+    if (selectedDevice) {
+      setSelectedDepartmentId(
+        selectedDevice?.trolley?.map((item: any) => item?.departmentId?._id)
+      );
+    }
   }, [selectedDevice]);
   const getDepartmentDropdown = async () => {
     try {
@@ -53,9 +69,6 @@ export default function AssignAssessment({
       );
       if (status === 200 || status === 201) {
         setDepartment(data?.data?.data);
-        if (department?.length > 0) {
-          setDepartment(department[0]._id);
-        }
       }
     } catch (error) {
       console.log(error);
@@ -73,7 +86,9 @@ export default function AssignAssessment({
         data1
       );
       if (status === 200 || status === 201) {
-        setGetAllList(data?.data?.data);
+        if (selectedDepartmentId) {
+          setGetAllList(data?.data?.data);
+        }
       }
     } catch (error) {
       console.log(error);

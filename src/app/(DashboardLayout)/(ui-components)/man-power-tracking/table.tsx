@@ -132,6 +132,9 @@ const Table: React.FC<TableProps> = ({
     }));
   };
   const badgeCount = [
+    selectedItems?.department,
+    selectedItems?.sections.length > 0 ? 1 : null,
+    selectedItems?.lines.length > 0 ? 1 : null,
     // startDate && endDate ? 1 : null,
   ]?.filter(Boolean)?.length;
 

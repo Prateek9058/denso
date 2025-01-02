@@ -112,12 +112,10 @@ export default function AssignAssessmentTabSelected({
 
   const handleChangeAutocompleteSIte = (event: any, value: any[]) => {
     const selectedIds = value.map((item) => item?._id);
-
     setSelectedIds(selectedIds);
   };
   const handleChangeAutocompleteLine = (event: any, value: any[]) => {
     const selectedIds = value.map((item) => item?._id);
-
     setLineIds(selectedIds);
   };
 
@@ -193,7 +191,12 @@ export default function AssignAssessmentTabSelected({
 
   return (
     <div>
-      <Grid container justifyContent="space-between" alignItems={"center"} mb={2}>
+      <Grid
+        container
+        justifyContent="space-between"
+        alignItems={"center"}
+        mb={2}
+      >
         <Grid item xs={9}>
           <Grid container xs={12} spacing={2}>
             <Grid item xs={4}>

@@ -27,6 +27,7 @@ const Page: React.FC = () => {
   const [deviceData, setDeviceData] = useState<any>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [value, setTabValue] = useState<number>(0);
+
   const tabs: TabData[] = [{ label: "Assigned" }, { label: "Not assigned" }];
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -34,25 +35,35 @@ const Page: React.FC = () => {
     setPage(0);
     setRowsPerPage(10);
   };
-  const getEmployeeData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await axiosInstance.get(
-        `/employees/getAllEmployees?page=${
-          page + 1
-        }&limit=${rowsPerPage}&search=${searchQuery}&status=${value === 0 ? true : false}`
-      );
-      if (res?.status === 200 || res?.status === 201) {
-        setDeviceData(res?.data?.data);
+  const getEmployeeData = useCallback(
+    async (selectedItems?: any) => {
+      setLoading(true);
+      try {
+        const filter = {
+          departmentId: selectedItems?.department || null,
+          sectionId: selectedItems?.sections ? selectedItems.sections : [],
+          lineId: selectedItems?.lines ? selectedItems.lines : [],
+        };
+
+        const encodedFilter = encodeURIComponent(JSON.stringify(filter));
+        const res = await axiosInstance.get(
+          `/employees/getAllEmployees?page=${
+            page + 1
+          }&limit=${rowsPerPage}&search=${searchQuery}&status=${value === 0 ? true : false}&filter=${encodedFilter}`
+        );
+        if (res?.status === 200 || res?.status === 201) {
+          setDeviceData(res?.data?.data);
+          setLoading(false);
+        }
+      } catch (err) {
+        setLoading(false);
+        console.error("Error fetching device data:", err);
+      } finally {
         setLoading(false);
       }
-    } catch (err) {
-      setLoading(false);
-      console.error("Error fetching device data:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, rowsPerPage, searchQuery, value]);
+    },
+    [page, rowsPerPage, searchQuery, value]
+  );
   useEffect(() => {
     getEmployeeData();
   }, [page, rowsPerPage, searchQuery, value]);

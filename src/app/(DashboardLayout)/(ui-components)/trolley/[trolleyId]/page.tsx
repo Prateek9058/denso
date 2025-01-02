@@ -25,7 +25,6 @@ import DetailsListingSkeleton from "@/app/(components)/mui-components/Skeleton/d
 import AddRepair from "@/app/(components)/pages/trolley/addRepair";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
 import AssgnMen from "@/app/(components)/pages/trolley/assignMen/index";
-import { FaUserFriends } from "react-icons/fa";
 
 type Breadcrumb = {
   label: string;
@@ -56,7 +55,7 @@ const Page: React.FC = () => {
       link: "",
     },
   ];
-  const getDataFromChildHandler: GetDataHandler = (state, resultArray) => {
+  const getDataFromChildHandler: GetDataHandler = (state) => {
     const startDate = moment(state?.[0]?.startDate);
     const endDate = moment(state?.[0]?.endDate);
     setStartDate(startDate);

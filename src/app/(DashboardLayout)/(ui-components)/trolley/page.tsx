@@ -75,7 +75,6 @@ const Page: React.FC = () => {
     dept?: Category,
     selectedItems?: any
   ) => {
-    console.log("status", status, dept);
     let statusValue = "";
     if (status === "assigned") {
       statusValue = "true";
@@ -99,10 +98,7 @@ const Page: React.FC = () => {
       sectionId: selectedItems?.sections ? selectedItems.sections : [],
       lineId: selectedItems?.lines ? selectedItems.lines : [],
     };
-
     const encodedFilter = encodeURIComponent(JSON.stringify(filter));
-
-    // Construct query parameters
     const queryParams = new URLSearchParams({
       page: (page + 1).toString(),
       limit: rowsPerPage.toString(),

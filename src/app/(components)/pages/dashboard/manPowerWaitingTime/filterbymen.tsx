@@ -83,9 +83,6 @@ export default function AssignAssessment({ open, setOpen }: Props) {
   const [men, setMen] = useState<any>([]);
   const [allShifts, setAllShifts] = useState<any>([]);
   const [date, setDate] = useState<any>(null);
-  const getDataFromChildHandler = (date: any, dataArr: any) => {
-    setDate(date);
-  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

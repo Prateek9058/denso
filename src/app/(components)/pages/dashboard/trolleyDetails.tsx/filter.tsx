@@ -29,7 +29,7 @@ interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   trolley: any;
   setTrolley: React.Dispatch<React.SetStateAction<any>>;
-  handleTrolleyData: any;
+  handleTrolleyData?: any;
 }
 
 interface TabPanelProps {

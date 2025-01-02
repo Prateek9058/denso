@@ -78,7 +78,6 @@ const TrolleyDetails = () => {
   React.useEffect(() => {
     handleTrolleyData();
   }, []);
-  console.log("trolleysData", trolleysData);
   const badgeCount = [trolley.length > 0 ? 1 : null]?.filter(Boolean)?.length;
 
   return (

@@ -55,6 +55,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
   );
 
   const [trolley, setTrolley] = useState<any>([]);
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<any>("");
+  const [selectIDs, setSelectedIds] = useState<any>(null);
+  const [lineIds, setLineIds] = useState<any>(null);
 
   const employmentTypes = [
     { _id: "Permanent", label: "Permanent" },
@@ -97,6 +100,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
     reset();
     setTrolley(null);
     setActiveStep(0);
+    setSelectedDepartmentId(null);
+    setSelectedIds(null);
+    setLineIds(null);
   };
   const onDrop = (acceptedFiles: File[]) => {
     const selectedFile = acceptedFiles[0];
@@ -163,10 +169,11 @@ const AddManPower: React.FC<AddDeviceProps> = ({
       const formData = getValues();
       const body = {
         uId: empUid,
+        empNumber: formData?.empNumber,
         name: formData?.name,
-        phoneNumber: `${formData?.phone}`,
+        phoneNumber: `${formData?.phone ?? ""}`,
         countryCode: "91",
-        email: formData?.email,
+        email: formData?.email ?? "",
         jobRole: formData?.jobRole,
         age: formData?.age,
         category: formData?.category,
@@ -177,6 +184,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
           unit: "days",
         },
         trolley: trolley,
+        departmentId: selectedDepartmentId,
+        sectionId: selectIDs,
+        lineId: lineIds,
       };
       let res;
       if (selectedDevice && activeStep > 0) {
@@ -337,8 +347,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             name="manpowerId"
                             label="Manpower ID"
                             placeholder="Enter manpower id"
-                            error={!!errors.manpowerId}
-                            helperText={errors.manpowerId?.message}
+                            // error={!!errors.manpowerId}
+                            // helperText={errors.manpowerId?.message}
                             onChange={handleInputChange}
                             disabled
                             defaultValue={
@@ -352,11 +362,15 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       <Controller
                         name="empNumber"
                         control={control}
+                        rules={{
+                          required: "empNumber is requiredd",
+                        }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
                             name="empNumber"
                             label="Employee number"
+                            field={"number"}
                             placeholder="Enter Employee Number"
                             error={!!errors.empNumber}
                             helperText={errors.empNumber?.message}
@@ -372,9 +386,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       <Controller
                         name="name"
                         control={control}
-                        // rules={{
-                        //   required: "Name is required",
-                        // }}
+                        rules={{
+                          required: "Name is required",
+                        }}
                         render={({ field }) => (
                           <CustomTextField
                             {...field}
@@ -410,8 +424,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             name="phone"
                             label="Phone Number"
                             placeholder="Enter phone number"
-                            error={!!errors.phone}
-                            helperText={errors.phone?.message}
+                            // error={!!errors.phone}
+                            // helperText={errors.phone?.message}
                             onChange={handleInputChange}
                             defaultValue={
                               selectedDevice ? selectedDevice?.phoneNumber : ""
@@ -438,8 +452,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             name="email"
                             label="Email"
                             placeholder="Enter email address"
-                            error={!!errors.email}
-                            helperText={errors.email?.message}
+                            // error={!!errors.email}
+                            // helperText={errors.email?.message}
                             onChange={handleInputChange}
                             defaultValue={
                               selectedDevice ? selectedDevice?.email : ""
@@ -461,8 +475,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             name="jobRole"
                             label="Job Role"
                             placeholder="Enter job role"
-                            error={!!errors.jobRole}
-                            helperText={errors.jobRole?.message}
+                            // error={!!errors.jobRole}
+                            // helperText={errors.jobRole?.message}
                             onChange={handleInputChange}
                             defaultValue={
                               selectedDevice ? selectedDevice?.jobRole : ""
@@ -500,8 +514,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             name="age"
                             label="Age"
                             placeholder="Enter age"
-                            error={!!errors.age}
-                            helperText={errors.age?.message}
+                            // error={!!errors.age}
+                            // helperText={errors.age?.message}
                             onChange={handleInputChange}
                             defaultValue={
                               selectedDevice ? selectedDevice?.age : ""
@@ -528,8 +542,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             field="number"
                             label="Salary"
                             placeholder="Enter salary"
-                            error={!!errors.salary}
-                            helperText={errors.salary?.message}
+                            // error={!!errors.salary}
+                            // helperText={errors.salary?.message}
                             onChange={handleInputChange}
                             defaultValue={
                               selectedDevice ? selectedDevice?.salary : ""
@@ -580,9 +594,9 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                         <Controller
                           name="shift"
                           control={control}
-                          // rules={{
-                          //   required: "shift is required",
-                          // }}
+                          rules={{
+                            required: "shift is required",
+                          }}
                           render={({ field }) => (
                             <Select
                               {...field}
@@ -624,8 +638,8 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                             name="shiftRange"
                             label="Shift range"
                             placeholder="Enter shift"
-                            error={!!errors.shiftRange}
-                            helperText={errors.shiftRange?.message}
+                            // error={!!errors.shiftRange}
+                            // helperText={errors.shiftRange?.message}
                             onChange={handleInputChange}
                             defaultValue={
                               selectedDevice
@@ -648,6 +662,12 @@ const AddManPower: React.FC<AddDeviceProps> = ({
                       title="Assign User"
                       trolley={trolley}
                       setTrolley={setTrolley}
+                      selectedDepartmentId={selectedDepartmentId}
+                      setSelectedDepartmentId={setSelectedDepartmentId}
+                      selectIDs={selectIDs}
+                      setSelectedIds={setSelectedIds}
+                      lineIds={lineIds}
+                      setLineIds={setLineIds}
                     />
                   </Grid>
                 )}

@@ -36,7 +36,7 @@ const scroll = keyframes`
 
 const MarqueeContainer = styled.div`
   width: 100%;
-//   overflow: hidden;
+  //   overflow: hidden;
   background-color: #f5f5f5;
   position: relative;
   margin-top: 10px;
@@ -45,7 +45,7 @@ const MarqueeContainer = styled.div`
 const ScrollWrapper = styled.div`
   display: flex;
   animation: ${scroll} 30s linear infinite;
-//   width: max-content;
+  //   width: max-content;
 `;
 
 const Notification = styled.div`

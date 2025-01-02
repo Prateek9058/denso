@@ -199,7 +199,11 @@ export default function AssignAssessment({
             >
               <TabItem label="Department" {...a11yProps(0)} />
               <TabItem label="Manpower" {...a11yProps(1)} />
-              <TabItem label="Department" {...a11yProps(2)} />
+              <TabItem
+                label="Department"
+                {...a11yProps(2)}
+                disabled={selectedDept === "not_assigned" && true}
+              />
               <TabItem
                 label="Section"
                 {...a11yProps(3)}
