@@ -14,17 +14,14 @@ import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import moment from "moment";
-import { FaUserFriends } from "react-icons/fa";
 import { FaMapLocation } from "react-icons/fa6";
 import { BsEye } from "react-icons/bs";
 import { GoOrganization } from "react-icons/go";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 import AssignDept from "@/app/(components)/pages/trolley/assignDeparment/index";
 import Filter from "@/app/(components)/pages/trolley/filter/index";
-import AssgnMen from "@/app/(components)/pages/trolley/assignMen/index";
 import AnimatedTrolley from "@/app/(components)/pages/trolley/animatedRoute/index";
 import { MdOutlineEdit } from "react-icons/md";
-import { AiOutlineDelete } from "react-icons/ai";
 import AddCategory from "@/app/(components)/pages/trolley/addCategory";
 import axiosInstance from "@/app/api/axiosInstance";
 import {
@@ -32,6 +29,11 @@ import {
   notifySuccess,
 } from "@/app/(components)/mui-components/Snackbar";
 
+interface SelectedItems {
+  department: string | null;
+  sections: string[];
+  lines: string[];
+}
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -64,8 +66,6 @@ const Table: React.FC<TableProps> = ({
   const [openDept, setOpenDept] = React.useState<boolean>(false);
   const [openFilter, setOpenFilter] = React.useState<boolean>(false);
   const [trolleyId, setTrolleyId] = React.useState<string>("");
-  const [openMen, setOpenMen] = React.useState<boolean>(false);
-  const [mensData, setMensData] = React.useState<any>(null);
   const [selectedMen, setSelectedMen] = useState<string | null>(null);
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
   const [openAnimated, setOpenAnimated] = useState<boolean>(false);
@@ -73,6 +73,13 @@ const Table: React.FC<TableProps> = ({
   const [openCat, setOpenCat] = useState<boolean>(false);
   const [catData, setCatData] = useState<any>(null);
   const [deleteId, setDeleteId] = useState<string>("");
+  const [selectedItems, setSelectedItems] = useState<SelectedItems>({
+    department: null,
+    sections: [],
+    lines: [],
+  });
+  const [startDate, setStartDate] = React.useState<any>(moment());
+  const [endDate, setEndDate] = React.useState<any>(moment());
 
   const handleOpenAnimatedRoute = (item: any) => {
     setOpenAnimated(true);
@@ -86,10 +93,7 @@ const Table: React.FC<TableProps> = ({
     setOpenDept(true);
     setTrolleyId(id);
   };
-  const handleOpenMen = (data: any) => {
-    setOpenMen(true);
-    setMensData(data);
-  };
+
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -123,10 +127,7 @@ const Table: React.FC<TableProps> = ({
   const handleCancel = () => {
     setOpenDialog(false);
   };
-  const handleOpenDelete = (id: string) => {
-    setOpenDialog(true);
-    setDeleteId(id);
-  };
+
   const renderPowerStatus = (status: any) => (
     <Chip
       label={status}
@@ -138,7 +139,14 @@ const Table: React.FC<TableProps> = ({
       }}
     />
   );
-  const badgeCount = [selectedMen, selectedDept]?.filter(Boolean)?.length;
+  const badgeCount = [
+    selectedMen,
+    selectedDept,
+    selectedItems?.department,
+    selectedItems?.sections.length > 0 ? 1 : null,
+    selectedItems?.lines.length > 0 ? 1 : null,
+    // startDate && endDate ? 1 : null,
+  ]?.filter(Boolean)?.length;
 
   const getFormattedData = (data: any[]) => {
     return data?.map((item, index) => ({
@@ -271,6 +279,12 @@ const Table: React.FC<TableProps> = ({
           selectedDept={selectedDept}
           setSelectedDept={setSelectedDept}
           setSelectedMen={setSelectedMen}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+          setEndDate={setEndDate}
+          endDate={endDate}
+          startDate={startDate}
+          setStartDate={setStartDate}
         />
       )}
       {/* {openMen && (

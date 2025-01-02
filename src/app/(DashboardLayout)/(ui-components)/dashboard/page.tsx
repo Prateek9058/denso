@@ -23,6 +23,7 @@ import TrolleyDetails from "@/app/(components)/pages/dashboard/trolleyDetails.ts
 import TrolleyRepairTime from "@/app/(components)/pages/dashboard/trolleyRepairTime";
 import TotalAlerts from "@/app/(components)/pages/dashboard/totalAlerts";
 import axiosInstance from "@/app/api/axiosInstance";
+import Filter from "@/app/(components)/pages/dashboard/trolleyDetails.tsx/filter";
 
 const DynamicHeader = dynamic(
   () => import("../../../(components)/pages/track"),
@@ -44,6 +45,8 @@ const Page = () => {
   const [selectedGraph, setSelectedGraph] = useState<string | null>(
     "Total Registered Devices"
   );
+  const [trolley, setTrolley] = useState<any>([]);
+  const [open, setOpen] = React.useState(false);
 
   const [stats, setStats] = useState([
     {
@@ -178,7 +181,7 @@ const Page = () => {
                         <LinearProgress
                           variant="determinate"
                           color="success"
-                          value={72} // You can replace 72 with actual progress calculation logic
+                          value={72}
                           sx={{
                             height: 8,
                             borderRadius: 5,
@@ -328,9 +331,21 @@ const Page = () => {
         p={1}
         sx={{ backgroundColor: "#fff", borderRadius: "8px" }}
       >
+        {open && (
+          <Filter
+            open={open}
+            setOpen={setOpen}
+            setTrolley={setTrolley}
+            trolley={trolley}
+          />
+        )}
         <Grid container justifyContent="space-between" alignItems="center">
           <Typography variant="h6">Showing trolley | 25 out of 25</Typography>
-          <Button variant="contained" size="large">
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => setOpen(true)}
+          >
             filter
           </Button>
         </Grid>

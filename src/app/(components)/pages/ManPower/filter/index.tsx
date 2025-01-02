@@ -13,13 +13,9 @@ import CommonDialog from "@/app/(components)/mui-components/Dialog/common-dialog
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import Step1 from "../trolley/assignDeparment/Step1";
-import Step2 from "../trolley/assignDeparment/Step2";
-import Step3 from "../trolley/assignDeparment/Step3";
-import { addDays, subDays } from "date-fns";
-import { DateRangePicker } from "react-date-range";
-import moment from "moment";
-import { start } from "repl";
+import Step1 from "@/app/(components)/pages/trolley/assignDeparment/Step1";
+import Step2 from "@/app/(components)/pages/trolley/assignDeparment/Step2";
+import Step3 from "@/app/(components)/pages/trolley/assignDeparment/Step3";
 
 interface SelectedItems {
   department: string | null;
@@ -30,8 +26,8 @@ interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   getTrolleyData?: any;
-  setSelectedItems: React.Dispatch<React.SetStateAction<SelectedItems>>;
   selectedItems: SelectedItems;
+  setSelectedItems: React.Dispatch<React.SetStateAction<SelectedItems>>;
 }
 
 interface TabPanelProps {
@@ -45,7 +41,7 @@ const TabItem = styled(Tab)(({ theme }) => ({
   minHeight: 35,
   minWidth: "120px",
   padding: "8px",
-  marginBottom: "25px",
+  marginBottom: "18px",
 
   "&.Mui-selected": {
     color: "#DC0032",
@@ -84,13 +80,12 @@ export default function AssignAssessment({
   open,
   setOpen,
   getTrolleyData,
+
   selectedItems,
   setSelectedItems,
 }: Props) {
   const methods = useForm<any>();
   const [activeStep, setValue] = React.useState(0);
-  const [startDate, setStartDate] = React.useState<any>(moment());
-  const [endDate, setEndDate] = React.useState<any>(moment());
 
   const handleSelectionChange = (key: keyof SelectedItems, id: string) => {
     setSelectedItems((prevState: any) => {
@@ -121,33 +116,13 @@ export default function AssignAssessment({
   };
 
   const handleSubmit = () => {
-    getTrolleyData(selectedItems, startDate, endDate);
+    getTrolleyData(selectedItems);
     handleClose();
   };
   const handleClear = () => {
     setSelectedItems({ department: null, sections: [], lines: [] });
     getTrolleyData();
     handleClose();
-  };
-  const defaultDateRange: any = {
-    startDate: subDays(new Date(), 0),
-    endDate: addDays(new Date(), 0),
-    key: "selection",
-  };
-  const [state, setState] = useState<any>([defaultDateRange]);
-  const isFutureDate = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date > today;
-  };
-  const handleOnChange = (ranges: any) => {
-    const selection = ranges.selection;
-    const startDate = new Date(selection.startDate);
-    const endDate = new Date(selection.endDate);
-    setStartDate(startDate);
-    setEndDate(endDate);
-
-    setState([selection]);
   };
 
   return (
@@ -169,8 +144,15 @@ export default function AssignAssessment({
               value={activeStep}
               onChange={handleChange}
               aria-label="Vertical tabs example"
-              sx={{ borderRight: 1, borderColor: "divider", height: "100%" }}
+              sx={{
+                borderRight: 1,
+                borderColor: "divider",
+                height: "100%",
+                p: 0,
+              }}
             >
+              {/* <TabItem label="Department" {...a11yProps(0)} />
+              <TabItem label="Manpower" {...a11yProps(1)} /> */}
               <TabItem label="Department" {...a11yProps(0)} />
               <TabItem
                 label="Section"
@@ -182,9 +164,65 @@ export default function AssignAssessment({
                 {...a11yProps(2)}
                 disabled={selectedItems?.sections?.length === 0 && true}
               />
-              <TabItem label="Date" {...a11yProps(0)} />
             </Tabs>
-
+            {/* <TabPanel value={activeStep} index={0}>
+              <Grid container rowGap={2}>
+                <Typography variant="h5">Department</Typography>
+                <Grid container columnGap={2}>
+                  <Button
+                    variant={selectedDept === "all" ? "contained" : "outlined"}
+                    onClick={() => handleSelectionChangeDept("all")}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={
+                      selectedDept === "assigned" ? "contained" : "outlined"
+                    }
+                    onClick={() => handleSelectionChangeDept("assigned")}
+                  >
+                    Assigned
+                  </Button>
+                  <Button
+                    variant={
+                      selectedDept === "not_assigned" ? "contained" : "outlined"
+                    }
+                    onClick={() => handleSelectionChangeDept("not_assigned")}
+                  >
+                    Not Assigned
+                  </Button>
+                </Grid>
+              </Grid>
+            </TabPanel>
+            <TabPanel value={activeStep} index={1}>
+              <Grid container rowGap={2}>
+                <Typography variant="h5">Manpower</Typography>
+                <Grid container columnGap={2}>
+                  <Button
+                    variant={selectedMen === "all" ? "contained" : "outlined"}
+                    onClick={() => handleSelectionChangeMen("all")}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={
+                      selectedMen === "assigned" ? "contained" : "outlined"
+                    }
+                    onClick={() => handleSelectionChangeMen("assigned")}
+                  >
+                    Assigned
+                  </Button>
+                  <Button
+                    variant={
+                      selectedMen === "not_assigned" ? "contained" : "outlined"
+                    }
+                    onClick={() => handleSelectionChangeMen("not_assigned")}
+                  >
+                    Not Assigned
+                  </Button>
+                </Grid>
+              </Grid>
+            </TabPanel> */}
             <TabPanel value={activeStep} index={0}>
               {activeStep === 0 && (
                 <Step1
@@ -210,18 +248,6 @@ export default function AssignAssessment({
                   handleSelectionChange={handleSelectionChange}
                 />
               )}
-            </TabPanel>
-            <TabPanel value={activeStep} index={3}>
-              <Grid container width={"100px"}>
-                <DateRangePicker
-                  onChange={handleOnChange}
-                  moveRangeOnFirstSelection={false}
-                  months={2}
-                  ranges={state}
-                  direction="horizontal"
-                  disabledDay={(date: Date) => isFutureDate(date)}
-                />
-              </Grid>
             </TabPanel>
           </Grid>
         </DialogContent>

@@ -17,6 +17,7 @@ import Selected from "./trolleyByfilter";
 import { addDays, subDays, differenceInDays } from "date-fns";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 import { DateRangePicker } from "react-date-range";
+import moment from "moment";
 
 interface SelectedItems {
   department: string | null;
@@ -28,6 +29,7 @@ interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   trolley: any;
   setTrolley: React.Dispatch<React.SetStateAction<any>>;
+  handleTrolleyData: any;
 }
 
 interface TabPanelProps {
@@ -81,10 +83,13 @@ export default function AssignAssessment({
   setOpen,
   setTrolley,
   trolley,
+  handleTrolleyData,
 }: Props) {
   const methods = useForm<any>();
   const [activeStep, setValue] = React.useState(0);
   const [date, setDate] = useState<any>(null);
+  const [startDate, setStartDate] = useState<any>(moment());
+  const [endDate, setEndDate] = useState<any>(moment());
   const getDataFromChildHandler = (date: any, dataArr: any) => {
     setDate(date);
   };
@@ -98,12 +103,16 @@ export default function AssignAssessment({
 
   const handleClose = () => {
     setOpen(false);
+    // setTrolley([]);
   };
 
   const handleSubmit = () => {
+    handleTrolleyData(trolley, startDate, endDate);
     handleClose();
   };
   const handleClear = () => {
+    setTrolley([]);
+    handleTrolleyData(trolley, startDate, endDate);
     handleClose();
   };
   const defaultDateRange: any = {
@@ -121,11 +130,12 @@ export default function AssignAssessment({
     const selection = ranges.selection;
     const startDate = new Date(selection.startDate);
     const endDate = new Date(selection.endDate);
+    setStartDate(startDate);
+    setEndDate(endDate);
 
     setState([selection]);
   };
 
-  console.log("state", state);
   return (
     <CommonDialog
       open={open}

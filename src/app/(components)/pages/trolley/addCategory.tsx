@@ -67,9 +67,9 @@ const AddCategory: React.FC<AddDeviceProps> = ({
     if (selectedDevice) {
       setValue("macId", setcategoryUid(selectedDevice?.uId));
       setValue("name", selectedDevice?.name);
-      setValue("color", selectedDevice?.color);
+      setColor(selectedDevice?.color);
     }
-  }, [selectedDevice]);
+  }, [selectedDevice, setValue]);
 
   const [categoryUid, setcategoryUid] = useState<string>("");
   const handleCategoryUid = async () => {
@@ -139,13 +139,14 @@ const AddCategory: React.FC<AddDeviceProps> = ({
   const handleChange = (color: any) => {
     setColor(color?.hex);
   };
+  console.log("color", color);
   return (
     <>
       <CommonDialog
         open={open}
         maxWidth={"sm"}
         fullWidth={true}
-        title={`Add a New category`}
+        title={selectedDevice ? "Edit category" : `Add a New category`}
         message={"Are you sure you want to cancel?"}
         titleConfirm={"Cancel"}
         onClose={handleClose}
@@ -194,9 +195,8 @@ const AddCategory: React.FC<AddDeviceProps> = ({
                     disabled
                     label="Trolley color"
                     placeholder="Enter trolley color"
-                    defaultValue={
-                      selectedDevice ? selectedDevice?.color : color
-                    }
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
                   />
                 </Grid>
               </Grid>

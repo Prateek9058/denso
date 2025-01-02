@@ -53,7 +53,7 @@ const AddCategory: React.FC<AddDeviceProps> = ({
         decriprion: data?.decriprion,
       };
       const { status } = await axiosInstance.post(
-        `trolleyRepairing/updateTrolleyToRepair/${id}`,
+        `trolleyMaintenance/updateTrolleyToRepair/${id}`,
         { payload }
       );
       if (status === 200 || status === 201) {

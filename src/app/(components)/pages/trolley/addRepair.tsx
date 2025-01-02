@@ -75,7 +75,7 @@ const AddRepair: React.FC<AddDeviceProps> = ({
   const getAllIssues = async () => {
     try {
       const { data, status } = await axiosInstance.get(
-        `/trolleyRepairing/getTrolleyIssues`
+        `/trolleyMaintenance/getTrolleyIssues`
       );
       if (status === 200 || status === 201) {
         const issuesArray = Object.entries(data?.data).map(
@@ -109,7 +109,7 @@ const AddRepair: React.FC<AddDeviceProps> = ({
     }
     try {
       const res = await axiosInstance.post(
-        `trolleyRepairing/addTrolleyRepairing/${selectedDevice?._id}`,
+        `trolleyMaintenance/addTrolleyRepairing/${selectedDevice?._id}`,
         body
       );
       if (res?.status === 200 || res?.status === 201) {

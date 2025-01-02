@@ -1,14 +1,23 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, IconButton, Tooltip } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  IconButton,
+  Tooltip,
+  Badge,
+  Button,
+} from "@mui/material";
 import CustomTextField from "@/app/(components)/mui-components/Text-Field's";
 import CommonDialog from "@/app/(components)/mui-components/Dialog";
 import Link from "next/link";
 import { TbTrolley } from "react-icons/tb";
 import TableSkeleton from "@/app/(components)/mui-components/Skeleton/tableSkeleton";
 import { BsEye } from "react-icons/bs";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 import AssignTrolley from "@/app/(components)/pages/ManPower/assigntrolley/index";
+import Filter from "@/app/(components)/pages/ManPower/filter/index";
 
 interface TableProps {
   deviceData: any;
@@ -20,6 +29,11 @@ interface TableProps {
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   getEmployeeData?: any;
+}
+interface SelectedItems {
+  department: string | null;
+  sections: string[];
+  lines: string[];
 }
 const Table: React.FC<TableProps> = ({
   deviceData,
@@ -47,6 +61,12 @@ const Table: React.FC<TableProps> = ({
   const [openAssign, setOpenAssign] = React.useState<boolean>(false);
   const [selectedDevice, setSelectedDevice] = React.useState<any>(null);
   const [trolley, setTrolley] = useState<any>([]);
+  const [openFilter, setOpenFilter] = useState<boolean>(false);
+  const [selectedItems, setSelectedItems] = useState<SelectedItems>({
+    department: null,
+    sections: [],
+    lines: [],
+  });
 
   const handleOpenAssoign = (data: any) => {
     setOpenAssign(true);
@@ -111,8 +131,21 @@ const Table: React.FC<TableProps> = ({
       ],
     }));
   };
+  const badgeCount = [
+    // startDate && endDate ? 1 : null,
+  ]?.filter(Boolean)?.length;
+
   return (
     <>
+      {openFilter && (
+        <Filter
+          open={openFilter}
+          setOpen={setOpenFilter}
+          getTrolleyData={getEmployeeData}
+          setSelectedItems={setSelectedItems}
+          selectedItems={selectedItems}
+        />
+      )}
       {openAssign && (
         <AssignTrolley
           open={openAssign}
@@ -149,6 +182,22 @@ const Table: React.FC<TableProps> = ({
           </Grid>
           <Grid item>
             <Grid container justifyContent={"space-between"}>
+              <Grid item sx={{ mr: 2 }}>
+                <Badge
+                  badgeContent={badgeCount}
+                  color="error"
+                  overlap="circular"
+                >
+                  <Button
+                    startIcon={<FilterListIcon />}
+                    variant="contained"
+                    onClick={() => setOpenFilter(true)}
+                    size="large"
+                  >
+                    Filter
+                  </Button>
+                </Badge>
+              </Grid>
               <Grid item className="customSearch">
                 <CustomTextField
                   type="search"

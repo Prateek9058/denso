@@ -66,7 +66,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
     try {
       setLoading(true);
       const { data, status } = await axiosInstance.get(
-        `/trolleyRepairing/getSingleTrolleyRepairingData/${params?.maintenanceId}?page=${page + 1}&limit=${rowsPerPage}&sortType=1&search=${searchQuery}&startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`
+        `/trolleyMaintenance/getSingleTrolleyRepairingData/${params?.maintenanceId}?page=${page + 1}&limit=${rowsPerPage}&sortType=1&search=${searchQuery}&startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`
       );
       if (status === 200 || status === 201) {
         setDeviceData(data?.data);
@@ -90,7 +90,7 @@ const Page = ({ params }: { params: { maintenanceId: string } }) => {
   const handleConfirm = async () => {
     try {
       const { status } = await axiosInstance.post(
-        `trolleyRepairing/updateTrolleyToRepair/${params?.maintenanceId}`
+        `trolleyMaintenance/updateTrolleyToRepair/${params?.maintenanceId}`
       );
       if (status === 200 || status === 201) {
         getTrolleyDetails();

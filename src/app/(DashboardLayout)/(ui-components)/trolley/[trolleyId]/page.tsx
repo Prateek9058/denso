@@ -109,7 +109,7 @@ const Page: React.FC = () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `trolleyRepairing/getSingleTrolleyRepairingData/${trolleyId}?page=${
+        `trolleyMaintenance/getSingleTrolleyRepairingData/${trolleyId}?page=${
           page + 1
         }&limit=${rowsPerPage}&search=${searchQuery}&startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`
       );

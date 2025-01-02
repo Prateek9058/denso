@@ -70,7 +70,12 @@ const Page: React.FC = () => {
     setPage(0);
     setRowsPerPage(10);
   };
-  const getTrolleyData = async (status?: Category, dept?: Category) => {
+  const getTrolleyData = async (
+    status?: Category,
+    dept?: Category,
+    selectedItems?: any
+  ) => {
+    console.log("status", status, dept);
     let statusValue = "";
     if (status === "assigned") {
       statusValue = "true";
@@ -89,13 +94,28 @@ const Page: React.FC = () => {
     }
     setDeptStatus(DeptStatus);
     setLoading(true);
+    const filter = {
+      departmentId: selectedItems?.department || null,
+      sectionId: selectedItems?.sections ? selectedItems.sections : [],
+      lineId: selectedItems?.lines ? selectedItems.lines : [],
+    };
+
+    const encodedFilter = encodeURIComponent(JSON.stringify(filter));
+
+    // Construct query parameters
+    const queryParams = new URLSearchParams({
+      page: (page + 1).toString(),
+      limit: rowsPerPage.toString(),
+      departmentStatus: DeptStatus || "",
+    });
+
     const Url =
       value == 0
         ? "trolleys/getAllTrolleys"
         : "trolleyCategory/getAllTrolleyCategories";
     try {
       const res = await axiosInstance.get(
-        `${Url}?page=${page + 1}&limit=${rowsPerPage}&search=${searchQuery}&status=${statusValue}&departmentStatus=${DeptStatus}`
+        `${Url}?${queryParams.toString()}&filter=${encodedFilter}`
       );
       if (res?.status === 200 || res?.status === 201) {
         if (value === 0) {

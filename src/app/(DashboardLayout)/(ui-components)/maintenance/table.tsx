@@ -20,7 +20,11 @@ import CustomTable from "@/app/(components)/mui-components/Table/customTable";
 import Breadcrumb from "@/app/(components)/mui-components/Breadcrumbs";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import Filter from "@/app/(components)/pages/filter";
-
+interface SelectedItems {
+  department: string | null;
+  sections: string[];
+  lines: string[];
+}
 interface TableProps {
   deviceData: any;
   rowsPerPage: number;
@@ -31,16 +35,15 @@ interface TableProps {
   loading: boolean;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   getDataFromChildHandler: any;
+  selectedItems: SelectedItems;
+  setSelectedItems: React.Dispatch<React.SetStateAction<SelectedItems>>;
+  getTrolleyData: (selectedItems: any) => void;
 }
 type Breadcrumb = {
   label: string;
   link: string;
 };
-interface SelectedItems {
-  department: string | null;
-  sections: string[];
-  lines: string[];
-}
+
 const breadcrumbItems: Breadcrumb[] = [
   { label: "Dashboard", link: "/" },
   { label: "Maintenance ", link: "" },
@@ -55,6 +58,9 @@ const Table: React.FC<TableProps> = ({
   setSearchQuery,
   loading,
   getDataFromChildHandler,
+  setSelectedItems,
+  selectedItems,
+  getTrolleyData,
 }) => {
   const columns = [
     "Sno.",
@@ -68,13 +74,6 @@ const Table: React.FC<TableProps> = ({
   const [open, setOpenDialog] = React.useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
   const [openFilter, setOpenFilter] = React.useState<boolean>(false);
-  const [selectedMen, setSelectedMen] = useState<string | null>(null);
-  const [selectedDept, setSelectedDept] = useState<string | null>(null);
-  const [selectedItems, setSelectedItems] = useState<SelectedItems>({
-    department: null,
-    sections: [],
-    lines: [],
-  });
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -141,8 +140,6 @@ const Table: React.FC<TableProps> = ({
   };
 
   const badgeCount = [
-    selectedMen,
-    selectedDept,
     selectedItems?.department,
     selectedItems?.sections.length > 0 ? 1 : null,
     selectedItems?.lines.length > 0 ? 1 : null,
@@ -157,11 +154,7 @@ const Table: React.FC<TableProps> = ({
         <Filter
           open={openFilter}
           setOpen={setOpenFilter}
-          // getTrolleyData={getTrolleyData}
-          selectedMen={selectedMen}
-          selectedDept={selectedDept}
-          setSelectedDept={setSelectedDept}
-          setSelectedMen={setSelectedMen}
+          getTrolleyData={getTrolleyData}
           selectedItems={selectedItems}
           setSelectedItems={setSelectedItems}
         />
@@ -220,11 +213,11 @@ const Table: React.FC<TableProps> = ({
                   onChange={handleSearchChange}
                 />
               </Grid>
-              <Grid ml={2}>
+              {/* <Grid ml={2}>
                 <CommonDatePicker
                   getDataFromChildHandler={getDataFromChildHandler}
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
         </Grid>{" "}

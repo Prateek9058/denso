@@ -18,6 +18,7 @@ import { addDays, subDays, differenceInDays } from "date-fns";
 import CommonDatePicker from "@/app/(components)/mui-components/Text-Field's/Date-range-Picker";
 import { DateRangePicker } from "react-date-range";
 import axiosInstance from "@/app/api/axiosInstance";
+import MensFilter from "./mensfilter";
 
 interface SelectedItems {
   department: string | null;
@@ -79,6 +80,7 @@ export default function AssignAssessment({ open, setOpen }: Props) {
   const methods = useForm<any>();
   const [activeStep, setValue] = React.useState(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [men, setMen] = useState<any>([]);
   const [allShifts, setAllShifts] = useState<any>([]);
   const [date, setDate] = useState<any>(null);
   const getDataFromChildHandler = (date: any, dataArr: any) => {
@@ -170,7 +172,9 @@ export default function AssignAssessment({ open, setOpen }: Props) {
               <TabItem label="Shift" {...a11yProps(2)} />
             </Tabs>
             <TabPanel value={activeStep} index={0}>
-              <Grid container>hjk</Grid>
+              <Grid container>
+                <MensFilter setTrolley={setMen} trolley={men} />
+              </Grid>
             </TabPanel>
             <TabPanel value={activeStep} index={1}>
               <Grid container width={"100px"}>
